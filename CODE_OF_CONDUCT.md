@@ -30,7 +30,7 @@ Examples of unacceptable behavior include:
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project maintainers at **conduct@neighbourgood.eu**.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project maintainers at **hallo@neighbourgood.eu**.
 
 All complaints will be reviewed and investigated promptly and fairly. All project maintainers are obligated to respect the privacy and security of the reporter of any incident.
 
