@@ -3,6 +3,7 @@
 	import { api } from '$lib/api';
 	import { token, user } from '$lib/stores/auth';
 	import type { UserProfile } from '$lib/stores/auth';
+	import { t } from 'svelte-i18n';
 
 	let email = $state('');
 	let password = $state('');
@@ -34,8 +35,8 @@
 </script>
 
 <div class="auth-page">
-	<h1>Welcome Back</h1>
-	<p class="subtitle">Log in to your community.</p>
+	<h1>{$t('auth.login_title')}</h1>
+	<p class="subtitle">{$t('auth.login_community')}</p>
 
 	{#if error}
 		<p class="error">{error}</p>
@@ -43,19 +44,19 @@
 
 	<form onsubmit={handleSubmit}>
 		<label>
-			<span>Email</span>
+			<span>{$t('auth.email')}</span>
 			<input type="email" bind:value={email} required />
 		</label>
 		<label>
-			<span>Password</span>
+			<span>{$t('auth.password')}</span>
 			<input type="password" bind:value={password} required />
 		</label>
 		<button type="submit" disabled={loading}>
-			{loading ? 'Logging in...' : 'Login'}
+			{loading ? $t('auth.logging_in') : $t('auth.login_btn')}
 		</button>
 	</form>
 
-	<p class="switch">No account yet? <a href="/register">Sign Up</a></p>
+	<p class="switch">{$t('auth.no_account')} <a href="/register">{$t('nav.signup')}</a></p>
 </div>
 
 <style>

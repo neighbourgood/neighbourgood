@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { isLoggedIn, user } from '$lib/stores/auth';
 	import { api } from '$lib/api';
+	import { t } from 'svelte-i18n';
 
 	interface DashboardData {
 		resources_count: number;
@@ -143,10 +144,10 @@
 </svelte:head>
 
 <div class="dashboard">
-	<h1>Welcome back{$user?.display_name ? `, ${$user.display_name}` : ''}</h1>
+	<h1>{$t('dashboard.welcome', { values: { name: $user?.display_name ?? '' } })}</h1>
 
 	{#if loading}
-		<div class="loading">Loading...</div>
+		<div class="loading">{$t('dashboard.loading')}</div>
 	{:else if error}
 		<div class="alert alert-error">{error}</div>
 	{:else}
