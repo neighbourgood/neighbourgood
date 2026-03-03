@@ -3,6 +3,7 @@
 	import { api } from '$lib/api';
 	import { token, user } from '$lib/stores/auth';
 	import type { UserProfile } from '$lib/stores/auth';
+	import { t } from 'svelte-i18n';
 
 	let email = $state('');
 	let password = $state('');
@@ -41,8 +42,8 @@
 </script>
 
 <div class="auth-page">
-	<h1>Create Account</h1>
-	<p class="subtitle">Join your neighbourhood community.</p>
+	<h1>{$t('auth.register_title')}</h1>
+	<p class="subtitle">{$t('auth.register_community')}</p>
 
 	{#if error}
 		<p class="error">{error}</p>
@@ -50,27 +51,27 @@
 
 	<form onsubmit={handleSubmit}>
 		<label>
-			<span>Email</span>
+			<span>{$t('auth.email')}</span>
 			<input type="email" bind:value={email} required />
 		</label>
 		<label>
-			<span>Password</span>
+			<span>{$t('auth.password')}</span>
 			<input type="password" bind:value={password} required minlength="6" />
 		</label>
 		<label>
-			<span>Display Name</span>
+			<span>{$t('auth.display_name')}</span>
 			<input type="text" bind:value={displayName} required />
 		</label>
 		<label>
-			<span>Neighbourhood (optional)</span>
+			<span>{$t('auth.neighbourhood')}</span>
 			<input type="text" bind:value={neighbourhood} placeholder="e.g. Kreuzberg, Friedrichshain" />
 		</label>
 		<button type="submit" disabled={loading}>
-			{loading ? 'Creating account...' : 'Sign Up'}
+			{loading ? $t('auth.creating_account') : $t('auth.register_btn')}
 		</button>
 	</form>
 
-	<p class="switch">Already have an account? <a href="/login">Login</a></p>
+	<p class="switch">{$t('auth.have_account')} <a href="/login">{$t('auth.login_btn')}</a></p>
 </div>
 
 <style>
