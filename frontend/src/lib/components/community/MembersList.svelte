@@ -60,7 +60,7 @@
   }
   .members-section h2 {
     font-size: 1.05rem;
-    font-weight: 600;
+    font-weight: 500;
     margin-bottom: 1rem;
   }
   .members-list {

@@ -746,7 +746,7 @@
 	.members-section h2,
 	.merge-section h2 {
 		font-size: 1.15rem;
-		font-weight: 600;
+		font-weight: 500;
 		margin-bottom: 0.75rem;
 	}
 
@@ -829,7 +829,7 @@
 
 	.suggestion-info h3 {
 		font-size: 0.95rem;
-		font-weight: 600;
+		font-weight: 500;
 		margin-bottom: 0.3rem;
 	}
 
@@ -919,7 +919,7 @@
 
 	.resources-section h2 {
 		font-size: 1.15rem;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	.section-header {
@@ -1020,7 +1020,7 @@
 
 	.invites-section h2 {
 		font-size: 1.15rem;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	.invite-form {
@@ -1282,7 +1282,7 @@
 
 	.tickets-section h2 {
 		font-size: 1.15rem;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	.ticket-form {
@@ -1379,7 +1379,7 @@
 
 	.ticket-card h3 {
 		font-size: 0.92rem;
-		font-weight: 600;
+		font-weight: 500;
 		margin-bottom: 0.15rem;
 	}
 

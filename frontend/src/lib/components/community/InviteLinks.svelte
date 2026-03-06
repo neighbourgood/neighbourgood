@@ -136,7 +136,7 @@
   }
   .section-header h2 {
     font-size: 1.05rem;
-    font-weight: 600;
+    font-weight: 500;
     margin: 0;
   }
   .invite-form {
