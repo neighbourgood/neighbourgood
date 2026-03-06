@@ -4,17 +4,7 @@
 	import { isLoggedIn } from '$lib/stores/auth';
 	import { onMount } from 'svelte';
 	import { t } from 'svelte-i18n';
-
-	// ── Types ──────────────────────────────────────────────────────────────
-	interface CommunityOut {
-		id: number;
-		name: string;
-		description: string | null;
-		postal_code: string;
-		city: string;
-		member_count: number;
-		is_active: boolean;
-	}
+	import type { CommunityOut } from '$lib/types';
 
 	interface Suggestion {
 		label: string;
