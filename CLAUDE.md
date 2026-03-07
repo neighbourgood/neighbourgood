@@ -20,14 +20,14 @@ Token efficiency matters. Use the right model for the right task:
 
 ## Project Overview
 
-**NeighbourGood v1.3.0** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
+**NeighbourGood v1.5.0** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
 
 - **Blue Sky Mode** (normal operation): resource library, skill exchange, calendar bookings, reputation/trust scores, community feed, direct messaging
 - **Red Sky Mode** (crisis operation): per-community crisis toggle or 60%-threshold community vote, emergency ticketing (request / offer / ping), neighbourhood leader roles, cross-instance Red Sky alerts
 
 Each instance exposes `/instance/info` so instances can discover and federate with each other.
 
-Current test count: **200+ tests** across 21 test files (all backend, pytest + in-memory SQLite).
+Current test count: **310+ tests** across 24 test files (all backend, pytest + in-memory SQLite).
 
 ---
 
@@ -383,6 +383,7 @@ Full reference: `API_ENDPOINTS.md`. Interactive: `http://localhost:8300/docs`.
 | `/instance/info` | instance.py | public metadata for federation crawlers |
 | `/federation` | federation.py | instance directory, Red Sky alert broadcast |
 | `/webhooks` | webhooks.py | CRUD outbound webhooks + inbound handler |
+| `/matching` | matching.py | Smart suggestions, unmet needs, AI status |
 | `/users/me/telegram` | telegram.py | link/unlink Telegram account |
 
 ---
@@ -464,7 +465,7 @@ def test_not_found(client, auth_headers):
     assert res.status_code == 404
 ```
 
-Current test files (21): `test_activity`, `test_auth`, `test_bookings`, `test_communities`, `test_crisis`, `test_instance`, `test_inventory`, `test_invites`, `test_messages`, `test_notifications`, `test_reputation`, `test_resource_community`, `test_resources`, `test_resources_phase2`, `test_reviews`, `test_skills`, `test_status`, `test_telegram`, `test_triage`, `test_users`, `test_webhooks`.
+Current test files (24): `test_activity`, `test_auth`, `test_bookings`, `test_communities`, `test_crisis`, `test_federation_sync`, `test_instance`, `test_inventory`, `test_invites`, `test_matching`, `test_mesh_sync`, `test_messages`, `test_notifications`, `test_reputation`, `test_resource_community`, `test_resources`, `test_resources_phase2`, `test_reviews`, `test_skills`, `test_status`, `test_telegram`, `test_triage`, `test_users`, `test_webhooks`.
 
 ---
 
@@ -472,6 +473,7 @@ Current test files (21): `test_activity`, `test_auth`, `test_bookings`, `test_co
 
 | Version | Date | Highlights |
 |---------|------|-----------|
+| 1.5.0 | 2026-03-07 | Smart matching engine with optional AI enhancement: rule-based skill/resource matching, unmet emergency needs surfacing, Ollama/OpenAI-compatible LLM re-ranking, 20 new tests |
 | 1.4.0 | 2026-03-07 | Decentralized data sync between instances: public snapshot endpoint, pull-based sync from all known peers, incremental cursors, federated resource/skill browsing, 33 new tests |
 | 1.3.0 | 2026-03-07 | Frontend refactor: extract CrisisModePanel, MembersList, InviteLinks sub-components; shared ErrorMessage/LoadingSpinner; backend utils (authorization.py, db.py, file_upload.py); remove lifespan auto-migration; lighter desktop heading font weights |
 | 1.2.0 | 2026-03-02 | BitChat BLE mesh gateway integration: offline crisis communication via Bluetooth Low Energy, Web Bluetooth connection manager, mesh Svelte store, POST /mesh/sync endpoint, 260 tests |
