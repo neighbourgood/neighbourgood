@@ -1,6 +1,6 @@
 # 🏘️ NeighbourGood
 
-**v1.5.0** · A self-hostable web platform that helps communities share resources and coordinate during crises — including when the internet is gone.
+**v1.6.0** · A self-hostable web platform that helps communities share resources and coordinate during crises — including when the internet is gone.
 
 ## 💡 Vision
 
@@ -311,81 +311,22 @@ See [API_ENDPOINTS.md](API_ENDPOINTS.md) for the full endpoint reference. Intera
 - [x] Multi-language support (i18n) (v1.1.0) — 7 languages with RTL support
 - [ ] Admin dashboard with analytics
 - [x] Outbound webhook system with HMAC-SHA256 signing (generic integrations)
-- [x] Telegram bot integration (personal notifications, community group alerts, bot commands)
+- [x] Telegram bot integration (personal notifications, community group alerts, bot commands) + AI natural language interface (v1.6.0)
 - [ ] Signal integration
 - [ ] Matrix integration
 
-## 🤖 Telegram Bot Setup
+## 🤖 Telegram Bot & AI Assistant
 
-NeighbourGood can send notifications to personal Telegram accounts and community group chats, and respond to bot commands.
+NeighbourGood includes a Telegram bot with an AI-powered natural language interface — members can search resources, find skills, and coordinate during crises directly from Telegram without opening the app.
 
-### 1. Create a bot
+See **[TELEGRAM_SETUP.md](TELEGRAM_SETUP.md)** for the full setup guide, including:
+- Creating and configuring your bot
+- Linking personal accounts and community groups
+- Setting up local AI with Ollama (model recommendations included)
+- What the agent can and cannot do
+- Slash command reference and notification event table
 
-Open a conversation with [@BotFather](https://t.me/BotFather) and run:
-
-```
-/newbot
-```
-
-Follow the prompts to choose a name and username. Copy the **API token** you receive.
-
-### 2. Configure the environment
-
-Add the following to your `.env` file (or Docker environment):
-
-```env
-NG_TELEGRAM_BOT_TOKEN=123456789:AAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-NG_TELEGRAM_BOT_NAME=your_bot_username   # without the @ prefix
-NG_TELEGRAM_WEBHOOK_SECRET=some-random-string-at-least-32-chars
-```
-
-### 3. Register the webhook with Telegram
-
-After the backend is running, call Telegram's `setWebhook` endpoint once:
-
-```bash
-curl "https://api.telegram.org/bot<TOKEN>/setWebhook" \
-  -d "url=https://<your-domain>/telegram/webhook" \
-  -d "secret_token=<NG_TELEGRAM_WEBHOOK_SECRET>"
-```
-
-Replace `<your-domain>` with the public URL of your NeighbourGood instance (must be HTTPS). For local development you can use a tunnel such as [ngrok](https://ngrok.com/).
-
-### 4. Link accounts
-
-**Personal notifications** — users go to **Settings → Telegram** and click the link button. This opens a deep link (`t.me/your_bot?start=TOKEN`) that lets the bot identify them and store their chat ID.
-
-**Community group chat** — a community admin:
-1. Adds the bot to the Telegram group.
-2. Goes to **Settings → Telegram** (community section) and copies the generated link token.
-3. Types `/link <token>` in the group. The bot then recognises the group and will send community-wide announcements there.
-
-### 5. Bot commands
-
-Once a community group is linked, members can query the community directory:
-
-| Command | Description |
-|---------|-------------|
-| `/profile <name>` | Show a neighbour's reputation score and community role |
-| `/lending <name>` | List resources a neighbour currently has available to borrow |
-| `/skills <name>` | List skills a neighbour is offering or requesting |
-
-### Events sent to Telegram
-
-| Event | Personal | Community group |
-|-------|----------|----------------|
-| New message received | Yes | — |
-| Booking created | Yes (resource owner) | — |
-| Booking status changed | Yes (borrower) | — |
-| New resource shared | — | Yes (all modes) |
-| New skill posted | — | Yes (all modes) |
-| Member joined | — | Yes (all modes) |
-| Emergency ticket created | Yes | Yes (Red Sky only) |
-| Crisis mode changed | Yes (all members) | — |
-
-### Webhooks (generic)
-
-Any external service can receive the same events via **Settings → Webhooks**. POST requests are signed with `X-Signature: sha256=<hmac>` using the secret you provide. Supported events mirror the table above.
+To customise the agent's behaviour, tone, or available intents, see **[TELEGRAM_AGENT.md](TELEGRAM_AGENT.md)**.
 
 ## 🤝 Contributing
 

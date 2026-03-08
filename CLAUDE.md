@@ -20,7 +20,7 @@ Token efficiency matters. Use the right model for the right task:
 
 ## Project Overview
 
-**NeighbourGood v1.5.0** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
+**NeighbourGood v1.6.0** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
 
 - **Blue Sky Mode** (normal operation): resource library, skill exchange, calendar bookings, reputation/trust scores, community feed, direct messaging
 - **Red Sky Mode** (crisis operation): per-community crisis toggle or 60%-threshold community vote, emergency ticketing (request / offer / ping), neighbourhood leader roles, cross-instance Red Sky alerts
@@ -473,6 +473,7 @@ Current test files (24): `test_activity`, `test_auth`, `test_bookings`, `test_co
 
 | Version | Date | Highlights |
 |---------|------|-----------|
+| 1.6.0 | 2026-03-08 | AI-powered Telegram bot natural language interface: mode-aware system prompts (Blue Sky warm, Red Sky urgent), intent classification and execution (search/list resources, skills, crisis summary, create emergency requests), group chat crisis keyword responses, comprehensive setup and customisation docs, 13 new tests |
 | 1.5.0 | 2026-03-07 | Smart matching engine with optional AI enhancement: rule-based skill/resource matching, unmet emergency needs surfacing, Ollama/OpenAI-compatible LLM re-ranking, 20 new tests |
 | 1.4.0 | 2026-03-07 | Decentralized data sync between instances: public snapshot endpoint, pull-based sync from all known peers, incremental cursors, federated resource/skill browsing, 33 new tests |
 | 1.3.0 | 2026-03-07 | Frontend refactor: extract CrisisModePanel, MembersList, InviteLinks sub-components; shared ErrorMessage/LoadingSpinner; backend utils (authorization.py, db.py, file_upload.py); remove lifespan auto-migration; lighter desktop heading font weights |
