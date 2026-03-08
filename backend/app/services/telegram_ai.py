@@ -19,16 +19,30 @@ from app.services.ai_client import get_ai_client
 
 logger = logging.getLogger(__name__)
 
-# ── Intent classification ─────────────────────────────────────────────────────
+# ── Mode-aware system prompts ─────────────────────────────────────────────────
+#
+# Two distinct system prompts keep the agent's tone and available actions
+# appropriate for the community's current state.  Customise these strings in
+# TELEGRAM_AGENT.md (see project root) — the full guide explains every field.
 
-_CLASSIFY_SYSTEM = (
-    "You are a NeighbourGood community assistant. "
+BLUE_SKY_SYSTEM = (
+    "You are a friendly assistant for NeighbourGood, a community resource-sharing platform. "
+    "Your community is in Blue Sky mode — everyday sharing of tools, skills, and time. "
+    "Keep your tone warm and helpful. "
+    "Classify the user message into exactly one intent and extract parameters. "
+    "Respond with a single JSON object and no other text."
+)
+
+RED_SKY_SYSTEM = (
+    "You are an emergency coordination assistant for NeighbourGood in RED SKY (crisis) mode. "
+    "The community is facing an active emergency. "
+    "Be direct, clear, and calm — every second counts. "
+    "Prioritise create_request and summarize_crisis intents when the message expresses urgency or need. "
     "Classify the user message into exactly one intent and extract parameters. "
     "Respond with a single JSON object and no other text."
 )
 
 _CLASSIFY_TEMPLATE = """Message: "{text}"
-Community mode: {mode}
 
 Respond with JSON matching this schema:
 {{
@@ -42,8 +56,8 @@ Intent rules:
 - search_resource: user wants to borrow or find a specific item (e.g. "do you have a drill?")
 - list_resources: user wants to see everything available (e.g. "what can I borrow?")
 - search_skill: user needs help or someone with a skill (e.g. "who can fix my sink?")
-- summarize_crisis: user asks about open emergency tickets (e.g. "what's happening?")
-- create_request: user states an urgent need in a Red Sky community ("I need food, the power is out")
+- summarize_crisis: user asks about open emergency tickets or what is happening
+- create_request: user states an urgent need (e.g. "I need food, the power is out")
 - help: anything else or unclear
 """
 
@@ -54,10 +68,11 @@ def _classify_intent(text: str, community_mode: str) -> dict:
     if not client:
         return {"intent": "help", "query": "", "title": "", "description": ""}
 
-    prompt = _CLASSIFY_TEMPLATE.format(text=text[:500], mode=community_mode)
+    system_prompt = RED_SKY_SYSTEM if community_mode == "red" else BLUE_SKY_SYSTEM
+    prompt = _CLASSIFY_TEMPLATE.format(text=text[:500])
     raw = client.chat(
         [
-            {"role": "system", "content": _CLASSIFY_SYSTEM},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt},
         ],
         max_tokens=200,
