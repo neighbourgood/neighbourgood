@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.5.0] - 2026-03-07
+
+### Added
+
+- **Smart matching engine with optional AI enhancement** — rule-based skill/resource matching that works out of the box, with optional LLM re-ranking via Ollama or any OpenAI-compatible API
+  - `GET /matching/suggestions` — personalised skill match and resource suggestions based on community membership, booking history, category overlap, keyword similarity, and provider reputation
+  - `GET /matching/unmet-needs` — surfaces open emergency requests with few or no matching offers during Red Sky mode (leaders/admins only)
+  - `GET /matching/status` — reports whether AI enhancement is available
+  - New `AIClient` service (`app/services/ai_client.py`) — generic OpenAI-compatible HTTP client that works with both Ollama (`/v1/chat/completions`) and OpenAI/compatible APIs via a single code path
+  - New configuration: `NG_AI_PROVIDER` (ollama/openai), `NG_AI_BASE_URL`, `NG_AI_MODEL`, `NG_AI_API_KEY` — all optional; matching works purely rule-based when unset
+  - 20 new backend tests covering skill matching, resource suggestions, unmet needs, AI enhancement (mocked), graceful fallback, auth guards, and edge cases
+- Backend and frontend versions bumped to 1.5.0
+
 ## [1.4.0] - 2026-03-07
 
 ### Added
