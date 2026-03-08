@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.6.0] - 2026-03-08
+
+### Added
+
+- **AI-powered Telegram bot natural language interface** — linked users can send plain-text messages to the bot and get instant responses without opening the app
+  - Intent classification via LLM (Ollama, OpenAI, or any compatible API)
+  - `search_resource`: "Do you have a ladder?" → searches available items in user's community
+  - `list_resources`: "What can I borrow?" → lists all available resources
+  - `search_skill`: "Who can help with plumbing?" → finds matching skill offers
+  - `summarize_crisis`: "What emergency tickets are open?" → Red Sky crisis summary
+  - `create_request`: "I need food, no power" → creates emergency request ticket (Red Sky only)
+  - **Mode-aware system prompts** — separate Blue Sky (warm, community-building) and Red Sky (direct, urgent) personas
+  - Group chat auto-response on crisis keywords (crisis, emergency, ticket, what's happening)
+  - Graceful no-AI fallback: returns slash-command help text when AI not configured
+  - 13 new tests covering all intents, no-AI fallback, unlinked user guard, group chat, and mode-specific behaviour
+- **Comprehensive Telegram setup and customisation documentation**
+  - `TELEGRAM_SETUP.md` — end-to-end bot creation via BotFather, environment config, webhook registration, account/group linking, local AI setup
+  - **AI model recommendations** — Llama 3.2 3B (default, fast), Phi-4 Mini (excellent JSON, low hallucination), Mistral 7B (best reasoning)
+  - OpenAI alternative configuration guide
+  - `TELEGRAM_AGENT.md` — developer customisation guide covering system prompts, adding new intents, fallback behaviour, reply formatting
+- Backend and frontend versions bumped to 1.6.0
+
 ## [1.5.0] - 2026-03-07
 
 ### Added

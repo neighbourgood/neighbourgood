@@ -1,6 +1,6 @@
 # 🏘️ NeighbourGood
 
-**v1.5.0** · A self-hostable web platform that helps communities share resources and coordinate during crises — including when the internet is gone.
+**v1.6.0** · A self-hostable web platform that helps communities share resources and coordinate during crises — including when the internet is gone.
 
 ## 💡 Vision
 
@@ -311,7 +311,7 @@ See [API_ENDPOINTS.md](API_ENDPOINTS.md) for the full endpoint reference. Intera
 - [x] Multi-language support (i18n) (v1.1.0) — 7 languages with RTL support
 - [ ] Admin dashboard with analytics
 - [x] Outbound webhook system with HMAC-SHA256 signing (generic integrations)
-- [x] Telegram bot integration (personal notifications, community group alerts, bot commands)
+- [x] Telegram bot integration (personal notifications, community group alerts, bot commands) + AI natural language interface (v1.6.0)
 - [ ] Signal integration
 - [ ] Matrix integration
 
