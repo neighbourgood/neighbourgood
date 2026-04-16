@@ -1,24 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { t } from 'svelte-i18n';
 	import { api } from '$lib/api';
 	import { isLoggedIn, user } from '$lib/stores/auth';
 	import { isOnline } from '$lib/stores/offline';
+	import type { UserInfo, Conversation } from '$lib/types';
 
-	interface UserInfo {
-		id: number;
-		display_name: string;
-		email: string;
-	}
-
-	interface Conversation {
-		partner: UserInfo;
-		last_message_body: string;
-		last_message_at: string;
-		unread_count: number;
-	}
-
+	// Extended locally to include skill_id which the backend returns but $lib/types.MessageOut omits
 	interface Message {
 		id: number;
 		sender_id: number;
@@ -46,6 +36,7 @@
 	let newMessage = $state('');
 	let sending = $state(false);
 	let messageQueued = $state(false);
+	let sendError = $state('');
 
 	// New message modal state
 	let showNewMessage = $state(false);
@@ -140,6 +131,7 @@
 	async function sendMessage() {
 		if (!newMessage.trim() || !selectedPartner || sending) return;
 		sending = true;
+		sendError = '';
 		messageQueued = false;
 		// Attach skill context to the first message in a skill-initiated thread
 		const isFirstMessage = messages.length === 0;
@@ -164,7 +156,7 @@
 			}
 			newMessage = '';
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to send');
+			sendError = err instanceof Error ? err.message : $t('common.error');
 		} finally {
 			sending = false;
 		}
@@ -187,6 +179,10 @@
 	}
 
 	onMount(async () => {
+		if (!$isLoggedIn) {
+			goto('/login');
+			return;
+		}
 		await loadConversations();
 		const partnerId = $page.url.searchParams.get('partner');
 		const skillParam = $page.url.searchParams.get('skill');
@@ -296,6 +292,9 @@
 					</div>
 					{#if messageQueued}
 						<div class="queued-notice">{$t('offline.queued_confirmation')}</div>
+					{/if}
+					{#if sendError}
+						<p class="send-error" role="alert">{sendError}</p>
 					{/if}
 					<div class="thread-input">
 						<textarea
@@ -610,6 +609,14 @@
 		color: var(--color-success);
 		background: var(--color-success-bg, rgba(34, 197, 94, 0.1));
 		text-align: center;
+	}
+
+	.send-error {
+		padding: 0.4rem 1rem;
+		font-size: 0.82rem;
+		color: var(--color-error);
+		background: var(--color-error-bg);
+		border-left: 3px solid var(--color-error);
 	}
 
 	.loading, .empty-text {

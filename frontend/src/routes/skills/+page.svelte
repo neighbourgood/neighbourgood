@@ -32,19 +32,7 @@
 		postal_code: string;
 	}
 
-	const CATEGORIES = [
-		{ value: '', label: 'All Categories' },
-		{ value: 'tutoring', label: 'Tutoring' },
-		{ value: 'repairs', label: 'Repairs' },
-		{ value: 'cooking', label: 'Cooking' },
-		{ value: 'languages', label: 'Languages' },
-		{ value: 'music', label: 'Music' },
-		{ value: 'gardening', label: 'Gardening' },
-		{ value: 'tech', label: 'Tech' },
-		{ value: 'crafts', label: 'Crafts' },
-		{ value: 'fitness', label: 'Fitness' },
-		{ value: 'other', label: 'Other' }
-	];
+	const CATEGORIES = ['', 'tutoring', 'repairs', 'cooking', 'languages', 'music', 'gardening', 'tech', 'crafts', 'fitness', 'other'];
 
 	const CATEGORY_ICONS: Record<string, string> = {
 		tutoring: '📚', repairs: '🔧', cooking: '🍳', languages: '🌐',
@@ -52,11 +40,7 @@
 		fitness: '💪', other: '⭐'
 	};
 
-	const TYPE_FILTERS = [
-		{ value: '', label: 'All Types' },
-		{ value: 'offer', label: 'Offers' },
-		{ value: 'request', label: 'Requests' }
-	];
+	const TYPE_FILTERS = ['', 'offer', 'request'];
 
 	let skills: Skill[] = $state([]);
 	let total = $state(0);
@@ -197,7 +181,7 @@
 						<span>{$t('skills.category_label')}</span>
 						<select bind:value={newCategory}>
 							{#each CATEGORIES.slice(1) as cat}
-								<option value={cat.value}>{$t('skills.categories.' + cat.value)}</option>
+								<option value={cat}>{$t('skills.categories.' + cat)}</option>
 							{/each}
 						</select>
 					</label>
@@ -236,17 +220,17 @@
 		/>
 		<select bind:value={filterCategory}>
 			{#each CATEGORIES as cat}
-				<option value={cat.value}>
-					{cat.value === '' ? $t('skills.all_categories') : $t('skills.categories.' + cat.value)}
+				<option value={cat}>
+					{cat === '' ? $t('skills.all_categories') : $t('skills.categories.' + cat)}
 				</option>
 			{/each}
 		</select>
 		<select bind:value={filterType}>
 			{#each TYPE_FILTERS as typeFilter}
-				<option value={typeFilter.value}>
-					{#if typeFilter.value === ''}
+				<option value={typeFilter}>
+					{#if typeFilter === ''}
 						{$t('skills.all_types')}
-					{:else if typeFilter.value === 'offer'}
+					{:else if typeFilter === 'offer'}
 						{$t('skills.offers')}
 					{:else}
 						{$t('skills.requests')}

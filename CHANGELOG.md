@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.1] - 2026-04-16
+
+### Fixed
+
+- **Raw `fetch()` calls replaced with `api()` wrapper** — `+page.svelte`, `+layout.svelte`, `explore/+page.svelte`, `communities/+page.svelte` now go through the auth-aware `api()` helper instead of bare `fetch('/api/...')`, ensuring consistent error handling and auth header forwarding
+- **Auth guards added** — `bookings` and `messages` pages now redirect to `/login` in `onMount` instead of silently failing with an empty state
+- **Null/undefined safety** — `bookings` and `events` list responses guarded with `Array.isArray` check; `profile/[id]` review pagination guarded against non-array API responses
+- **Local type redefinitions removed** — `Resource` in `resources/+page.svelte`, `ReviewOut` in `bookings/+page.svelte`, `UserInfo`/`Conversation` in `messages/+page.svelte`, `EmergencyTicket` in `triage/[id]/+page.svelte` now imported from `$lib/types` instead of redefined locally
+- **`alert()`/`confirm()` dialogs replaced** — `bookings`, `messages`, `events`, `skills/[id]`, and `resources/[id]` now use inline error state and two-step confirmation UI instead of blocking browser dialogs
+- **Hardcoded hex colors replaced with CSS variables** — map markers in `explore` and `communities` pages, urgency badge in `communities/[id]`, `.alert-success` block, `.user-dot` in explore now use `var(--color-*)` tokens
+- **Hardcoded UI strings replaced with i18n** — `CATEGORIES`/`TYPE_FILTERS` dead label fields removed from `resources`, `skills`, `events`; filter selects now use `$t()` throughout; event create-form validation messages now use i18n keys; booking count uses ICU plural format
+- **`.replace('_', ' ')` removed** — ticket type and status display in `triage`, `dashboard`, and `communities/[id]` now uses `$t('crisis.ticket_types.*')` and `$t('crisis.status_*')` lookups; urgency label in `communities/[id]` uses `$t('crisis.priority.*')`
+- **`$_` import normalised** — `skills/[id]/+page.svelte` and `profile/[id]/+page.svelte` now import `t` from `svelte-i18n` consistently with the rest of the codebase
+- **New i18n keys added** — `common.confirm_delete`, `skills.manage`, `skills.delete_listing`, `bookings.count`, `events.all_categories`, `events.error_*` added to all 12 locale files
+
 ## [2.0.0] - 2026-04-03
 
 ### Added

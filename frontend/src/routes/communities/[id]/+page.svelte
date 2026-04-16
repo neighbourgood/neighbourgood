@@ -10,6 +10,7 @@
 	import CrisisModePanel from '$lib/components/community/CrisisModePanel.svelte';
 	import MembersList from '$lib/components/community/MembersList.svelte';
 	import InviteLinks from '$lib/components/community/InviteLinks.svelte';
+	import { t } from 'svelte-i18n';
 
 	const CATEGORY_ICONS: Record<string, string> = {
 		tool: '🔧', vehicle: '🚗', electronics: '⚡', furniture: '🪑',
@@ -291,22 +292,21 @@
 	const URGENCY_COLORS: Record<string, string> = {
 		low: 'var(--color-text-muted)',
 		medium: 'var(--color-warning)',
-		high: '#f97316',
+		high: 'var(--color-warning)',
 		critical: 'var(--color-error)'
 	};
 
-	const TICKET_TYPE_LABELS: Record<string, string> = {
-		request: 'Request',
-		offer: 'Offer',
-		emergency_ping: 'Emergency Ping'
-	};
+	function ticketTypeLabel(type: string): string {
+		const key = type === 'emergency_ping' ? 'ping' : type;
+		return $t(`crisis.ticket_types.${key}`);
+	}
 
 	let activeTab = $state('overview');
 </script>
 
 <div class="detail-page">
 	{#if loading}
-		<p class="loading-text">Loading...</p>
+		<p class="loading-text">{$t('common.loading')}</p>
 	{:else if error && !community}
 		<div class="alert alert-error">{error}</div>
 	{:else if community}
@@ -460,12 +460,12 @@
 							<div class="ticket-card" class:ticket-resolved={t.status === 'resolved'}>
 								<div class="ticket-top">
 									<span class="ticket-type-badge" style="background: {t.ticket_type === 'emergency_ping' ? 'var(--color-error)' : t.ticket_type === 'offer' ? 'var(--color-success)' : 'var(--color-primary)'}">
-										{TICKET_TYPE_LABELS[t.ticket_type] ?? t.ticket_type}
+										{ticketTypeLabel(t.ticket_type)}
 									</span>
 									<span class="ticket-urgency" style="color: {URGENCY_COLORS[t.urgency] ?? 'var(--color-text-muted)'}">
-										{t.urgency}
+										{$t(`crisis.priority.${t.urgency}`)}
 									</span>
-									<span class="ticket-status">{t.status.replace('_', ' ')}</span>
+									<span class="ticket-status">{$t(`crisis.status_${t.status}`)}</span>
 								</div>
 								<h3>{t.title}</h3>
 								{#if t.description}
@@ -897,15 +897,9 @@
 	}
 
 	.alert-success {
-		background: #ecfdf5;
-		color: #065f46;
-		border: 1px solid #a7f3d0;
-	}
-
-	:global([data-theme='dark']) .alert-success {
-		background: #064e3b;
-		color: #6ee7b7;
-		border-color: #065f46;
+		background: var(--color-success-bg, rgba(34, 197, 94, 0.1));
+		color: var(--color-success);
+		border: 1px solid var(--color-success);
 	}
 
 	.alert-info {

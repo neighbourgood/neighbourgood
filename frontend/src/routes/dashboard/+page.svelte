@@ -203,7 +203,7 @@
 						<a href="/triage/{ticket.id}" class="assigned-ticket-item">
 							<span class="ticket-urgency-dot urgency-{ticket.urgency}"></span>
 							<span class="assigned-ticket-title">{ticket.title}</span>
-							<span class="assigned-ticket-meta">{ticket.ticket_type.replace('_', ' ')} · {ticket.status.replace('_', ' ')}</span>
+							<span class="assigned-ticket-meta">{$t(`crisis.ticket_types.${ticket.ticket_type === 'emergency_ping' ? 'ping' : ticket.ticket_type}`)} · {$t(`crisis.status_${ticket.status}`)}</span>
 							<span class="assigned-ticket-arrow">→</span>
 						</a>
 					{/each}

@@ -4,22 +4,7 @@
   import { goto } from '$app/navigation';
   import { api } from '$lib/api';
   import { isLoggedIn, user } from '$lib/stores/auth';
-
-  interface Ticket {
-    id: number;
-    community_id: number;
-    author: { id: number; display_name: string };
-    ticket_type: string;
-    title: string;
-    description: string;
-    status: string;
-    urgency: string;
-    due_at: string | null;
-    triage_score?: number;
-    assigned_to: { id: number; display_name: string } | null;
-    created_at: string;
-    updated_at: string;
-  }
+  import type { EmergencyTicket as Ticket } from '$lib/types';
 
   interface Comment {
     id: number;
@@ -430,7 +415,7 @@
     border-radius: var(--radius-sm);
     font-size: 0.75rem;
     font-weight: 600;
-    color: #fff;
+    color: white;
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
@@ -562,7 +547,7 @@
 
   .btn-primary {
     background: var(--color-primary);
-    color: #fff;
+    color: white;
   }
 
   .btn-primary:not(:disabled):hover {
@@ -581,7 +566,7 @@
 
   .btn-success {
     background: var(--color-success);
-    color: #fff;
+    color: white;
   }
 
   .btn-success:not(:disabled):hover {

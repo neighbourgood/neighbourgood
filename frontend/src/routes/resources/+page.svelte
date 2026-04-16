@@ -7,21 +7,7 @@
 	import { bandwidth } from '$lib/stores/theme';
 	import { isOnline } from '$lib/stores/offline';
 
-	import type { OwnerTrust } from '$lib/types';
-
-	interface Resource {
-		id: number;
-		title: string;
-		description: string | null;
-		category: string;
-		condition: string | null;
-		image_url: string | null;
-		is_available: boolean;
-		community_id: number | null;
-		owner: { display_name: string; neighbourhood: string | null };
-		owner_trust?: OwnerTrust | null;
-		created_at: string;
-	}
+	import type { Resource } from '$lib/types';
 
 	interface MyCommunity {
 		id: number;
@@ -29,17 +15,7 @@
 		postal_code: string;
 	}
 
-	const CATEGORIES = [
-		{ value: '', label: 'All Categories' },
-		{ value: 'tool', label: 'Tools' },
-		{ value: 'vehicle', label: 'Vehicles' },
-		{ value: 'electronics', label: 'Electronics' },
-		{ value: 'furniture', label: 'Furniture' },
-		{ value: 'food', label: 'Food' },
-		{ value: 'clothing', label: 'Clothing' },
-		{ value: 'skill', label: 'Skills' },
-		{ value: 'other', label: 'Other' }
-	];
+	const CATEGORIES = ['', 'tool', 'vehicle', 'electronics', 'furniture', 'food', 'clothing', 'skill', 'other'];
 
 	const CATEGORY_ICONS: Record<string, string> = {
 		tool: '🔧', vehicle: '🚗', electronics: '⚡', furniture: '🪑',
@@ -249,8 +225,8 @@
 		/>
 		<select bind:value={filterCategory}>
 			{#each CATEGORIES as cat}
-				<option value={cat.value}>
-					{cat.value === '' ? $t('resources.all_categories') : $t('resources.categories.' + cat.value)}
+				<option value={cat}>
+					{cat === '' ? $t('resources.all_categories') : $t('resources.categories.' + cat)}
 				</option>
 			{/each}
 		</select>

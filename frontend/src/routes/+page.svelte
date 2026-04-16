@@ -3,6 +3,7 @@
 	import { isLoggedIn } from '$lib/stores/auth';
 	import { bandwidth, platformMode } from '$lib/stores/theme';
 	import { t } from 'svelte-i18n';
+	import { api } from '$lib/api';
 
 	interface PlatformStatus {
 		status: string;
@@ -15,12 +16,7 @@
 
 	onMount(async () => {
 		try {
-			const res = await fetch('/api/status');
-			if (res.ok) {
-				platformStatus = await res.json();
-			} else {
-				error = $t('home.status_unavailable');
-			}
+			platformStatus = await api<PlatformStatus>('/status');
 		} catch {
 			error = $t('home.status_unavailable');
 		}

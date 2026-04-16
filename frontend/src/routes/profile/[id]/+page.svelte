@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/api';
 	import { isLoggedIn, user } from '$lib/stores/auth';
-	import { _ } from 'svelte-i18n';
+	import { t as _ } from 'svelte-i18n';
 	import type { TrustSummary, ReviewOut } from '$lib/types';
 
 	let trust: TrustSummary | null = null;
@@ -67,8 +67,9 @@
 			const fetched = await api<ReviewOut[]>(
 				`/reviews/user/${userId}?${typeParam}&skip=${skip}&limit=${PAGE_SIZE}`
 			);
-			reviews = [...reviews, ...fetched];
-			hasMore = fetched.length === PAGE_SIZE;
+			const page = Array.isArray(fetched) ? fetched : [];
+			reviews = [...reviews, ...page];
+			hasMore = page.length === PAGE_SIZE;
 			reviewPage++;
 		} catch (e: any) {
 			error = e.message;

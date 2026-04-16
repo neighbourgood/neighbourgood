@@ -1,18 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { t } from 'svelte-i18n';
 	import { api } from '$lib/api';
 	import { isLoggedIn, user } from '$lib/stores/auth';
-	import { statusColor, type Booking } from '$lib/types';
+	import { statusColor, type Booking, type ReviewOut } from '$lib/types';
 	import { offlineQueue, removeFromQueue, type QueuedRequest } from '$lib/stores/offline';
-
-	interface ReviewOut {
-		id: number;
-		booking_id: number;
-		reviewer_id: number;
-		rating: number;
-		comment: string | null;
-	}
 
 	let bookings: Booking[] = $state([]);
 	let total = $state(0);
@@ -26,6 +19,7 @@
 	let reviewComment = $state('');
 	let submittingReview = $state(false);
 	let reviewedBookings = $state<Set<number>>(new Set());
+	let actionError = $state('');
 
 	async function loadBookings() {
 		loading = true;
@@ -37,8 +31,8 @@
 				`/bookings?${params.toString()}`,
 				{ auth: true }
 			);
-			bookings = res.items;
-			total = res.total;
+			bookings = Array.isArray(res?.items) ? res.items : [];
+			total = res?.total ?? 0;
 			const completedIds = bookings.filter(b => b.status === 'completed').map(b => b.id);
 			if (completedIds.length > 0) {
 				loadReviewStatus(completedIds);
@@ -51,6 +45,7 @@
 	}
 
 	async function updateStatus(bookingId: number, newStatus: string) {
+		actionError = '';
 		try {
 			await api(`/bookings/${bookingId}`, {
 				method: 'PATCH',
@@ -59,7 +54,7 @@
 			});
 			await loadBookings();
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to update booking');
+			actionError = err instanceof Error ? err.message : $t('common.error');
 		}
 	}
 
@@ -104,13 +99,19 @@
 			reviewRating = 5;
 			reviewComment = '';
 		} catch (err) {
-			alert(err instanceof Error ? err.message : 'Failed to submit review');
+			actionError = err instanceof Error ? err.message : $t('common.error');
 		} finally {
 			submittingReview = false;
 		}
 	}
 
-	onMount(loadBookings);
+	onMount(async () => {
+		if (!$isLoggedIn) {
+			goto('/login');
+			return;
+		}
+		await loadBookings();
+	});
 
 	$effect(() => {
 		roleFilter;
@@ -126,6 +127,10 @@
 {:else}
 	<div class="bookings-page">
 		<h1>{$t('bookings.title')}</h1>
+
+		{#if actionError}
+			<div class="error-banner" role="alert">{actionError}</div>
+		{/if}
 
 		{#if $offlineQueue.length > 0}
 			<div class="queued-section">
@@ -170,7 +175,7 @@
 				<option value="cancelled">{$t('bookings.status_cancelled')}</option>
 				<option value="completed">{$t('bookings.status_completed')}</option>
 			</select>
-			<span class="result-count">{total} booking{total !== 1 ? 's' : ''}</span>
+			<span class="result-count">{$t('bookings.count', { values: { count: total } })}</span>
 		</div>
 
 		{#if loading}
@@ -261,6 +266,16 @@
 <style>
 	.bookings-page {
 		max-width: 900px;
+	}
+
+	.error-banner {
+		padding: 0.75rem 1rem;
+		border-radius: var(--radius);
+		background: var(--color-error-bg);
+		color: var(--color-error);
+		border: 1px solid var(--color-error);
+		font-size: 0.9rem;
+		margin-bottom: 1rem;
 	}
 
 	h1 {

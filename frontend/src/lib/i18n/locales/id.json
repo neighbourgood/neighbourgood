@@ -39,6 +39,7 @@
     "save": "Simpan",
     "cancel": "Batal",
     "delete": "Hapus",
+    "confirm_delete": "Are you sure? This cannot be undone.",
     "edit": "Ubah",
     "submit": "Kirim",
     "loading": "Memuat…",
@@ -155,7 +156,8 @@
     "end_date": "Tanggal selesai",
     "message": "Pesan (opsional)",
     "no_bookings": "Belum ada pemesanan.",
-    "calendar": "Kalender ketersediaan"
+    "calendar": "Kalender ketersediaan",
+    "count": "{count, plural, one {# booking} other {# bookings}}"
   },
   "messages": {
     "title": "Pesan",
@@ -206,7 +208,10 @@
       "medical": "Medis & pertolongan pertama",
       "legal": "Hukum",
       "other": "Lainnya"
-    }
+    },
+    "manage": "Manage Skill",
+    "delete_listing": "Delete Listing",
+    "back": "Back to Skills"
   },
   "crisis": {
     "title": "Koordinasi darurat",
@@ -401,7 +406,11 @@
       "sport": "Olahraga",
       "cultural": "Budaya",
       "other": "Lainnya"
-    }
+    },
+    "all_categories": "All Categories",
+    "error_title_required": "Title is required.",
+    "error_start_required": "Start date and time are required.",
+    "error_no_community": "No community found. Please join a community first."
   },
   "offline": {
     "banner": "Anda offline — menjelajahi konten tersimpan",

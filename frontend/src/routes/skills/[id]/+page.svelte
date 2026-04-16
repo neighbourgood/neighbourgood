@@ -4,7 +4,7 @@
 	import { api } from '$lib/api';
 	import { isLoggedIn, user } from '$lib/stores/auth';
 	import { goto } from '$app/navigation';
-	import { _ } from 'svelte-i18n';
+	import { t as _ } from 'svelte-i18n';
 	import type { OwnerTrust, ReviewOut } from '$lib/types';
 
 	interface SkillOwner {
@@ -39,6 +39,7 @@
 	let reviewSuccess = $state('');
 	let submittingReview = $state(false);
 	let hasReviewed = $state(false);
+	let confirmDelete = $state(false);
 
 	const isOwner = $derived(
 		$isLoggedIn && skill !== null && $user?.id === skill.owner_id
@@ -116,7 +117,9 @@
 	});
 
 	async function deleteSkill() {
-		if (!skill || !confirm('Delete this skill listing?')) return;
+		if (!skill) return;
+		if (!confirmDelete) { confirmDelete = true; return; }
+		confirmDelete = false;
 		try {
 			await api(`/skills/${skill.id}`, {
 				method: 'DELETE', auth: true,
@@ -124,7 +127,7 @@
 			});
 			goto('/skills');
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Delete failed';
+			error = err instanceof Error ? err.message : $_('common.error');
 		}
 	}
 
@@ -259,9 +262,15 @@
 		<!-- Owner actions -->
 		{#if isOwner}
 			<div class="section-card owner-panel">
-				<h3>Manage Skill</h3>
+				<h3>{$_('skills.manage')}</h3>
 				<div class="owner-actions">
-					<button class="btn-danger" onclick={deleteSkill}>Delete Listing</button>
+					{#if confirmDelete}
+						<span class="confirm-text">{$_('common.confirm_delete')}</span>
+						<button class="btn-danger" onclick={deleteSkill}>{$_('common.delete')}</button>
+						<button class="btn-secondary" onclick={() => confirmDelete = false}>{$_('common.cancel')}</button>
+					{:else}
+						<button class="btn-danger" onclick={deleteSkill}>{$_('skills.delete_listing')}</button>
+					{/if}
 				</div>
 			</div>
 		{/if}

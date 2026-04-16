@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { isLoggedIn } from '$lib/stores/auth';
 	import { t } from 'svelte-i18n';
+	import { api } from '$lib/api';
 
 	interface MapCommunity {
 		id: number;
@@ -73,14 +74,9 @@
 	onMount(async () => {
 		// Fetch communities
 		try {
-			const res = await fetch('/api/communities/map');
-			if (res.ok) {
-				communities = await res.json();
-			} else {
-				error = 'Could not load communities';
-			}
+			communities = await api<MapCommunity[]>('/communities/map');
 		} catch {
-			error = 'Could not connect to backend';
+			error = $t('common.error');
 		} finally {
 			loading = false;
 		}
@@ -128,7 +124,7 @@
 				if (c.latitude != null && c.longitude != null) {
 					const level = activityLevel(c);
 					const size = level === 'high' ? 40 : level === 'medium' ? 34 : 28;
-					const color = c.mode === 'red' ? '#ef4444' : '#4f46e5';
+					const color = c.mode === 'red' ? 'var(--color-error)' : 'var(--color-primary)';
 					const ringClass = level === 'high' ? 'ring-active' : '';
 					const icon = L.divIcon({
 						className: 'community-marker',
@@ -327,10 +323,10 @@
 	:global(.user-dot) {
 		width: 16px;
 		height: 16px;
-		background: #3b82f6;
+		background: var(--color-primary);
 		border: 3px solid white;
 		border-radius: 50%;
-		box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 40%, transparent), 0 2px 8px rgba(0, 0, 0, 0.2);
 		animation: pulse-dot 2s infinite;
 	}
 

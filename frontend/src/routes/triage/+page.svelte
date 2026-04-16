@@ -154,6 +154,15 @@
 
 	const URGENCY_ORDER = ['critical', 'high', 'medium', 'low'];
 
+	function ticketTypeLabel(type: string): string {
+		const key = type === 'emergency_ping' ? 'ping' : type;
+		return $t(`crisis.ticket_types.${key}`);
+	}
+
+	function ticketStatusLabel(status: string): string {
+		return $t(`crisis.status_${status}`);
+	}
+
 	function urgencyColor(urgency: string): string {
 		switch (urgency) {
 			case 'critical': return 'var(--color-error)';
@@ -413,7 +422,7 @@
 									{String(msg.data.urgency ?? 'medium').toUpperCase()}
 								</span>
 								<span class="via-mesh-badge">mesh</span>
-								<span class="ticket-type">{String(msg.data.ticket_type ?? 'request').replace('_', ' ')}</span>
+								<span class="ticket-type">{ticketTypeLabel(String(msg.data.ticket_type ?? 'request'))}</span>
 							</div>
 							<h3 class="ticket-title">{msg.data.title ?? 'Untitled'}</h3>
 							{#if msg.data.description}
@@ -494,9 +503,9 @@
 								<span class="score-badge" title="Triage score">{$t('crisis.score', { values: { n: ticket.triage_score } })}</span>
 							{/if}
 							<span class="status-chip" style="color: {statusColor(ticket.status)}">
-								{ticket.status.replace('_', ' ')}
+								{ticketStatusLabel(ticket.status)}
 							</span>
-							<span class="ticket-type">{ticket.ticket_type.replace('_', ' ')}</span>
+							<span class="ticket-type">{ticketTypeLabel(ticket.ticket_type)}</span>
 						</div>
 
 						<h3 class="ticket-title">{ticket.title}</h3>
