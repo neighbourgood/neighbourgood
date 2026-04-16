@@ -98,11 +98,8 @@
 
 		// Fetch platform mode and apply Red Sky automatically when active
 		try {
-			const res = await fetch('/api/status');
-			if (res.ok) {
-				const status = await res.json();
-				setPlatformMode(status.mode);
-			}
+			const status = await api<{ mode: string }>('/status');
+			setPlatformMode(status.mode);
 		} catch {
 			// Backend unreachable — leave mode at default blue
 		}

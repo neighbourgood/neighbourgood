@@ -220,7 +220,7 @@
 		// Fetch map communities and user's memberships in parallel
 		try {
 			const [mapData, myData] = await Promise.all([
-				fetch('/api/communities/map').then((r) => r.ok ? r.json() : []),
+				api<MapCommunity[]>('/communities/map').catch(() => [] as MapCommunity[]),
 				api<MyCommunity[]>('/communities/my/memberships', { auth: true })
 			]);
 			allCommunities = mapData;
@@ -283,7 +283,7 @@
 				const isMine = myIds.has(c.id);
 				const level = activityLevel(c);
 				const size = level === 'high' ? 40 : level === 'medium' ? 34 : 28;
-				const color = isMine ? '#22c55e' : c.mode === 'red' ? '#ef4444' : '#4f46e5';
+				const color = isMine ? 'var(--color-success)' : c.mode === 'red' ? 'var(--color-error)' : 'var(--color-primary)';
 				const ringClass = isMine ? 'ring-mine' : level === 'high' ? 'ring-active' : '';
 				const icon = L.divIcon({
 					className: 'community-marker',

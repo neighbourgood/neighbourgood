@@ -39,6 +39,7 @@
     "save": "Зберегти",
     "cancel": "Скасувати",
     "delete": "Видалити",
+    "confirm_delete": "Are you sure? This cannot be undone.",
     "edit": "Редагувати",
     "submit": "Надіслати",
     "loading": "Завантаження…",
@@ -256,7 +257,8 @@
     "message": "Повідомлення (необов'язково)",
     "no_bookings": "Бронювань поки немає.",
     "calendar": "Календар доступності",
-    "rating_label": "Оцінка"
+    "rating_label": "Оцінка",
+    "count": "{count, plural, one {# booking} other {# bookings}}"
   },
   "messages": {
     "title": "Повідомлення",
@@ -352,7 +354,10 @@
       "medical": "Медицина та перша допомога",
       "legal": "Юридична допомога",
       "other": "Інше"
-    }
+    },
+    "manage": "Manage Skill",
+    "delete_listing": "Delete Listing",
+    "back": "Back to Skills"
   },
   "crisis": {
     "title": "Надзвичайна ситуація",
@@ -706,7 +711,11 @@
       "sport": "Спорт",
       "cultural": "Культурний",
       "other": "Інше"
-    }
+    },
+    "all_categories": "All Categories",
+    "error_title_required": "Title is required.",
+    "error_start_required": "Start date and time are required.",
+    "error_no_community": "No community found. Please join a community first."
   },
   "offline": {
     "banner": "Ви офлайн — переглядаєте кешований вміст",

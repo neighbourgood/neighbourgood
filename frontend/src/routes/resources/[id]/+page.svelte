@@ -8,11 +8,13 @@
 	import { statusColor, type Resource, type Booking } from '$lib/types';
 	import { bandwidth } from '$lib/stores/theme';
 	import { isOnline, enqueueRequest } from '$lib/stores/offline';
+	import { t } from 'svelte-i18n';
 
 	let resource: Resource | null = $state(null);
 	let bookings: Booking[] = $state([]);
 	let error = $state('');
 	let loading = $state(true);
+	let confirmDelete = $state(false);
 
 	// Booking form
 	let showBookingForm = $state(false);
@@ -71,12 +73,14 @@
 	}
 
 	async function deleteResource() {
-		if (!resource || !confirm('Delete this resource?')) return;
+		if (!resource) return;
+		if (!confirmDelete) { confirmDelete = true; return; }
+		confirmDelete = false;
 		try {
 			await api(`/resources/${resource.id}`, { method: 'DELETE', auth: true });
 			goto('/resources');
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Delete failed';
+			error = err instanceof Error ? err.message : $t('common.error');
 		}
 	}
 
@@ -227,7 +231,13 @@
 							hidden
 						/>
 					</label>
-					<button class="btn-danger" onclick={deleteResource}>Delete</button>
+					{#if confirmDelete}
+						<span class="confirm-text">{$t('common.confirm_delete')}</span>
+						<button class="btn-danger" onclick={deleteResource}>{$t('common.delete')}</button>
+						<button class="btn-secondary" onclick={() => confirmDelete = false}>{$t('common.cancel')}</button>
+					{:else}
+						<button class="btn-danger" onclick={deleteResource}>{$t('common.delete')}</button>
+					{/if}
 				</div>
 			</div>
 		{/if}

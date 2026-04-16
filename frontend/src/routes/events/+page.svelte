@@ -24,18 +24,7 @@
 		other: '⭐'
 	};
 
-	const CATEGORIES = [
-		{ value: '', label: 'All Categories' },
-		{ value: 'meetup', label: 'Meetup' },
-		{ value: 'workshop', label: 'Workshop' },
-		{ value: 'repair_cafe', label: 'Repair Café' },
-		{ value: 'swap', label: 'Swap' },
-		{ value: 'gardening', label: 'Gardening' },
-		{ value: 'food', label: 'Food' },
-		{ value: 'sport', label: 'Sport' },
-		{ value: 'cultural', label: 'Cultural' },
-		{ value: 'other', label: 'Other' }
-	];
+	const CATEGORIES = ['', 'meetup', 'workshop', 'repair_cafe', 'swap', 'gardening', 'food', 'sport', 'cultural', 'other'];
 
 	let events = $state<CommunityEvent[]>([]);
 	let total = $state(0);
@@ -59,6 +48,7 @@
 	let newMaxAttendees = $state('');
 	let newCommunityId = $state('');
 	let createError = $state('');
+	let rsvpError = $state('');
 	let myCommunities = $state<MyCommunity[]>([]);
 
 	async function loadEvents() {
@@ -76,8 +66,8 @@
 				`/events${qs ? '?' + qs : ''}`,
 				{ auth: true }
 			);
-			events = data.items;
-			total = data.total;
+			events = Array.isArray(data?.items) ? data.items : [];
+			total = data?.total ?? 0;
 		} catch {
 			events = [];
 			total = 0;
@@ -124,15 +114,15 @@
 	async function createEvent() {
 		createError = '';
 		if (!newTitle.trim()) {
-			createError = 'Title is required.';
+			createError = $t('events.error_title_required');
 			return;
 		}
 		if (!newStartDate || !newStartTime) {
-			createError = 'Start date and time are required.';
+			createError = $t('events.error_start_required');
 			return;
 		}
 		if (!newCommunityId) {
-			createError = 'No community found. Please join a community first.';
+			createError = $t('events.error_no_community');
 			return;
 		}
 		try {
@@ -171,6 +161,7 @@
 	}
 
 	async function toggleAttend(event: CommunityEvent) {
+		rsvpError = '';
 		try {
 			if (event.is_attending) {
 				await api(`/events/${event.id}/attend`, { method: 'DELETE', auth: true });
@@ -179,7 +170,7 @@
 			}
 			await loadEvents();
 		} catch (err: unknown) {
-			alert(err instanceof Error ? err.message : 'Could not update RSVP.');
+			rsvpError = err instanceof Error ? err.message : $t('common.error');
 		}
 	}
 
@@ -243,7 +234,7 @@
 					Category
 					<select bind:value={newCategory}>
 						{#each CATEGORIES.slice(1) as cat}
-							<option value={cat.value}>{CATEGORY_ICONS[cat.value]} {cat.label}</option>
+							<option value={cat}>{CATEGORY_ICONS[cat]} {$t('events.categories.' + cat)}</option>
 						{/each}
 					</select>
 				</label>
@@ -293,7 +284,9 @@
 		/>
 		<select bind:value={filterCategory}>
 			{#each CATEGORIES as cat}
-				<option value={cat.value}>{cat.label}</option>
+				<option value={cat}>
+					{cat === '' ? $t('events.all_categories') : $t('events.categories.' + cat)}
+				</option>
 			{/each}
 		</select>
 		{#if myCommunities.length > 1}
@@ -311,6 +304,10 @@
 			<span class="result-count">{total} event{total !== 1 ? 's' : ''}</span>
 		{/if}
 	</div>
+
+	{#if rsvpError}
+		<div class="error-banner" role="alert">{rsvpError}</div>
+	{/if}
 
 	{#if loading}
 		<p class="loading">{$t('common.loading')}</p>
@@ -583,6 +580,16 @@
 		color: var(--color-error);
 		font-size: 0.875rem;
 		margin: 0 0 0.5rem;
+	}
+
+	.error-banner {
+		padding: 0.75rem 1rem;
+		border-radius: var(--radius);
+		background: var(--color-error-bg);
+		color: var(--color-error);
+		border: 1px solid var(--color-error);
+		font-size: 0.9rem;
+		margin-bottom: 1rem;
 	}
 
 	@media (max-width: 500px) {
