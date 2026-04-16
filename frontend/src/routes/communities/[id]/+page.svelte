@@ -456,29 +456,29 @@
 					<p class="section-hint">No emergency tickets yet.</p>
 				{:else}
 					<div class="tickets-list">
-						{#each tickets as t (t.id)}
-							<div class="ticket-card" class:ticket-resolved={t.status === 'resolved'}>
+						{#each tickets as ticket (ticket.id)}
+							<div class="ticket-card" class:ticket-resolved={ticket.status === 'resolved'}>
 								<div class="ticket-top">
-									<span class="ticket-type-badge" style="background: {t.ticket_type === 'emergency_ping' ? 'var(--color-error)' : t.ticket_type === 'offer' ? 'var(--color-success)' : 'var(--color-primary)'}">
-										{ticketTypeLabel(t.ticket_type)}
+									<span class="ticket-type-badge" style="background: {ticket.ticket_type === 'emergency_ping' ? 'var(--color-error)' : ticket.ticket_type === 'offer' ? 'var(--color-success)' : 'var(--color-primary)'}">
+										{ticketTypeLabel(ticket.ticket_type)}
 									</span>
-									<span class="ticket-urgency" style="color: {URGENCY_COLORS[t.urgency] ?? 'var(--color-text-muted)'}">
-										{$t(`crisis.priority.${t.urgency}`)}
+									<span class="ticket-urgency" style="color: {URGENCY_COLORS[ticket.urgency] ?? 'var(--color-text-muted)'}">
+										{$t(`crisis.priority.${ticket.urgency}`)}
 									</span>
-									<span class="ticket-status">{$t(`crisis.status_${t.status}`)}</span>
+									<span class="ticket-status">{$t(`crisis.status_${ticket.status}`)}</span>
 								</div>
-								<h3>{t.title}</h3>
-								{#if t.description}
-									<p class="ticket-desc">{t.description}</p>
+								<h3>{ticket.title}</h3>
+								{#if ticket.description}
+									<p class="ticket-desc">{ticket.description}</p>
 								{/if}
 								<div class="ticket-footer">
-									<span class="ticket-meta">by {t.author.display_name} &middot; {new Date(t.created_at).toLocaleDateString()}</span>
-									{#if (isAdmin || isLeader || t.author.id === $user?.id) && t.status !== 'resolved'}
+									<span class="ticket-meta">by {ticket.author.display_name} &middot; {new Date(ticket.created_at).toLocaleDateString()}</span>
+									{#if (isAdmin || isLeader || ticket.author.id === $user?.id) && ticket.status !== 'resolved'}
 										<div class="ticket-actions">
-											{#if t.status === 'open'}
-												<button class="btn-tiny" onclick={() => updateTicketStatus(t.id, 'in_progress')}>Start</button>
+											{#if ticket.status === 'open'}
+												<button class="btn-tiny" onclick={() => updateTicketStatus(ticket.id, 'in_progress')}>Start</button>
 											{/if}
-											<button class="btn-tiny btn-tiny-success" onclick={() => updateTicketStatus(t.id, 'resolved')}>Resolve</button>
+											<button class="btn-tiny btn-tiny-success" onclick={() => updateTicketStatus(ticket.id, 'resolved')}>Resolve</button>
 										</div>
 									{/if}
 								</div>
