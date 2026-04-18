@@ -334,12 +334,7 @@
 	}
 
 	.page-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
 		margin-bottom: 0.75rem;
-		gap: 1rem;
-		flex-wrap: wrap;
 	}
 
 	h1 {
