@@ -126,7 +126,9 @@
 	</div>
 {:else}
 	<div class="bookings-page">
-		<h1>{$t('bookings.title')}</h1>
+		<div class="page-header">
+			<h1>{$t('bookings.title')}</h1>
+		</div>
 
 		{#if actionError}
 			<div class="error-banner" role="alert">{actionError}</div>

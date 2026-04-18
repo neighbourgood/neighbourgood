@@ -207,7 +207,7 @@
 </svelte:head>
 
 <div class="events-page">
-	<header class="page-header">
+	<div class="page-header">
 		<div>
 			<h1>{$t('events.title')}</h1>
 			<p class="subtitle">{$t('events.subtitle')}</p>
@@ -217,7 +217,7 @@
 				{showCreateForm ? '✕ Cancel' : $t('events.create_btn')}
 			</button>
 		{/if}
-	</header>
+	</div>
 
 	{#if showCreateForm}
 		<div class="create-form card">
@@ -362,23 +362,6 @@
 		padding: 1.5rem 1rem;
 	}
 
-	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 1.5rem;
-		gap: 1rem;
-	}
-
-	h1 {
-		margin: 0 0 0.25rem;
-		color: var(--color-primary);
-	}
-
-	.subtitle {
-		margin: 0;
-		color: var(--color-text-muted);
-	}
 
 	.card {
 		background: var(--color-surface);

@@ -22,7 +22,7 @@ _WINDOW_SECONDS = 60
 
 _AUTH_LIMIT = 5
 _UPLOAD_LIMIT = 10
-_GENERAL_LIMIT = 60
+_GENERAL_LIMIT = 200
 
 
 def _bucket(path: str) -> str:

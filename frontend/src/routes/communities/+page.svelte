@@ -547,25 +547,6 @@
 		width: 100%;
 	}
 
-	.page-header {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: 1rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.page-header h1 {
-		font-size: 1.9rem;
-		font-weight: 400;
-		letter-spacing: -0.01em;
-	}
-
-	.subtitle {
-		color: var(--color-text-muted);
-		font-size: 0.9rem;
-		margin-top: 0.25rem;
-	}
 
 	.btn-find {
 		padding: 0.5rem 1rem;

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.2] - 2026-04-18
+
+### Fixed
+
+- **Rate limiting relaxed** — general API limit raised from 60 to 200 req/min per IP; auth and upload limits unchanged (5 and 10 req/min respectively)
+- **Page header alignment unified** — global `.page-header` now uses `flex-start` alignment and `flex-wrap: wrap`; per-page overrides removed from events, communities, resources, and skills pages
+- **Events page h1 no longer tinted** — removed scoped `color: var(--color-primary)` that made the Events heading orange/purple unlike every other page
+- **Global `.subtitle` style added** — pages with h1 subtitles (communities, events) now share the same muted-text style from `app.css` instead of redefining it locally
+- **Bookings h1 wrapped in `.page-header`** — consistent top-of-page spacing and alignment with all other content pages
+
 ## [2.0.1] - 2026-04-16
 
 ### Fixed
