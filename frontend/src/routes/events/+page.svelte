@@ -310,7 +310,7 @@
 	{/if}
 
 	{#if loading}
-		<p class="loading">{$t('common.loading')}</p>
+		<p class="loading-text">{$t('common.loading')}</p>
 	{:else if events.length === 0}
 		<div class="empty-state">
 			<p>{$isLoggedIn ? $t('events.no_events') : $t('events.no_events_guest')}</p>
@@ -320,7 +320,9 @@
 			{#each events as event (event.id)}
 				<li class="event-card card">
 					<div class="event-header">
-						<span class="category-icon">{CATEGORY_ICONS[event.category] ?? '📅'}</span>
+						<div class="category-icon-wrap">
+						<span>{CATEGORY_ICONS[event.category] ?? '📅'}</span>
+					</div>
 						<div class="event-meta">
 							<h3 class="event-title">{event.title}</h3>
 							<p class="event-date">{formatDate(event.start_at)}
@@ -365,10 +367,12 @@
 
 	.card {
 		background: var(--color-surface);
-		border-radius: 8px;
+		border-radius: var(--radius-lg);
 		padding: 1.25rem;
 		margin-bottom: 1rem;
-		border: 1px solid color-mix(in srgb, var(--color-text-muted) 20%, transparent);
+		border: 1px solid var(--color-border);
+		box-shadow: var(--shadow-sm);
+		transition: all var(--transition);
 	}
 
 	.create-form h2 {
@@ -404,8 +408,8 @@
 	.form-grid select,
 	.form-grid textarea {
 		padding: 0.45rem 0.6rem;
-		border: 1px solid color-mix(in srgb, var(--color-text-muted) 40%, transparent);
-		border-radius: 4px;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
 		background: var(--color-bg);
 		color: var(--color-text);
 		font-size: 0.9rem;
@@ -423,16 +427,16 @@
 		flex: 1;
 		min-width: 160px;
 		padding: 0.45rem 0.7rem;
-		border: 1px solid color-mix(in srgb, var(--color-text-muted) 40%, transparent);
-		border-radius: 4px;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
 		background: var(--color-surface);
 		color: var(--color-text);
 	}
 
 	.filters select {
 		padding: 0.45rem 0.6rem;
-		border: 1px solid color-mix(in srgb, var(--color-text-muted) 40%, transparent);
-		border-radius: 4px;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
 		background: var(--color-surface);
 		color: var(--color-text);
 	}
@@ -463,16 +467,29 @@
 		gap: 0.5rem;
 	}
 
+	.event-card:hover {
+		box-shadow: var(--shadow-md);
+		border-color: var(--color-border-hover);
+		transform: translateY(-2px);
+	}
+
 	.event-header {
 		display: flex;
 		gap: 0.75rem;
 		align-items: flex-start;
 	}
 
-	.category-icon {
-		font-size: 1.75rem;
-		line-height: 1;
+	.category-icon-wrap {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
 		flex-shrink: 0;
+		border-radius: var(--radius);
+		background: var(--color-primary-light);
+		font-size: 1.25rem;
+		line-height: 1;
 	}
 
 	.event-meta {
@@ -525,11 +542,11 @@
 	.btn {
 		padding: 0.5rem 1rem;
 		border: none;
-		border-radius: 4px;
+		border-radius: var(--radius);
 		cursor: pointer;
 		font-size: 0.9rem;
 		font-weight: 500;
-		transition: opacity 0.15s;
+		transition: all var(--transition-fast);
 	}
 
 	.btn:disabled {
@@ -545,14 +562,25 @@
 	.btn-primary {
 		background: var(--color-primary);
 		color: #fff;
+		box-shadow: var(--shadow-sm);
+	}
+
+	.btn-primary:hover:not(:disabled) {
+		background: var(--color-primary-hover);
+		box-shadow: var(--shadow);
+		transform: translateY(-1px);
 	}
 
 	.btn-secondary {
-		background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+		background: var(--color-primary-light);
 		color: var(--color-primary);
+		border: 1px solid var(--color-border);
 	}
 
-	.loading,
+	.btn-secondary:hover:not(:disabled) {
+		border-color: var(--color-primary);
+	}
+
 	.empty-state {
 		text-align: center;
 		color: var(--color-text-muted);
