@@ -66,6 +66,14 @@ class EventUpdate(BaseModel):
         return v
 
 
+class EventAttendeeProfile(BaseModel):
+    id: int
+    display_name: str
+    neighbourhood: str | None
+
+    model_config = {"from_attributes": True}
+
+
 class EventOut(BaseModel):
     id: int
     title: str
@@ -80,6 +88,7 @@ class EventOut(BaseModel):
     organizer: UserProfile
     attendee_count: int
     is_attending: bool
+    attendees: list[EventAttendeeProfile] | None = None
     created_at: datetime.datetime
 
     model_config = {"from_attributes": True}

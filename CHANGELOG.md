@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.3] - 2026-05-09
+
+### Added
+
+- **Event detail page** — new `/events/[id]` route with full event info (title, category, start/end times, location, description, organizer) and an attendee list linked to user profiles; reuses the shared `LoadingSpinner` and `ErrorMessage` components
+- **`EventOut.attendees` field** — `GET /events/{id}` now returns the attendee list (id, display_name, neighbourhood) so the detail page can render attendees in a single round-trip; listing endpoints still omit it for performance
+- **Crisis-vote regression test** — `test_threshold_crossing_logs_activity_once` guards against double-logging when concurrent voters cross the threshold (442 backend tests)
+
+### Fixed
+
+- **Events page i18n + layout parity** — replaced hardcoded English form labels (`Title *`, `Category`, `Start date *`, …), the "Create Event" heading and submit button, the "by …" organizer line, and ad-hoc plural pluralisation (`event{s}`) with `$t()` keys; raised `max-width` from 800 px to 900 px to match the rest of the app; bumped the mobile breakpoint from 500 px to 640 px
+- **Clickable event cards** — wrapped each event-list entry in `<a href="/events/{id}">` so cards now actually navigate to the new detail page; the RSVP button calls `stopPropagation()` so it still works inline
+- **Crisis vote race condition** — `/crisis/vote` now re-fetches the community row with `with_for_update()` and re-checks `mode != new_mode` under the lock before flipping, preventing concurrent voters from double-flipping and double-logging the activity entry
+- **`api()` 401 handling** — both `api()` and `apiUpload()` now call `logout()` and `goto('/login')` on a 401 from an authenticated request, so expired tokens redirect to the login screen instead of failing silently across every page
+- **Lifespan auto-migration gated by `NG_DEBUG`** — `_add_missing_columns()` only runs when `settings.debug=True`; in production a log line directs operators to `alembic upgrade head` so the migration audit trail stays intact
+- **`response_model` added to mark-conversation-read** — `POST /messages/conversation/{id}/read` now returns a typed `MarkReadAck` payload (`{ ok, marked }`) instead of an untyped dict
+- **Locale parity restored** — `ar`, `fr`, `es`, `sw`, `id` were missing 333 keys each (44 % incomplete) since v1.8.0; backfilled with English placeholders so all 7 locales now expose the same 726 keys; new keys added to all locales as part of the events page work
+
 ## [2.0.2] - 2026-04-18
 
 ### Fixed

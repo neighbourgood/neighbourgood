@@ -16,6 +16,7 @@ from app.services.notifications import notify_new_message
 from app.services.webhooks import dispatch_event
 from app.schemas.message import (
     ConversationSummary,
+    MarkReadAck,
     MessageCreate,
     MessageableUser,
     MessageList,
@@ -289,17 +290,21 @@ def mark_as_read(
     return msg
 
 
-@router.post("/conversation/{partner_id}/read")
+@router.post("/conversation/{partner_id}/read", response_model=MarkReadAck)
 def mark_conversation_read(
     partner_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """Mark all messages from a partner as read."""
-    db.query(Message).filter(
-        Message.sender_id == partner_id,
-        Message.recipient_id == current_user.id,
-        Message.is_read == False,  # noqa: E712
-    ).update({"is_read": True})
+    marked = (
+        db.query(Message)
+        .filter(
+            Message.sender_id == partner_id,
+            Message.recipient_id == current_user.id,
+            Message.is_read == False,  # noqa: E712
+        )
+        .update({"is_read": True})
+    )
     db.commit()
-    return {"ok": True}
+    return MarkReadAck(ok=True, marked=int(marked or 0))

@@ -223,6 +223,35 @@ def test_vote_threshold_triggers_mode_switch(client, auth_headers):
     assert status["votes_to_activate"] == 0
 
 
+def test_threshold_crossing_logs_activity_once(client, auth_headers, db):
+    """Crossing the vote threshold must log exactly one crisis_mode_changed activity.
+
+    Regression guard for the race condition where two concurrent voters could
+    each cross the threshold and double-log the mode switch.
+    """
+    from app.models.activity import Activity
+
+    c = _create_community(client, auth_headers)
+    cid = c["id"]
+
+    res = client.post(
+        f"/communities/{cid}/crisis/vote",
+        headers=auth_headers,
+        json={"vote_type": "activate"},
+    )
+    assert res.status_code == 200
+
+    activities = (
+        db.query(Activity)
+        .filter(
+            Activity.community_id == cid,
+            Activity.event_type == "crisis_mode_changed",
+        )
+        .all()
+    )
+    assert len(activities) == 1, f"expected one mode-change activity, got {len(activities)}"
+
+
 # ── Emergency tickets ─────────────────────────────────────────────
 
 

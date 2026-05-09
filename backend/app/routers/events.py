@@ -14,6 +14,7 @@ from app.models.user import User
 from app.schemas.event import (
     EVENT_CATEGORY_META,
     VALID_EVENT_CATEGORIES,
+    EventAttendeeProfile,
     EventCategoryInfo,
     EventCreate,
     EventList,
@@ -26,8 +27,21 @@ from app.services.webhooks import dispatch_event
 router = APIRouter(prefix="/events", tags=["events"])
 
 
-def _event_to_out(event: Event, current_user_id: int | None) -> EventOut:
+def _event_to_out(
+    event: Event, current_user_id: int | None, *, include_attendees: bool = False
+) -> EventOut:
     attendee_ids = {a.user_id for a in event.attendees}
+    attendees: list[EventAttendeeProfile] | None = None
+    if include_attendees:
+        attendees = [
+            EventAttendeeProfile(
+                id=a.user.id,
+                display_name=a.user.display_name,
+                neighbourhood=a.user.neighbourhood,
+            )
+            for a in event.attendees
+            if a.user is not None
+        ]
     return EventOut(
         id=event.id,
         title=event.title,
@@ -42,6 +56,7 @@ def _event_to_out(event: Event, current_user_id: int | None) -> EventOut:
         organizer=event.organizer,
         attendee_count=len(attendee_ids),
         is_attending=current_user_id in attendee_ids if current_user_id else False,
+        attendees=attendees,
         created_at=event.created_at,
     )
 
@@ -49,7 +64,10 @@ def _event_to_out(event: Event, current_user_id: int | None) -> EventOut:
 def _load_event(event_id: int, db: Session) -> Event:
     event = (
         db.query(Event)
-        .options(joinedload(Event.organizer), joinedload(Event.attendees))
+        .options(
+            joinedload(Event.organizer),
+            joinedload(Event.attendees).joinedload(EventAttendee.user),
+        )
         .filter(Event.id == event_id)
         .first()
     )
@@ -194,9 +212,11 @@ def get_event(
     db: Session = Depends(get_db),
     current_user: User | None = Depends(get_current_user_optional),
 ):
-    """Get a single event by ID."""
+    """Get a single event by ID, including the attendee list."""
     event = _load_event(event_id, db)
-    return _event_to_out(event, current_user.id if current_user else None)
+    return _event_to_out(
+        event, current_user.id if current_user else None, include_attendees=True
+    )
 
 
 @router.patch("/{event_id}", response_model=EventOut)
