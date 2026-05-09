@@ -255,8 +255,18 @@ def cast_crisis_vote(
     threshold_needed = max(1, (total_members * VOTE_THRESHOLD_PCT + 99) // 100)
     if vote_count >= threshold_needed:
         new_mode = "red" if target_type == "activate" else "blue"
-        if community.mode != new_mode:
-            community.mode = new_mode
+        # Re-fetch the community row with a row-level lock (no-op on SQLite, but
+        # PostgreSQL serialises concurrent voters here) and re-check the mode
+        # under the lock. Without this, two voters who both push the count over
+        # the threshold could each flip the mode and double-log the activity.
+        locked_community = (
+            db.query(Community)
+            .filter(Community.id == community_id)
+            .with_for_update()
+            .first()
+        )
+        if locked_community is not None and locked_community.mode != new_mode:
+            locked_community.mode = new_mode
             # Clear all votes after mode switch
             db.query(CrisisVote).filter(
                 CrisisVote.community_id == community_id
@@ -267,7 +277,7 @@ def cast_crisis_vote(
             record_activity(
                 db,
                 event_type="crisis_mode_changed",
-                summary=f'community vote switched "{community.name}" to {label}',
+                summary=f'community vote switched "{locked_community.name}" to {label}',
                 actor_id=current_user.id,
                 community_id=community_id,
             )
