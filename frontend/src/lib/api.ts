@@ -50,6 +50,11 @@ export async function api<T = unknown>(path: string, opts: RequestOptions = {}):
 		body: body ? JSON.stringify(body) : undefined
 	});
 
+	if (res.status === 401 && auth) {
+		await handleUnauthorized();
+		throw new Error('Session expired');
+	}
+
 	if (!res.ok) {
 		const err = await res.json().catch(() => ({ detail: res.statusText }));
 
@@ -71,6 +76,27 @@ export async function api<T = unknown>(path: string, opts: RequestOptions = {}):
 }
 
 /**
+ * Clear auth state and redirect to /login. Called on 401 from any authenticated
+ * request so an expired token doesn't cause silent failures across the app.
+ * Uses dynamic imports to avoid SSR cycles on initial module load.
+ */
+async function handleUnauthorized(): Promise<void> {
+	if (typeof window === 'undefined') return;
+	try {
+		const { logout } = await import('$lib/stores/auth');
+		logout();
+	} catch {
+		// Auth store not available; fall through to redirect.
+	}
+	try {
+		const { goto } = await import('$app/navigation');
+		await goto('/login');
+	} catch {
+		// Navigation not available (SSR / test); fall through.
+	}
+}
+
+/**
  * Upload a file (multipart/form-data) to the backend.
  */
 export async function apiUpload<T = unknown>(path: string, file: File): Promise<T> {
@@ -87,6 +113,11 @@ export async function apiUpload<T = unknown>(path: string, file: File): Promise<
 		headers,
 		body: formData
 	});
+
+	if (res.status === 401 && t) {
+		await handleUnauthorized();
+		throw new Error('Session expired');
+	}
 
 	if (!res.ok) {
 		const err = await res.json().catch(() => ({ detail: res.statusText }));

@@ -72,7 +72,13 @@ def _add_missing_columns() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
-    _add_missing_columns()
+    if settings.debug:
+        _add_missing_columns()
+    else:
+        logger.info(
+            "Skipping additive column auto-migration (NG_DEBUG=false); "
+            "use 'alembic upgrade head' for schema changes."
+        )
     yield
 
 

@@ -214,24 +214,24 @@
 		</div>
 		{#if $isLoggedIn}
 			<button class="btn btn-primary" onclick={openCreateForm}>
-				{showCreateForm ? '✕ Cancel' : $t('events.create_btn')}
+				{showCreateForm ? $t('events.cancel_form') : $t('events.create_btn')}
 			</button>
 		{/if}
 	</div>
 
 	{#if showCreateForm}
 		<div class="create-form card">
-			<h2>Create Event</h2>
+			<h2>{$t('events.form_title')}</h2>
 			{#if createError}
 				<p class="error">{createError}</p>
 			{/if}
 			<div class="form-grid">
 				<label>
-					Title *
-					<input type="text" bind:value={newTitle} maxlength="200" placeholder="Event title" />
+					{$t('events.form.title_label')} *
+					<input type="text" bind:value={newTitle} maxlength="200" placeholder={$t('events.form.title_placeholder')} />
 				</label>
 				<label>
-					Category
+					{$t('events.form.category_label')}
 					<select bind:value={newCategory}>
 						{#each CATEGORIES.slice(1) as cat}
 							<option value={cat}>{CATEGORY_ICONS[cat]} {$t('events.categories.' + cat)}</option>
@@ -239,38 +239,38 @@
 					</select>
 				</label>
 				<label>
-					Start date *
+					{$t('events.form.start_date_label')} *
 					<input type="date" bind:value={newStartDate} />
 				</label>
 				<label>
-					Start time *
+					{$t('events.form.start_time_label')} *
 					<input type="time" bind:value={newStartTime} step="900" />
 				</label>
 				<label>
-					End date
+					{$t('events.form.end_date_label')}
 					<input type="date" bind:value={newEndDate} min={newStartDate} />
 				</label>
 				<label>
-					End time
+					{$t('events.form.end_time_label')}
 					<input type="time" bind:value={newEndTime} step="900" />
 				</label>
 				<label>
-					Location
-					<input type="text" bind:value={newLocation} maxlength="300" placeholder="Where?" />
+					{$t('events.form.location_label')}
+					<input type="text" bind:value={newLocation} maxlength="300" placeholder={$t('events.form.location_placeholder')} />
 				</label>
 				<label>
-					Max attendees
-					<input type="number" bind:value={newMaxAttendees} min="1" max="10000" placeholder="Unlimited" />
+					{$t('events.form.max_attendees_label')}
+					<input type="number" bind:value={newMaxAttendees} min="1" max="10000" placeholder={$t('events.form.max_attendees_placeholder')} />
 				</label>
 				{#if myCommunities.length > 1}
-				<p class="community-info full-width">Community: <strong>{myCommunities[0].name}</strong></p>
+				<p class="community-info full-width">{$t('events.community_label')} <strong>{myCommunities[0].name}</strong></p>
 			{/if}
 				<label class="full-width">
-					Description
-					<textarea bind:value={newDescription} maxlength="5000" rows="3" placeholder="Optional details…"></textarea>
+					{$t('events.form.description_label')}
+					<textarea bind:value={newDescription} maxlength="5000" rows="3" placeholder={$t('events.form.description_placeholder')}></textarea>
 				</label>
 			</div>
-			<button class="btn btn-primary" onclick={createEvent}>Create Event</button>
+			<button class="btn btn-primary" onclick={createEvent}>{$t('events.form_submit')}</button>
 		</div>
 	{/if}
 
@@ -301,7 +301,9 @@
 			{$t('events.upcoming_only')}
 		</label>
 		{#if !loading}
-			<span class="result-count">{total} event{total !== 1 ? 's' : ''}</span>
+			<span class="result-count">
+				{$t(total === 1 ? 'events.event_count_one' : 'events.event_count_other', { values: { count: total } })}
+			</span>
 		{/if}
 	</div>
 
@@ -319,32 +321,34 @@
 		<ul class="event-list">
 			{#each events as event (event.id)}
 				<li class="event-card card">
-					<div class="event-header">
-						<div class="category-icon-wrap">
-						<span>{CATEGORY_ICONS[event.category] ?? '📅'}</span>
-					</div>
-						<div class="event-meta">
-							<h3 class="event-title">{event.title}</h3>
-							<p class="event-date">{formatDate(event.start_at)}
-								{#if event.end_at} — {formatDate(event.end_at)}{/if}
-							</p>
-							{#if event.location}
-								<p class="event-location">📍 {event.location}</p>
-							{/if}
+					<a class="event-link" href={`/events/${event.id}`}>
+						<div class="event-header">
+							<div class="category-icon-wrap">
+								<span>{CATEGORY_ICONS[event.category] ?? '📅'}</span>
+							</div>
+							<div class="event-meta">
+								<h3 class="event-title">{event.title}</h3>
+								<p class="event-date">{formatDate(event.start_at)}
+									{#if event.end_at} — {formatDate(event.end_at)}{/if}
+								</p>
+								{#if event.location}
+									<p class="event-location">📍 {event.location}</p>
+								{/if}
+							</div>
 						</div>
-					</div>
-					{#if event.description}
-						<p class="event-description">{event.description}</p>
-					{/if}
+						{#if event.description}
+							<p class="event-description">{event.description}</p>
+						{/if}
+					</a>
 					<div class="event-footer">
 						<span class="attendee-count">
 							👥 {event.attendee_count}{event.max_attendees ? `/${event.max_attendees}` : ''} {$t('events.attendees')}
 						</span>
-						<span class="organizer">by {event.organizer.display_name}</span>
+						<span class="organizer">{$t('events.organizer_by', { values: { name: event.organizer.display_name } })}</span>
 						{#if $isLoggedIn}
 							<button
 								class="btn btn-sm {event.is_attending ? 'btn-secondary' : 'btn-primary'}"
-								onclick={() => toggleAttend(event)}
+								onclick={(e) => { e.preventDefault(); e.stopPropagation(); toggleAttend(event); }}
 								disabled={!event.is_attending && event.max_attendees !== null && event.attendee_count >= event.max_attendees}
 							>
 								{event.is_attending ? $t('events.unattend') : $t('events.attend')}
@@ -359,9 +363,28 @@
 
 <style>
 	.events-page {
-		max-width: 800px;
+		max-width: 900px;
 		margin: 0 auto;
 		padding: 1.5rem 1rem;
+	}
+
+	.page-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 1rem;
+		margin-bottom: 0.75rem;
+		flex-wrap: wrap;
+	}
+
+	.page-header h1 {
+		margin: 0 0 0.25rem;
+	}
+
+	.subtitle {
+		margin: 0;
+		color: var(--color-text-muted);
+		font-size: 0.95rem;
 	}
 
 
@@ -473,6 +496,18 @@
 		transform: translateY(-2px);
 	}
 
+	.event-link {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.event-link:hover .event-title {
+		color: var(--color-primary);
+	}
+
 	.event-header {
 		display: flex;
 		gap: 0.75rem;
@@ -561,7 +596,7 @@
 
 	.btn-primary {
 		background: var(--color-primary);
-		color: #fff;
+		color: var(--color-on-primary, #fff);
 		box-shadow: var(--shadow-sm);
 	}
 
@@ -603,7 +638,7 @@
 		margin-bottom: 1rem;
 	}
 
-	@media (max-width: 500px) {
+	@media (max-width: 640px) {
 		.form-grid {
 			grid-template-columns: 1fr;
 		}

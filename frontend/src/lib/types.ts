@@ -200,6 +200,12 @@ export interface MeshSyncResult {
 	errors: number;
 }
 
+export interface EventAttendeeProfile {
+	id: number;
+	display_name: string;
+	neighbourhood: string | null;
+}
+
 export interface CommunityEvent {
 	id: number;
 	title: string;
@@ -214,6 +220,7 @@ export interface CommunityEvent {
 	organizer: UserInfo;
 	attendee_count: number;
 	is_attending: boolean;
+	attendees?: EventAttendeeProfile[] | null;
 	created_at: string;
 }
 

@@ -53,3 +53,8 @@ class ConversationSummary(BaseModel):
 
 class UnreadCount(BaseModel):
     count: int
+
+
+class MarkReadAck(BaseModel):
+    ok: bool
+    marked: int
