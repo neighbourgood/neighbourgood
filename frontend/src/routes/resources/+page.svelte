@@ -155,8 +155,8 @@
 	</div>
 
 	<nav class="browse-tabs">
-		<a href="/resources" class="browse-tab active">Resources</a>
-		<a href="/skills" class="browse-tab">Skills</a>
+		<a href="/resources" class="browse-tab active">{$t('resources.tab_label')}</a>
+		<a href="/skills" class="browse-tab">{$t('skills.tab_label')}</a>
 	</nav>
 
 	{#if showCreateForm}

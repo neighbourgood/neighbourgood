@@ -22,7 +22,9 @@
     "toggle_low_bandwidth": "Geringen Datenmodus umschalten",
     "install_app": "NeighbourGood als App installieren",
     "events": "Veranstaltungen",
-    "federation": "Network"
+    "federation": "Network",
+    "bookings": "Buchungen",
+    "view_profile": "Profil ansehen"
   },
   "banner": {
     "update_available": "Eine neue Version von NeighbourGood ist verfügbar.",
@@ -222,7 +224,8 @@
       "good": "Gut",
       "fair": "Befriedigend",
       "worn": "Gebraucht"
-    }
+    },
+    "tab_label": "Ressourcen"
   },
   "bookings": {
     "title": "Meine Buchungen",
@@ -356,7 +359,8 @@
     },
     "manage": "Manage Skill",
     "delete_listing": "Delete Listing",
-    "back": "Back to Skills"
+    "back": "Back to Skills",
+    "tab_label": "Fähigkeiten"
   },
   "crisis": {
     "title": "Notfall",
@@ -407,7 +411,30 @@
     "vote_redsky": "Für den Krisenmodus abstimmen",
     "redsky_active": "Diese Gemeinschaft befindet sich im Roten-Himmel-Modus.",
     "enable_redsky": "Krisenmodus aktivieren",
-    "disable_redsky": "Krisenmodus deaktivieren"
+    "disable_redsky": "Krisenmodus deaktivieren",
+    "detail": {
+      "back": "Zurück zu Notfällen",
+      "loading": "Ticket wird geladen…",
+      "missing_community": "Community-Parameter fehlt.",
+      "load_failed": "Ticket konnte nicht geladen werden.",
+      "update_failed": "Ticket konnte nicht aktualisiert werden.",
+      "comment_failed": "Kommentar konnte nicht veröffentlicht werden.",
+      "opened_by": "Eröffnet von {name} am {date}",
+      "description": "Beschreibung",
+      "due": "Fällig",
+      "triage_score": "Triage-Punktzahl",
+      "assignment": "Zuweisung",
+      "take_this": "Ich übernehme das",
+      "select_member": "Mitglied auswählen…",
+      "assign": "Zuweisen",
+      "reopen": "Wieder öffnen",
+      "discussion": "Diskussion",
+      "no_comments": "Noch keine Kommentare. Antworte als Erste*r.",
+      "add_comment": "Kommentar hinzufügen",
+      "comment_placeholder": "Schreibe deine Antwort hier…",
+      "posting": "Wird veröffentlicht…",
+      "post_comment": "Kommentar veröffentlichen"
+    }
   },
   "settings": {
     "title": "Kontoeinstellungen",

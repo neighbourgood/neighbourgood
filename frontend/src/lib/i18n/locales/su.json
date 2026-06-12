@@ -22,7 +22,9 @@
     "toggle_low_bandwidth": "Ganti modeu bandwidth handap",
     "install_app": "Pasang NeighbourGood salaku aplikasi",
     "events": "Acara",
-    "federation": "Network"
+    "federation": "Network",
+    "bookings": "Réservasi",
+    "view_profile": "Tingali profil"
   },
   "banner": {
     "update_available": "Vérsi anyar NeighbourGood geus sadia.",
@@ -222,7 +224,8 @@
       "good": "Alus",
       "fair": "Lumayan",
       "worn": "Geus kapake"
-    }
+    },
+    "tab_label": "Sumber Daya"
   },
   "bookings": {
     "title": "Réservasi Kuring",
@@ -356,7 +359,8 @@
     },
     "manage": "Manage Skill",
     "delete_listing": "Delete Listing",
-    "back": "Back to Skills"
+    "back": "Back to Skills",
+    "tab_label": "Kaahlian"
   },
   "crisis": {
     "title": "Darurat",
@@ -407,7 +411,30 @@
     "vote_redsky": "Pilih pikeun modeu krisis",
     "redsky_active": "Komunitas ieu dina Modeu Langit Beureum.",
     "enable_redsky": "Aktifkeun modeu krisis",
-    "disable_redsky": "Nonaktifkeun modeu krisis"
+    "disable_redsky": "Nonaktifkeun modeu krisis",
+    "detail": {
+      "back": "Balik ka Darurat",
+      "loading": "Ngamuat tikét…",
+      "missing_community": "Parameter komunitas teu aya.",
+      "load_failed": "Gagal ngamuat tikét.",
+      "update_failed": "Gagal ngapdet tikét.",
+      "comment_failed": "Gagal ngirim koméntar.",
+      "opened_by": "Dibuka ku {name} dina {date}",
+      "description": "Katerangan",
+      "due": "Wates waktu",
+      "triage_score": "Skor triase",
+      "assignment": "Pancén",
+      "take_this": "Kuring anu nanganan",
+      "select_member": "Pilih anggota…",
+      "assign": "Tugaskeun",
+      "reopen": "Buka deui",
+      "discussion": "Diskusi",
+      "no_comments": "Can aya koméntar. Janten anu munggaran ngajawab.",
+      "add_comment": "Tambahkeun koméntar",
+      "comment_placeholder": "Tulis jawaban anjeun di dieu…",
+      "posting": "Ngirim…",
+      "post_comment": "Kirim koméntar"
+    }
   },
   "settings": {
     "title": "Setelan Akun",

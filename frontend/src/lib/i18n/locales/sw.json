@@ -23,7 +23,9 @@
     "install_app": "Sakinisha NeighbourGood kama programu",
     "events": "Matukio",
     "mesh": "Mesh",
-    "federation": "Network"
+    "federation": "Network",
+    "bookings": "Uhifadhi",
+    "view_profile": "Tazama wasifu"
   },
   "banner": {
     "update_available": "Toleo jipya la NeighbourGood linapatikana.",
@@ -187,7 +189,8 @@
     "need_community": "You need to join a community before sharing resources.",
     "adjust_filters": "Try adjusting your search or filters.",
     "first_share": "Be the first to share something with your neighbourhood!",
-    "sign_up_share": "Sign up to start sharing."
+    "sign_up_share": "Sign up to start sharing.",
+    "tab_label": "Rasilimali"
   },
   "bookings": {
     "title": "Uhifadhi",
@@ -321,7 +324,8 @@
     "description_label": "Description",
     "category_label": "Category",
     "type_label": "Type",
-    "community_label": "Community"
+    "community_label": "Community",
+    "tab_label": "Ujuzi"
   },
   "crisis": {
     "title": "Uratibu wa dharura",
@@ -373,7 +377,30 @@
     "by_author": "By {author}",
     "unassigned": "Unassigned",
     "start_ticket": "Start",
-    "resolve_ticket": "Resolve"
+    "resolve_ticket": "Resolve",
+    "detail": {
+      "back": "Rudi kwenye Dharura",
+      "loading": "Inapakia tikiti…",
+      "missing_community": "Kigezo cha jumuiya hakipo.",
+      "load_failed": "Imeshindwa kupakia tikiti.",
+      "update_failed": "Imeshindwa kusasisha tikiti.",
+      "comment_failed": "Imeshindwa kuchapisha maoni.",
+      "opened_by": "Imefunguliwa na {name} tarehe {date}",
+      "description": "Maelezo",
+      "due": "Mwisho",
+      "triage_score": "Alama ya kipaumbele",
+      "assignment": "Ukabidhi",
+      "take_this": "Nitalishughulikia",
+      "select_member": "Chagua mwanachama…",
+      "assign": "Kabidhi",
+      "reopen": "Fungua tena",
+      "discussion": "Majadiliano",
+      "no_comments": "Hakuna maoni bado. Kuwa wa kwanza kujibu.",
+      "add_comment": "Ongeza maoni",
+      "comment_placeholder": "Andika jibu lako hapa…",
+      "posting": "Inachapisha…",
+      "post_comment": "Chapisha maoni"
+    }
   },
   "settings": {
     "title": "Mipangilio",

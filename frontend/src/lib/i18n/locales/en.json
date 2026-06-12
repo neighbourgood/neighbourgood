@@ -23,7 +23,9 @@
     "install_app": "Install NeighbourGood as an app",
     "events": "Events",
     "mesh": "Mesh",
-    "federation": "Network"
+    "federation": "Network",
+    "bookings": "Bookings",
+    "view_profile": "View profile"
   },
   "banner": {
     "update_available": "A new version of NeighbourGood is available.",
@@ -223,7 +225,8 @@
       "good": "Good",
       "fair": "Fair",
       "worn": "Worn"
-    }
+    },
+    "tab_label": "Resources"
   },
   "bookings": {
     "title": "My Bookings",
@@ -357,7 +360,8 @@
       "medical": "Medical & First Aid",
       "legal": "Legal",
       "other": "Other"
-    }
+    },
+    "tab_label": "Skills"
   },
   "crisis": {
     "title": "Emergency",
@@ -408,7 +412,30 @@
     "vote_redsky": "Vote for crisis mode",
     "redsky_active": "This community is in Red Sky mode.",
     "enable_redsky": "Enable crisis mode",
-    "disable_redsky": "Disable crisis mode"
+    "disable_redsky": "Disable crisis mode",
+    "detail": {
+      "back": "Back to Emergency",
+      "loading": "Loading ticket…",
+      "missing_community": "Missing community parameter.",
+      "load_failed": "Failed to load ticket.",
+      "update_failed": "Failed to update ticket.",
+      "comment_failed": "Failed to post comment.",
+      "opened_by": "Opened by {name} on {date}",
+      "description": "Description",
+      "due": "Due",
+      "triage_score": "Triage score",
+      "assignment": "Assignment",
+      "take_this": "Take this",
+      "select_member": "Select member…",
+      "assign": "Assign",
+      "reopen": "Reopen",
+      "discussion": "Discussion",
+      "no_comments": "No comments yet. Be the first to respond.",
+      "add_comment": "Add a comment",
+      "comment_placeholder": "Write your response here…",
+      "posting": "Posting…",
+      "post_comment": "Post comment"
+    }
   },
   "settings": {
     "title": "Account Settings",

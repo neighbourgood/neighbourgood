@@ -22,7 +22,9 @@
     "toggle_low_bandwidth": "Lage bandbreedte modus wisselen",
     "install_app": "NeighbourGood als app installeren",
     "events": "Evenementen",
-    "federation": "Network"
+    "federation": "Network",
+    "bookings": "Boekingen",
+    "view_profile": "Profiel bekijken"
   },
   "banner": {
     "update_available": "Een nieuwe versie van NeighbourGood is beschikbaar.",
@@ -136,7 +138,8 @@
       "good": "Goed",
       "fair": "Redelijk",
       "worn": "Versleten"
-    }
+    },
+    "tab_label": "Middelen"
   },
   "bookings": {
     "title": "Boekingen",
@@ -210,7 +213,8 @@
     },
     "manage": "Manage Skill",
     "delete_listing": "Delete Listing",
-    "back": "Back to Skills"
+    "back": "Back to Skills",
+    "tab_label": "Vaardigheden"
   },
   "crisis": {
     "title": "Noodcoördinatie",
@@ -235,7 +239,30 @@
     "vote_redsky": "Stemmen voor crisismodus",
     "redsky_active": "Deze gemeenschap is in Red Sky-modus.",
     "enable_redsky": "Crisismodus inschakelen",
-    "disable_redsky": "Crisismodus uitschakelen"
+    "disable_redsky": "Crisismodus uitschakelen",
+    "detail": {
+      "back": "Terug naar Noodgevallen",
+      "loading": "Ticket laden…",
+      "missing_community": "Community-parameter ontbreekt.",
+      "load_failed": "Kan ticket niet laden.",
+      "update_failed": "Kan ticket niet bijwerken.",
+      "comment_failed": "Kan reactie niet plaatsen.",
+      "opened_by": "Geopend door {name} op {date}",
+      "description": "Beschrijving",
+      "due": "Deadline",
+      "triage_score": "Triagescore",
+      "assignment": "Toewijzing",
+      "take_this": "Ik pak dit op",
+      "select_member": "Kies een lid…",
+      "assign": "Toewijzen",
+      "reopen": "Heropenen",
+      "discussion": "Discussie",
+      "no_comments": "Nog geen reacties. Reageer als eerste.",
+      "add_comment": "Reactie toevoegen",
+      "comment_placeholder": "Schrijf hier je reactie…",
+      "posting": "Plaatsen…",
+      "post_comment": "Reactie plaatsen"
+    }
   },
   "settings": {
     "title": "Instellingen",

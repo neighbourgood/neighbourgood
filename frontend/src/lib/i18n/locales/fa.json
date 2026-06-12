@@ -22,7 +22,9 @@
     "toggle_low_bandwidth": "تغییر حالت کم‌پهنای باند",
     "install_app": "نصب NeighbourGood به عنوان برنامه",
     "events": "رویدادها",
-    "federation": "Network"
+    "federation": "Network",
+    "bookings": "رزروها",
+    "view_profile": "مشاهده نمایه"
   },
   "banner": {
     "update_available": "نسخه جدیدی از NeighbourGood در دسترس است.",
@@ -222,7 +224,8 @@
       "good": "خوب",
       "fair": "قابل قبول",
       "worn": "کهنه"
-    }
+    },
+    "tab_label": "منابع"
   },
   "bookings": {
     "title": "رزروهای من",
@@ -356,7 +359,8 @@
     },
     "manage": "Manage Skill",
     "delete_listing": "Delete Listing",
-    "back": "Back to Skills"
+    "back": "Back to Skills",
+    "tab_label": "مهارت‌ها"
   },
   "crisis": {
     "title": "اضطراری",
@@ -407,7 +411,30 @@
     "vote_redsky": "رأی برای حالت بحران",
     "redsky_active": "این جامعه در حالت آسمان قرمز است.",
     "enable_redsky": "فعال‌سازی حالت بحران",
-    "disable_redsky": "غیرفعال‌سازی حالت بحران"
+    "disable_redsky": "غیرفعال‌سازی حالت بحران",
+    "detail": {
+      "back": "بازگشت به اضطراری",
+      "loading": "در حال بارگیری تیکت…",
+      "missing_community": "پارامتر اجتماع موجود نیست.",
+      "load_failed": "بارگیری تیکت ناموفق بود.",
+      "update_failed": "به‌روزرسانی تیکت ناموفق بود.",
+      "comment_failed": "ارسال دیدگاه ناموفق بود.",
+      "opened_by": "باز شده توسط {name} در {date}",
+      "description": "توضیحات",
+      "due": "مهلت",
+      "triage_score": "امتیاز اولویت‌بندی",
+      "assignment": "واگذاری",
+      "take_this": "من انجامش می‌دهم",
+      "select_member": "انتخاب عضو…",
+      "assign": "واگذاری",
+      "reopen": "بازگشایی",
+      "discussion": "گفتگو",
+      "no_comments": "هنوز دیدگاهی نیست. اولین نفر باشید.",
+      "add_comment": "افزودن دیدگاه",
+      "comment_placeholder": "پاسخ خود را اینجا بنویسید…",
+      "posting": "در حال ارسال…",
+      "post_comment": "ارسال دیدگاه"
+    }
   },
   "settings": {
     "title": "تنظیمات حساب",

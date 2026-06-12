@@ -22,7 +22,9 @@
     "toggle_low_bandwidth": "Εναλλαγή λειτουργίας χαμηλής εύρους ζώνης",
     "install_app": "Εγκατάσταση του NeighbourGood ως εφαρμογή",
     "events": "Εκδηλώσεις",
-    "federation": "Network"
+    "federation": "Network",
+    "bookings": "Κρατήσεις",
+    "view_profile": "Προβολή προφίλ"
   },
   "banner": {
     "update_available": "Μια νέα έκδοση του NeighbourGood είναι διαθέσιμη.",
@@ -136,7 +138,8 @@
       "good": "Καλό",
       "fair": "Μέτριο",
       "worn": "Φθαρμένο"
-    }
+    },
+    "tab_label": "Πόροι"
   },
   "bookings": {
     "title": "Κρατήσεις",
@@ -210,7 +213,8 @@
     },
     "manage": "Manage Skill",
     "delete_listing": "Delete Listing",
-    "back": "Back to Skills"
+    "back": "Back to Skills",
+    "tab_label": "Δεξιότητες"
   },
   "crisis": {
     "title": "Συντονισμός έκτακτης ανάγκης",
@@ -235,7 +239,30 @@
     "vote_redsky": "Ψηφίστε για κατάσταση κρίσης",
     "redsky_active": "Αυτή η κοινότητα βρίσκεται σε λειτουργία Red Sky.",
     "enable_redsky": "Ενεργοποίηση κατάστασης κρίσης",
-    "disable_redsky": "Απενεργοποίηση κατάστασης κρίσης"
+    "disable_redsky": "Απενεργοποίηση κατάστασης κρίσης",
+    "detail": {
+      "back": "Πίσω στα Έκτακτα",
+      "loading": "Φόρτωση δελτίου…",
+      "missing_community": "Λείπει η παράμετρος κοινότητας.",
+      "load_failed": "Αποτυχία φόρτωσης δελτίου.",
+      "update_failed": "Αποτυχία ενημέρωσης δελτίου.",
+      "comment_failed": "Αποτυχία δημοσίευσης σχολίου.",
+      "opened_by": "Άνοιξε από {name} στις {date}",
+      "description": "Περιγραφή",
+      "due": "Προθεσμία",
+      "triage_score": "Βαθμολογία διαλογής",
+      "assignment": "Ανάθεση",
+      "take_this": "Το αναλαμβάνω",
+      "select_member": "Επιλέξτε μέλος…",
+      "assign": "Ανάθεση",
+      "reopen": "Άνοιγμα ξανά",
+      "discussion": "Συζήτηση",
+      "no_comments": "Δεν υπάρχουν σχόλια ακόμη. Απαντήστε πρώτοι.",
+      "add_comment": "Προσθήκη σχολίου",
+      "comment_placeholder": "Γράψτε την απάντησή σας εδώ…",
+      "posting": "Δημοσίευση…",
+      "post_comment": "Δημοσίευση σχολίου"
+    }
   },
   "settings": {
     "title": "Ρυθμίσεις",

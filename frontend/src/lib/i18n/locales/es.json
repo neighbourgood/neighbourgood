@@ -23,7 +23,9 @@
     "install_app": "Instalar NeighbourGood como aplicación",
     "events": "Eventos",
     "mesh": "Mesh",
-    "federation": "Network"
+    "federation": "Network",
+    "bookings": "Reservas",
+    "view_profile": "Ver perfil"
   },
   "banner": {
     "update_available": "Hay una nueva versión de NeighbourGood disponible.",
@@ -187,7 +189,8 @@
     "need_community": "You need to join a community before sharing resources.",
     "adjust_filters": "Try adjusting your search or filters.",
     "first_share": "Be the first to share something with your neighbourhood!",
-    "sign_up_share": "Sign up to start sharing."
+    "sign_up_share": "Sign up to start sharing.",
+    "tab_label": "Recursos"
   },
   "bookings": {
     "title": "Reservas",
@@ -321,7 +324,8 @@
     "description_label": "Description",
     "category_label": "Category",
     "type_label": "Type",
-    "community_label": "Community"
+    "community_label": "Community",
+    "tab_label": "Habilidades"
   },
   "crisis": {
     "title": "Coordinación de emergencia",
@@ -373,7 +377,30 @@
     "by_author": "By {author}",
     "unassigned": "Unassigned",
     "start_ticket": "Start",
-    "resolve_ticket": "Resolve"
+    "resolve_ticket": "Resolve",
+    "detail": {
+      "back": "Volver a Emergencias",
+      "loading": "Cargando el ticket…",
+      "missing_community": "Falta el parámetro de comunidad.",
+      "load_failed": "No se pudo cargar el ticket.",
+      "update_failed": "No se pudo actualizar el ticket.",
+      "comment_failed": "No se pudo publicar el comentario.",
+      "opened_by": "Abierto por {name} el {date}",
+      "description": "Descripción",
+      "due": "Vence",
+      "triage_score": "Puntuación de triaje",
+      "assignment": "Asignación",
+      "take_this": "Yo me encargo",
+      "select_member": "Seleccionar miembro…",
+      "assign": "Asignar",
+      "reopen": "Reabrir",
+      "discussion": "Discusión",
+      "no_comments": "Aún no hay comentarios. Sé el primero en responder.",
+      "add_comment": "Añadir un comentario",
+      "comment_placeholder": "Escribe tu respuesta aquí…",
+      "posting": "Publicando…",
+      "post_comment": "Publicar comentario"
+    }
   },
   "settings": {
     "title": "Configuración",

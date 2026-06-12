@@ -23,7 +23,9 @@
     "install_app": "Встановити NeighbourGood як додаток",
     "events": "Події",
     "mesh": "Mesh",
-    "federation": "Network"
+    "federation": "Network",
+    "bookings": "Бронювання",
+    "view_profile": "Переглянути профіль"
   },
   "banner": {
     "update_available": "Доступна нова версія NeighbourGood.",
@@ -223,7 +225,8 @@
       "good": "Хороший",
       "fair": "Задовільний",
       "worn": "Зношений"
-    }
+    },
+    "tab_label": "Ресурси"
   },
   "bookings": {
     "title": "Мої бронювання",
@@ -357,7 +360,8 @@
     },
     "manage": "Manage Skill",
     "delete_listing": "Delete Listing",
-    "back": "Back to Skills"
+    "back": "Back to Skills",
+    "tab_label": "Навички"
   },
   "crisis": {
     "title": "Надзвичайна ситуація",
@@ -408,7 +412,30 @@
     "vote_redsky": "Проголосувати за режим кризи",
     "redsky_active": "Ця спільнота перебуває в режимі Червоного неба.",
     "enable_redsky": "Увімкнути режим кризи",
-    "disable_redsky": "Вимкнути режим кризи"
+    "disable_redsky": "Вимкнути режим кризи",
+    "detail": {
+      "back": "Назад до надзвичайних",
+      "loading": "Завантаження заявки…",
+      "missing_community": "Відсутній параметр спільноти.",
+      "load_failed": "Не вдалося завантажити заявку.",
+      "update_failed": "Не вдалося оновити заявку.",
+      "comment_failed": "Не вдалося опублікувати коментар.",
+      "opened_by": "Відкрито: {name}, {date}",
+      "description": "Опис",
+      "due": "Термін",
+      "triage_score": "Оцінка пріоритету",
+      "assignment": "Призначення",
+      "take_this": "Беру на себе",
+      "select_member": "Виберіть учасника…",
+      "assign": "Призначити",
+      "reopen": "Відкрити знову",
+      "discussion": "Обговорення",
+      "no_comments": "Коментарів ще немає. Відповідайте першим.",
+      "add_comment": "Додати коментар",
+      "comment_placeholder": "Напишіть вашу відповідь тут…",
+      "posting": "Публікація…",
+      "post_comment": "Опублікувати коментар"
+    }
   },
   "settings": {
     "title": "Налаштування акаунту",

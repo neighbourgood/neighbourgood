@@ -281,6 +281,7 @@
 			{#if $isLoggedIn}
 				<a href="/dashboard" class="nav-link" class:active={$page.url.pathname === '/dashboard'} onclick={closeMobileMenu}>{$t('nav.home')}</a>
 				<a href="/resources" class="nav-link" class:active={$page.url.pathname.startsWith('/resources') || $page.url.pathname.startsWith('/skills')} onclick={closeMobileMenu}>{$t('nav.browse')}</a>
+				<a href="/bookings" class="nav-link" class:active={$page.url.pathname === '/bookings'} onclick={closeMobileMenu}>{$t('nav.bookings')}</a>
 				<a href="/communities" class="nav-link" class:active={$page.url.pathname.startsWith('/communities') || $page.url.pathname === '/explore'} onclick={closeMobileMenu}>{$t('nav.communities')}</a>
 				<a href="/events" class="nav-link" class:active={$page.url.pathname.startsWith('/events')} onclick={closeMobileMenu}>{$t('nav.events')}</a>
 				<a href="/messages" class="nav-link" class:active={$page.url.pathname === '/messages'} onclick={closeMobileMenu}>
@@ -368,7 +369,11 @@
 					<a href="/settings" class="nav-icon-btn" title={$t('nav.settings')} onclick={closeMobileMenu}>
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
 					</a>
-					<span class="nav-user">{$user?.display_name ?? $t('nav.account')}</span>
+					{#if $user}
+						<a href="/profile/{$user.id}" class="nav-user nav-user-link" title={$t('nav.view_profile')} onclick={closeMobileMenu}>{$user.display_name}</a>
+					{:else}
+						<span class="nav-user">{$t('nav.account')}</span>
+					{/if}
 					<button class="nav-btn" onclick={() => { closeMobileMenu(); logout(); window.location.href = '/'; }}>
 						{$t('nav.logout')}
 					</button>
@@ -673,6 +678,16 @@
 		font-size: 0.85rem;
 		font-weight: 500;
 		color: var(--color-text);
+	}
+
+	.nav-user-link {
+		text-decoration: none;
+		transition: color var(--transition-fast);
+	}
+
+	.nav-user-link:hover {
+		color: var(--color-primary);
+		text-decoration: none;
 	}
 
 	.nav-btn {

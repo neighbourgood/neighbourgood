@@ -120,6 +120,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>{$t('bookings.title')} - NeighbourGood</title>
+</svelte:head>
+
 {#if !$isLoggedIn}
 	<div class="empty-state">
 		<p>{$t('bookings.login_required')}</p>

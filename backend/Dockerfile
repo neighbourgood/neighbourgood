@@ -9,4 +9,6 @@ COPY . .
 
 EXPOSE 8300
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8300"]
+# Keep-alive must outlive the Node proxy's client keep-alive (undici: ~4s),
+# otherwise the proxy reuses sockets uvicorn has already closed → ECONNRESET.
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8300", "--timeout-keep-alive", "65"]
