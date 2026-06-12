@@ -1,22 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { isLoggedIn } from '$lib/stores/auth';
 	import { t } from 'svelte-i18n';
 	import { api } from '$lib/api';
-
-	interface MapCommunity {
-		id: number;
-		name: string;
-		city: string;
-		postal_code: string;
-		country_code: string;
-		member_count: number;
-		resource_count: number;
-		skill_count: number;
-		mode: string;
-		latitude: number | null;
-		longitude: number | null;
-	}
+	import CommunityMap from '$lib/components/CommunityMap.svelte';
+	import type { MapCommunity } from '$lib/types';
 
 	function activityScore(c: MapCommunity): number {
 		return c.member_count + c.resource_count * 2 + c.skill_count * 2;
@@ -32,47 +21,15 @@
 	let communities = $state<MapCommunity[]>([]);
 	let loading = $state(true);
 	let error = $state('');
-	let mapContainer: HTMLDivElement;
-	let map: any = $state(null);
-	let userLocated = $state(false);
-	let userLat = $state(51.1657);  // Default: center of Germany
-	let userLng = $state(10.4515);
-
-	async function loadLeaflet(): Promise<any> {
-		// Load Leaflet CSS
-		if (!document.querySelector('link[href*="leaflet"]')) {
-			const link = document.createElement('link');
-			link.rel = 'stylesheet';
-			link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-			document.head.appendChild(link);
-		}
-		// Load Leaflet JS
-		if ((window as any).L) return (window as any).L;
-		return new Promise((resolve, reject) => {
-			const script = document.createElement('script');
-			script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-			script.onload = () => resolve((window as any).L);
-			script.onerror = reject;
-			document.head.appendChild(script);
-		});
-	}
-
-	function locateUser(): Promise<{ lat: number; lng: number } | null> {
-		return new Promise((resolve) => {
-			if (!navigator.geolocation) {
-				resolve(null);
-				return;
-			}
-			navigator.geolocation.getCurrentPosition(
-				(pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-				() => resolve(null),
-				{ timeout: 5000, enableHighAccuracy: false }
-			);
-		});
-	}
 
 	onMount(async () => {
-		// Fetch communities
+		// /explore is the public discovery page; members get the full
+		// community page (same map and list, plus memberships/federation).
+		if ($isLoggedIn) {
+			goto('/communities', { replaceState: true });
+			return;
+		}
+
 		try {
 			communities = await api<MapCommunity[]>('/communities/map');
 		} catch {
@@ -80,80 +37,16 @@
 		} finally {
 			loading = false;
 		}
-
-		// Initialize map
-		try {
-			const L = await loadLeaflet();
-
-			// Try to locate user
-			const pos = await locateUser();
-			if (pos) {
-				userLat = pos.lat;
-				userLng = pos.lng;
-				userLocated = true;
-			}
-
-			map = L.map(mapContainer).setView([userLat, userLng], userLocated ? 12 : 6);
-
-			// Themed tiles: dark or light based on system preference
-			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			const tileUrl = prefersDark
-				? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-				: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-			L.tileLayer(tileUrl, {
-				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
-				maxZoom: 19,
-				subdomains: 'abcd',
-			}).addTo(map);
-
-			// User position marker
-			if (userLocated) {
-				const userIcon = L.divIcon({
-					className: 'user-marker',
-					html: '<div class="user-dot"></div>',
-					iconSize: [20, 20],
-					iconAnchor: [10, 10],
-				});
-				L.marker([userLat, userLng], { icon: userIcon })
-					.addTo(map)
-					.bindPopup(`<strong>${$t('explore.you_are_here')}</strong>`);
-			}
-
-			// Community markers – size scales with activity
-			for (const c of communities) {
-				if (c.latitude != null && c.longitude != null) {
-					const level = activityLevel(c);
-					const size = level === 'high' ? 40 : level === 'medium' ? 34 : 28;
-					const color = c.mode === 'red' ? 'var(--color-error)' : 'var(--color-primary)';
-					const ringClass = level === 'high' ? 'ring-active' : '';
-					const icon = L.divIcon({
-						className: 'community-marker',
-						html: `<div class="community-dot ${ringClass}" style="background:${color};width:${size}px;height:${size}px"><span>${c.member_count}</span></div>`,
-						iconSize: [size, size],
-						iconAnchor: [size / 2, size / 2],
-					});
-					const totalItems = c.resource_count + c.skill_count;
-					L.marker([c.latitude, c.longitude], { icon })
-						.addTo(map)
-						.bindPopup(`
-							<strong>${c.name}</strong><br/>
-							${c.city} (${c.postal_code})<br/>
-							${c.member_count} member${c.member_count !== 1 ? 's' : ''}
-							&middot; ${c.resource_count} item${c.resource_count !== 1 ? 's' : ''}
-							&middot; ${c.skill_count} skill${c.skill_count !== 1 ? 's' : ''}<br/>
-							<a href="/communities/${c.id}">${$t('explore.view_community')}</a>
-						`);
-				}
-			}
-		} catch (e) {
-			console.warn('Map initialization failed:', e);
-		}
 	});
 
 	const sortedCommunities = $derived(
 		[...communities].sort((a, b) => activityScore(b) - activityScore(a))
 	);
 </script>
+
+<svelte:head>
+	<title>{$t('explore.title')} - NeighbourGood</title>
+</svelte:head>
 
 <div class="explore-page">
 	<div class="explore-header slide-up">
@@ -170,30 +63,13 @@
 		<div class="alert alert-error fade-in">{error}</div>
 	{/if}
 
-	<div class="map-wrapper slide-up" style="animation-delay: 0.05s">
-		<div bind:this={mapContainer} class="map-container"></div>
-		{#if loading}
-			<div class="map-loading">
-				<p>{$t('explore.map_loading')}</p>
-			</div>
-		{/if}
-	</div>
-
-	{#if !userLocated && !loading}
-		<div class="location-hint fade-in">
-			<p>{$t('explore.no_location')}</p>
-		</div>
-	{/if}
+	<CommunityMap {communities} {loading} />
 
 	{#if communities.length === 0 && !loading && !error}
 		<div class="no-communities fade-in">
 			<h2>{$t('explore.no_communities')}</h2>
 			<p>{$t('explore.first_community')}</p>
-			{#if $isLoggedIn}
-				<a href="/onboarding" class="btn-primary">{$t('explore.create_community')}</a>
-			{:else}
-				<a href="/register" class="btn-primary">{$t('explore.sign_up_create')}</a>
-			{/if}
+			<a href="/register" class="btn-primary">{$t('explore.sign_up_create')}</a>
 		</div>
 	{/if}
 
@@ -201,9 +77,9 @@
 		<section class="community-list slide-up" style="animation-delay: 0.1s">
 			<h2>{$t('explore.communities_heading')}</h2>
 			<div class="list-grid">
-				{#each sortedCommunities as c, i (c.id)}
+				{#each sortedCommunities as c (c.id)}
 					{@const level = activityLevel(c)}
-					<a href={$isLoggedIn ? `/communities/${c.id}` : '/register'}
+					<a href="/register"
 					   class="list-card"
 					   class:card-active={level === 'high'}
 					   class:card-medium={level === 'medium'}>
@@ -269,103 +145,6 @@
 		color: var(--color-text-muted);
 		font-size: 0.95rem;
 		margin-top: 0.25rem;
-	}
-
-	/* ── Map ──────────────────────────────────── */
-
-	.map-wrapper {
-		position: relative;
-		border-radius: var(--radius-lg);
-		overflow: hidden;
-		border: 1px solid var(--color-border);
-		box-shadow: var(--shadow-md);
-		margin-bottom: 1.5rem;
-	}
-
-	.map-container {
-		width: 100%;
-		height: 450px;
-		background: var(--color-surface);
-	}
-
-	.map-loading {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--color-surface);
-		z-index: 10;
-	}
-
-	.map-loading p {
-		color: var(--color-text-muted);
-		font-size: 0.9rem;
-	}
-
-	.location-hint {
-		padding: 0.65rem 1rem;
-		border-radius: var(--radius);
-		background: var(--color-warning-bg);
-		border: 1px solid var(--color-warning);
-		color: var(--color-warning);
-		font-size: 0.85rem;
-		margin-bottom: 1.5rem;
-	}
-
-	/* ── Custom Leaflet markers ──────────────── */
-
-	:global(.user-marker) {
-		background: none !important;
-		border: none !important;
-	}
-
-	:global(.user-dot) {
-		width: 16px;
-		height: 16px;
-		background: var(--color-primary);
-		border: 3px solid white;
-		border-radius: 50%;
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 40%, transparent), 0 2px 8px rgba(0, 0, 0, 0.2);
-		animation: pulse-dot 2s infinite;
-	}
-
-	@keyframes pulse-dot {
-		0%, 100% { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2); }
-		50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(0, 0, 0, 0.2); }
-	}
-
-	:global(.community-marker) {
-		background: none !important;
-		border: none !important;
-	}
-
-	:global(.community-dot) {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
-		border-radius: 50%;
-		color: white;
-		font-size: 0.7rem;
-		font-weight: 700;
-		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-		border: 2px solid white;
-	}
-
-	:global(.community-dot span) {
-		line-height: 1;
-	}
-
-	:global(.ring-active) {
-		box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.25), 0 2px 6px rgba(0, 0, 0, 0.3) !important;
-		animation: pulse-ring 2s infinite;
-	}
-
-	@keyframes pulse-ring {
-		0%, 100% { box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.25), 0 2px 6px rgba(0, 0, 0, 0.3); }
-		50% { box-shadow: 0 0 0 8px rgba(79, 70, 229, 0.1), 0 2px 6px rgba(0, 0, 0, 0.3); }
 	}
 
 	/* ── Community list ──────────────────────── */
@@ -582,10 +361,6 @@
 	@media (max-width: 640px) {
 		.explore-header {
 			flex-direction: column;
-		}
-
-		.map-container {
-			height: 350px;
 		}
 
 		.list-grid {

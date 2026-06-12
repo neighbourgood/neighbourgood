@@ -87,6 +87,21 @@ export interface CommunityMember {
 	joined_at: string;
 }
 
+/** Entry returned by GET /communities/map — used by the shared CommunityMap. */
+export interface MapCommunity {
+	id: number;
+	name: string;
+	city: string;
+	postal_code: string;
+	country_code: string;
+	member_count: number;
+	resource_count: number;
+	skill_count: number;
+	mode: string;
+	latitude: number | null;
+	longitude: number | null;
+}
+
 export interface MergeSuggestion {
 	source: CommunityOut;
 	target: CommunityOut;
