@@ -66,7 +66,7 @@
 			<h1>{$t('federation.federated_skills')}</h1>
 			<p class="subtitle">{$t('federation.skills_subtitle')}</p>
 		</div>
-		<a href="/federation" class="back-link">&larr; {$t('federation.back_to_directory')}</a>
+		<a href="/communities#federation" class="back-link">&larr; {$t('federation.back_to_directory')}</a>
 	</header>
 
 	<div class="filters">

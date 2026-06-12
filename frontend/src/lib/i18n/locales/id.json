@@ -23,7 +23,9 @@
     "install_app": "Pasang NeighbourGood sebagai aplikasi",
     "events": "Acara",
     "mesh": "Mesh",
-    "federation": "Network"
+    "federation": "Network",
+    "bookings": "Pemesanan",
+    "view_profile": "Lihat profil"
   },
   "banner": {
     "update_available": "Versi baru NeighbourGood tersedia.",
@@ -187,7 +189,8 @@
     "need_community": "You need to join a community before sharing resources.",
     "adjust_filters": "Try adjusting your search or filters.",
     "first_share": "Be the first to share something with your neighbourhood!",
-    "sign_up_share": "Sign up to start sharing."
+    "sign_up_share": "Sign up to start sharing.",
+    "tab_label": "Sumber Daya"
   },
   "bookings": {
     "title": "Pemesanan",
@@ -321,7 +324,8 @@
     "description_label": "Description",
     "category_label": "Category",
     "type_label": "Type",
-    "community_label": "Community"
+    "community_label": "Community",
+    "tab_label": "Keahlian"
   },
   "crisis": {
     "title": "Koordinasi darurat",
@@ -373,7 +377,30 @@
     "by_author": "By {author}",
     "unassigned": "Unassigned",
     "start_ticket": "Start",
-    "resolve_ticket": "Resolve"
+    "resolve_ticket": "Resolve",
+    "detail": {
+      "back": "Kembali ke Darurat",
+      "loading": "Memuat tiket…",
+      "missing_community": "Parameter komunitas tidak ada.",
+      "load_failed": "Gagal memuat tiket.",
+      "update_failed": "Gagal memperbarui tiket.",
+      "comment_failed": "Gagal mengirim komentar.",
+      "opened_by": "Dibuka oleh {name} pada {date}",
+      "description": "Deskripsi",
+      "due": "Tenggat",
+      "triage_score": "Skor triase",
+      "assignment": "Penugasan",
+      "take_this": "Saya tangani",
+      "select_member": "Pilih anggota…",
+      "assign": "Tugaskan",
+      "reopen": "Buka kembali",
+      "discussion": "Diskusi",
+      "no_comments": "Belum ada komentar. Jadilah yang pertama menanggapi.",
+      "add_comment": "Tambah komentar",
+      "comment_placeholder": "Tulis tanggapan Anda di sini…",
+      "posting": "Mengirim…",
+      "post_comment": "Kirim komentar"
+    }
   },
   "settings": {
     "title": "Pengaturan",

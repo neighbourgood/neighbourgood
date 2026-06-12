@@ -403,6 +403,7 @@
 								{syncing ? $t('mesh.syncing') : $t('mesh.sync_messages', { values: { count: $meshMessages.length } })}
 							</button>
 						{/if}
+						<a href="/mesh" class="btn-mesh mesh-dash-link">{$t('settings.mesh_open_dashboard')}</a>
 					</div>
 				</div>
 				{#if meshError}
@@ -955,6 +956,16 @@
 		border-color: var(--color-primary);
 		background: var(--color-primary);
 		color: white;
+	}
+
+	.mesh-dash-link {
+		display: inline-flex;
+		align-items: center;
+		text-decoration: none;
+	}
+
+	.mesh-dash-link:hover {
+		text-decoration: none;
 	}
 
 	.btn-mesh:disabled {

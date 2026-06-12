@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.4] - 2026-06-12
+
+### Added
+
+- **Bookings in main navigation** — `/bookings` (accept/decline borrow requests, leave reviews) was previously only reachable via dashboard widget links; it now has a persistent nav entry and a proper page `<title>`
+- **"View profile" link** — the display name in the nav now links to your own public profile (`/profile/{id}`), which previously had no entry point anywhere in the UI
+- **Mesh dashboard link from Emergency** — the mesh panel on `/triage` now links to the full `/mesh` dashboard (shown when mesh networking is enabled), so the offline mesh tools are discoverable from the crisis flow instead of only via Settings
+
+### Fixed
+
+- **Intermittent 500 on page open** — the SSR `/api` proxy (`hooks.server.ts`) had no error handling, so a transient backend connection failure (stale keep-alive socket, backend restarting) surfaced as an opaque 500 until reload; the proxy now retries idempotent requests once on a fresh connection and returns a clean 502 JSON error otherwise. Uvicorn now runs with `--timeout-keep-alive 65` so the backend never closes idle sockets before the Node proxy does
+- **Broken "Back to Network" links** — `/federation/resources` and `/federation/skills` linked to the nonexistent `/federation` route (404); they now return to the federation section on `/communities`
+- **Emergency ticket detail i18n** — `/triage/[id]` was entirely hardcoded English (the only untranslated page, on the crisis flow of all places); all labels, buttons, badges, and error messages now use `$t()` with translations in all 12 locales
+- **Hardcoded "Resources"/"Skills" browse tab labels** — now translated via new `tab_label` keys in all 12 locales
+
 ## [2.0.3] - 2026-05-09
 
 ### Added

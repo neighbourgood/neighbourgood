@@ -23,7 +23,9 @@
     "install_app": "تثبيت تطبيق NeighbourGood",
     "events": "الفعاليات",
     "mesh": "Mesh",
-    "federation": "Network"
+    "federation": "Network",
+    "bookings": "الحجوزات",
+    "view_profile": "عرض الملف الشخصي"
   },
   "banner": {
     "update_available": "يتوفر إصدار جديد من NeighbourGood.",
@@ -187,7 +189,8 @@
     "need_community": "You need to join a community before sharing resources.",
     "adjust_filters": "Try adjusting your search or filters.",
     "first_share": "Be the first to share something with your neighbourhood!",
-    "sign_up_share": "Sign up to start sharing."
+    "sign_up_share": "Sign up to start sharing.",
+    "tab_label": "الموارد"
   },
   "bookings": {
     "title": "الحجوزات",
@@ -321,7 +324,8 @@
     "description_label": "Description",
     "category_label": "Category",
     "type_label": "Type",
-    "community_label": "Community"
+    "community_label": "Community",
+    "tab_label": "المهارات"
   },
   "crisis": {
     "title": "التنسيق الطارئ",
@@ -373,7 +377,30 @@
     "by_author": "By {author}",
     "unassigned": "Unassigned",
     "start_ticket": "Start",
-    "resolve_ticket": "Resolve"
+    "resolve_ticket": "Resolve",
+    "detail": {
+      "back": "العودة إلى الطوارئ",
+      "loading": "جارٍ تحميل التذكرة…",
+      "missing_community": "معرّف المجتمع مفقود.",
+      "load_failed": "فشل تحميل التذكرة.",
+      "update_failed": "فشل تحديث التذكرة.",
+      "comment_failed": "فشل نشر التعليق.",
+      "opened_by": "فتحها {name} في {date}",
+      "description": "الوصف",
+      "due": "الموعد النهائي",
+      "triage_score": "درجة الفرز",
+      "assignment": "الإسناد",
+      "take_this": "سأتولى هذا",
+      "select_member": "اختر عضوًا…",
+      "assign": "إسناد",
+      "reopen": "إعادة فتح",
+      "discussion": "النقاش",
+      "no_comments": "لا توجد تعليقات بعد. كن أول من يرد.",
+      "add_comment": "أضف تعليقًا",
+      "comment_placeholder": "اكتب ردك هنا…",
+      "posting": "جارٍ النشر…",
+      "post_comment": "نشر التعليق"
+    }
   },
   "settings": {
     "title": "الإعدادات",

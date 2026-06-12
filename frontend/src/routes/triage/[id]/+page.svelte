@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { get } from 'svelte/store';
+  import { t } from 'svelte-i18n';
   import { api } from '$lib/api';
   import { isLoggedIn, user } from '$lib/stores/auth';
   import type { EmergencyTicket as Ticket } from '$lib/types';
@@ -78,10 +80,6 @@
     }
   }
 
-  function formatLabel(value: string): string {
-    return value.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-  }
-
   function formatDate(iso: string): string {
     const d = new Date(iso);
     return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
@@ -89,7 +87,7 @@
 
   async function loadAll() {
     if (!communityId) {
-      error = 'Missing community parameter.';
+      error = get(t)('crisis.detail.missing_community');
       loading = false;
       return;
     }
@@ -104,7 +102,7 @@
       members = m;
       assigneeId = t.assigned_to?.id ?? null;
     } catch (e: unknown) {
-      error = e instanceof Error ? e.message : 'Failed to load ticket.';
+      error = e instanceof Error ? e.message : get(t)('crisis.detail.load_failed');
     } finally {
       loading = false;
     }
@@ -121,7 +119,7 @@
       ticket = updated;
       assigneeId = updated.assigned_to?.id ?? null;
     } catch (e: unknown) {
-      error = e instanceof Error ? e.message : 'Failed to update ticket.';
+      error = e instanceof Error ? e.message : get(t)('crisis.detail.update_failed');
     } finally {
       updatingTicket = false;
     }
@@ -153,7 +151,7 @@
       comments = [...comments, newComment];
       commentText = '';
     } catch (e: unknown) {
-      commentError = e instanceof Error ? e.message : 'Failed to post comment.';
+      commentError = e instanceof Error ? e.message : get(t)('crisis.detail.comment_failed');
     } finally {
       postingComment = false;
     }
@@ -170,11 +168,11 @@
 
 <main class="page-container">
   <nav class="breadcrumb">
-    <a href="/triage">← Back to Emergency</a>
+    <a href="/triage">← {$t('crisis.detail.back')}</a>
   </nav>
 
   {#if loading}
-    <p class="loading-msg">Loading ticket…</p>
+    <p class="loading-msg">{$t('crisis.detail.loading')}</p>
   {:else if error && !ticket}
     <p class="error-msg">{error}</p>
   {:else if ticket}
@@ -185,19 +183,19 @@
           class="badge urgency-badge"
           style="background-color: {urgencyColor(ticket.urgency)};"
         >
-          {formatLabel(ticket.urgency)}
+          {$t(`crisis.priority.${ticket.urgency}`)}
         </span>
         <span
           class="badge status-badge"
           style="background-color: {statusColor(ticket.status)};"
         >
-          {formatLabel(ticket.status)}
+          {$t(`crisis.status_${ticket.status}`)}
         </span>
-        <span class="type-label">{formatLabel(ticket.ticket_type)}</span>
+        <span class="type-label">{$t(`crisis.ticket_types.${ticket.ticket_type}`)}</span>
       </div>
       <h1 class="ticket-title">{ticket.title}</h1>
       <p class="ticket-byline">
-        Opened by <strong>{ticket.author.display_name}</strong> on {formatDate(ticket.created_at)}
+        {$t('crisis.detail.opened_by', { values: { name: ticket.author.display_name, date: formatDate(ticket.created_at) } })}
       </p>
     </header>
 
@@ -207,27 +205,27 @@
 
     <!-- Description -->
     <section class="card description-card">
-      <h2 class="section-heading">Description</h2>
+      <h2 class="section-heading">{$t('crisis.detail.description')}</h2>
       <p class="description-body">{ticket.description}</p>
       {#if ticket.due_at}
         <p class="due-at">
-          Due: <strong>{formatDate(ticket.due_at)}</strong>
+          {$t('crisis.detail.due')}: <strong>{formatDate(ticket.due_at)}</strong>
         </p>
       {/if}
       {#if ticket.triage_score !== undefined}
-        <p class="triage-score">Triage score: <strong>{ticket.triage_score}</strong></p>
+        <p class="triage-score">{$t('crisis.detail.triage_score')}: <strong>{ticket.triage_score}</strong></p>
       {/if}
     </section>
 
     <!-- Assignment panel -->
     <section class="card assignment-card">
-      <h2 class="section-heading">Assignment</h2>
+      <h2 class="section-heading">{$t('crisis.detail.assignment')}</h2>
       <div class="assignment-row">
         <div class="assignee-info">
           {#if ticket.assigned_to}
             <span class="assignee-name">{ticket.assigned_to.display_name}</span>
           {:else}
-            <span class="unassigned">Unassigned</span>
+            <span class="unassigned">{$t('crisis.unassigned')}</span>
           {/if}
         </div>
 
@@ -238,14 +236,14 @@
               onclick={selfAssign}
               disabled={updatingTicket}
             >
-              Take this
+              {$t('crisis.detail.take_this')}
             </button>
           {/if}
 
           {#if isPrivileged}
             <div class="assign-form">
               <select bind:value={assigneeId} class="member-select">
-                <option value={null}>— select member —</option>
+                <option value={null}>{$t('crisis.detail.select_member')}</option>
                 {#each members as m (m.user.id)}
                   <option value={m.user.id}>{m.user.display_name}</option>
                 {/each}
@@ -255,7 +253,7 @@
                 onclick={assignMember}
                 disabled={updatingTicket || assigneeId === null}
               >
-                Assign
+                {$t('crisis.detail.assign')}
               </button>
             </div>
           {/if}
@@ -266,7 +264,7 @@
     <!-- Status controls -->
     {#if canControlStatus}
       <section class="card status-card">
-        <h2 class="section-heading">Actions</h2>
+        <h2 class="section-heading">{$t('common.actions')}</h2>
         <div class="status-actions">
           {#if ticket.status === 'open'}
             <button
@@ -274,14 +272,14 @@
               onclick={() => setStatus('in_progress')}
               disabled={updatingTicket}
             >
-              Start
+              {$t('crisis.start_ticket')}
             </button>
             <button
               class="btn btn-success"
               onclick={() => setStatus('resolved')}
               disabled={updatingTicket}
             >
-              Close
+              {$t('crisis.resolve_ticket')}
             </button>
           {:else if ticket.status === 'in_progress'}
             <button
@@ -289,14 +287,14 @@
               onclick={() => setStatus('resolved')}
               disabled={updatingTicket}
             >
-              Close
+              {$t('crisis.resolve_ticket')}
             </button>
             <button
               class="btn btn-secondary"
               onclick={() => setStatus('open')}
               disabled={updatingTicket}
             >
-              Reopen
+              {$t('crisis.detail.reopen')}
             </button>
           {:else if ticket.status === 'resolved'}
             <button
@@ -304,7 +302,7 @@
               onclick={() => setStatus('open')}
               disabled={updatingTicket}
             >
-              Reopen
+              {$t('crisis.detail.reopen')}
             </button>
           {/if}
         </div>
@@ -313,10 +311,10 @@
 
     <!-- Discussion -->
     <section class="discussion-section">
-      <h2 class="section-heading discussion-heading">Discussion</h2>
+      <h2 class="section-heading discussion-heading">{$t('crisis.detail.discussion')}</h2>
 
       {#if comments.length === 0}
-        <p class="no-comments">No comments yet. Be the first to respond.</p>
+        <p class="no-comments">{$t('crisis.detail.no_comments')}</p>
       {:else}
         <ol class="comment-list">
           {#each comments as comment (comment.id)}
@@ -333,14 +331,14 @@
 
       <!-- Add comment form -->
       <div class="card comment-form-card">
-        <h3 class="form-label">Add a comment</h3>
+        <h3 class="form-label">{$t('crisis.detail.add_comment')}</h3>
         {#if commentError}
           <p class="error-msg">{commentError}</p>
         {/if}
         <textarea
           class="comment-textarea"
           bind:value={commentText}
-          placeholder="Write your response here…"
+          placeholder={$t('crisis.detail.comment_placeholder')}
           rows={4}
           maxlength={5000}
         ></textarea>
@@ -350,7 +348,7 @@
             onclick={postComment}
             disabled={postingComment || !commentText.trim()}
           >
-            {postingComment ? 'Posting…' : 'Post Comment'}
+            {postingComment ? $t('crisis.detail.posting') : $t('crisis.detail.post_comment')}
           </button>
         </div>
       </div>
