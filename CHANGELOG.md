@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.5] - 2026-06-12
+
+### Changed
+
+- **Consolidated community discovery** — `/explore` and `/communities` were two separately-maintained copies of the same map + community list. `/explore` is now the canonical guest page (logged-in visits redirect to `/communities`, which already redirected guests to login), and both pages render the map through a new shared `CommunityMap` component (Leaflet loading, geolocation, themed tiles, user/community markers, popups, loading/location-hint states) instead of ~150 duplicated lines each
+- **Dark mode keeps the brand colour** — dark theme previously switched the primary colour from terracotta to indigo (`#818cf8`); it now uses a terracotta lightened for dark surfaces (`#e07b33`, hover `#eb8f4d`, tint `#3a2415`), matching the old indigo's contrast characteristics so button/text legibility does not regress
+
+### Fixed
+
+- **Hardcoded map colours** — the communities map's user-location dot used hardcoded `#3b82f6` blue and indigo `rgba(79, 70, 229, …)` marker rings; the shared component derives all marker colours from theme tokens via `color-mix`
+- **Map centring regression-proofing** — the shared component centres on the user's own community when one has coordinates (previous `/communities` behaviour), falling back to geolocation, then a country-level default
+
 ## [2.0.4] - 2026-06-12
 
 ### Added

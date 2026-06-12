@@ -54,9 +54,11 @@
 	--color-text: #e8e8ed;
 	--color-text-muted: #9ca3af;
 	--color-text-subtle: #6b7280;
-	--color-primary: #818cf8;
-	--color-primary-hover: #6366f1;
-	--color-primary-light: #1e1b4b;
+	/* Brand terracotta lightened for dark surfaces — keeps the same brand
+	   hue as light mode instead of switching to indigo. */
+	--color-primary: #e07b33;
+	--color-primary-hover: #eb8f4d;
+	--color-primary-light: #3a2415;
 	--color-accent: #34d399;
 	--color-accent-light: #064e3b;
 	--color-border: #2d2d44;
