@@ -498,7 +498,7 @@
 		width: 34px;
 		height: 34px;
 		border-radius: var(--radius-sm);
-		background: var(--color-primary);
+		background: var(--color-accent);
 		color: white;
 		flex-shrink: 0;
 	}
@@ -512,7 +512,7 @@
 	}
 
 	.brand-accent {
-		color: var(--color-primary);
+		color: var(--color-accent);
 	}
 
 	/* ── Hamburger button (hidden on desktop) ────────────────── */

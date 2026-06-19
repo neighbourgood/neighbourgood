@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.1.0] - 2026-06-19
+
+### Changed
+
+- **Violet restored as the primary brand accent** — the primary accent is violet again in both themes (light `#4f46e5`, dark `#818cf8` — the original dark-mode indigo), reverting the v2.0.5 switch to terracotta. Buttons, links, focus rings, onboarding step indicators and active states are violet once more
+- **Terracotta is now the secondary accent** — the warm terracotta moves into the `--color-accent` slot (light `#c95d1b`, dark `#e07b33`) and the brand logo (house icon + "Good" wordmark) keeps it, giving a deliberate violet + terracotta palette; the previously unused green secondary accent is retired
+- **More restrained accent usage** — the home hero heading is now solid violet instead of a two-tone gradient, and dashboard highlight cards use a subtle border with a single violet left-accent strip instead of a full coloured outline
+
+### Fixed
+
+- **Hardcoded component colours** — the community leader badge and the booking review star now use the `--color-warning` theme tokens instead of hardcoded hex values, so they adapt correctly to dark mode
+
 ## [2.0.5] - 2026-06-12
 
 ### Changed
