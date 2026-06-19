@@ -463,7 +463,7 @@
 	}
 
 	.star-btn.active {
-		color: #f59e0b;
+		color: var(--color-warning);
 	}
 
 	.review-form textarea {

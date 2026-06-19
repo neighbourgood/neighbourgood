@@ -372,7 +372,8 @@
 		gap: 1rem;
 		padding: 1.25rem 1.5rem;
 		background: linear-gradient(135deg, var(--color-primary-light), var(--color-surface));
-		border: 1px solid var(--color-primary);
+		border: 1px solid var(--color-border);
+		border-left: 3px solid var(--color-primary);
 		border-radius: var(--radius-md);
 	}
 
@@ -430,7 +431,7 @@
 		display: block;
 		padding: 1rem 1.25rem;
 		background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-primary-light) 100%);
-		border: 1px solid var(--color-primary);
+		border: 1px solid var(--color-border);
 		border-left: 4px solid var(--color-primary);
 		border-radius: var(--radius-md);
 		text-decoration: none;

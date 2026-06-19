@@ -94,8 +94,8 @@
     color: var(--color-primary);
   }
   .role-badge-leader {
-    background: #fef3c7;
-    color: #92400e;
+    background: var(--color-warning-bg);
+    color: var(--color-warning);
   }
   .member-right {
     display: flex;

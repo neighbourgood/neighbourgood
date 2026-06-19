@@ -172,10 +172,7 @@
 	}
 
 	.hero-accent {
-		background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
+		color: var(--color-primary);
 	}
 
 	.hero-subtitle {
