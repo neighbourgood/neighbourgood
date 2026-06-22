@@ -30,7 +30,7 @@
 	let total = $state(0);
 	let loading = $state(true);
 	let filterCategory = $state('');
-	let filterUpcoming = $state(false);
+	let filterUpcoming = $state(true);
 	let filterCommunity = $state('');
 	let searchQuery = $state('');
 	let searchTimeout: ReturnType<typeof setTimeout> | null = $state(null);
@@ -185,6 +185,10 @@
 		});
 	}
 
+	function isPast(event: CommunityEvent): boolean {
+		return new Date(event.end_at ?? event.start_at).getTime() < Date.now();
+	}
+
 	onMount(() => {
 		if (!$isLoggedIn) {
 			goto('/login');
@@ -320,14 +324,19 @@
 	{:else}
 		<ul class="event-list">
 			{#each events as event (event.id)}
-				<li class="event-card card">
+				<li class="event-card card" class:event-past={isPast(event)}>
 					<a class="event-link" href={`/events/${event.id}`}>
 						<div class="event-header">
 							<div class="category-icon-wrap">
 								<span>{CATEGORY_ICONS[event.category] ?? '📅'}</span>
 							</div>
 							<div class="event-meta">
-								<h3 class="event-title">{event.title}</h3>
+								<h3 class="event-title">
+									{event.title}
+									{#if isPast(event)}
+										<span class="past-badge">{$t('events.past_badge')}</span>
+									{/if}
+								</h3>
 								<p class="event-date">{formatDate(event.start_at)}
 									{#if event.end_at} — {formatDate(event.end_at)}{/if}
 								</p>
@@ -364,8 +373,6 @@
 <style>
 	.events-page {
 		max-width: 900px;
-		margin: 0 auto;
-		padding: 1.5rem 1rem;
 	}
 
 	.page-header {
@@ -494,6 +501,24 @@
 		box-shadow: var(--shadow-md);
 		border-color: var(--color-border-hover);
 		transform: translateY(-2px);
+	}
+
+	.event-card.event-past {
+		opacity: 0.6;
+	}
+
+	.past-badge {
+		display: inline-block;
+		margin-left: 0.5rem;
+		padding: 0.1rem 0.5rem;
+		border-radius: 999px;
+		background: var(--color-border);
+		color: var(--color-text-muted);
+		font-size: 0.7rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		vertical-align: middle;
 	}
 
 	.event-link {
