@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.1.1] - 2026-06-22
+
+### Fixed
+
+- **Events page layout inconsistency** — `/events` and the event detail page nested their own `max-width`/`margin`/`padding` inside the shared layout's already-centred, already-padded content wrapper, doubling up spacing and making them render narrower and taller than every other page reached from the nav. Both pages now rely solely on the shared layout wrapper, like the rest of the app
+- **Past events no longer clutter the events list** — the events page now defaults to showing upcoming events only (the existing "Upcoming only" filter is now on by default), so events that have already finished drop out of the default view. Unchecking the filter still shows past events, now marked with a "Past" badge on both the events list and the event detail page
+
 ## [2.1.0] - 2026-06-19
 
 ### Changed

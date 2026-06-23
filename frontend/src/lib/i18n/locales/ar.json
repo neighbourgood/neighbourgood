@@ -693,6 +693,7 @@
     "attend": "حضور",
     "unattend": "إلغاء الحضور",
     "attendees": "حاضر",
+    "past_badge": "سابق",
     "categories": {
       "meetup": "لقاء",
       "workshop": "ورشة عمل",

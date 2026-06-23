@@ -693,6 +693,7 @@
     "attend": "Participer",
     "unattend": "Annuler",
     "attendees": "participant(s)",
+    "past_badge": "Passé",
     "categories": {
       "meetup": "Rencontre",
       "workshop": "Atelier",

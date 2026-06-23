@@ -34,6 +34,9 @@
 			event.max_attendees !== null &&
 			event.attendee_count >= event.max_attendees
 	);
+	const isPast = $derived(
+		!!event && new Date(event.end_at ?? event.start_at).getTime() < Date.now()
+	);
 
 	function formatDate(iso: string): string {
 		return new Date(iso).toLocaleString(undefined, {
@@ -109,7 +112,12 @@
 					<span>{CATEGORY_ICONS[event.category] ?? '📅'}</span>
 				</div>
 				<div>
-					<h1 class="event-title">{event.title}</h1>
+					<h1 class="event-title">
+						{event.title}
+						{#if isPast}
+							<span class="past-badge">{$t('events.past_badge')}</span>
+						{/if}
+					</h1>
 					<p class="event-category">{$t('events.categories.' + event.category)}</p>
 				</div>
 			</div>
@@ -187,8 +195,6 @@
 <style>
 	.event-detail-page {
 		max-width: 900px;
-		margin: 0 auto;
-		padding: 1.5rem 1rem;
 	}
 
 	.back-link {
@@ -233,6 +239,20 @@
 
 	.event-title {
 		margin: 0 0 0.25rem;
+	}
+
+	.past-badge {
+		display: inline-block;
+		margin-left: 0.5rem;
+		padding: 0.15rem 0.55rem;
+		border-radius: 999px;
+		background: var(--color-border);
+		color: var(--color-text-muted);
+		font-size: 0.7rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		vertical-align: middle;
 	}
 
 	.event-category {

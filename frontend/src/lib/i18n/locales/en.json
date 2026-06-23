@@ -740,6 +740,7 @@
     "attend": "Attend",
     "unattend": "Cancel RSVP",
     "attendees": "attending",
+    "past_badge": "Past",
     "form": {
       "title_label": "Title",
       "title_placeholder": "Event title",
