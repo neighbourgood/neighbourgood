@@ -160,120 +160,129 @@
 					</span>
 				</div>
 				<h1>{skill.title}</h1>
+				<p class="meta">Listed {formatDate(skill.created_at)}</p>
 			</div>
 		</div>
 
-		{#if skill.description}
-			<div class="section-card">
-				<h3>About</h3>
-				<p>{skill.description}</p>
-			</div>
-		{/if}
+		<div class="detail-grid">
+			<div class="detail-main">
+				{#if skill.description}
+					<div class="section-card">
+						<h3>About</h3>
+						<p>{skill.description}</p>
+					</div>
+				{/if}
 
-		<div class="owner-section">
-			<h3>{$_('profile.listed_by')}</h3>
-			<a href="/profile/{skill.owner_id}" class="owner-name-link">{skill.owner.display_name}</a>
-			{#if skill.owner.neighbourhood}
-				<p class="owner-neighbourhood">{skill.owner.neighbourhood}</p>
-			{/if}
-			{#if skill.owner_trust}
-				<div class="owner-trust-row">
-					{#if skill.owner_trust.total_reviews > 0}
-						<span class="trust-stars">★ {skill.owner_trust.average_rating.toFixed(1)}</span>
-						<span class="trust-count">({skill.owner_trust.total_reviews} {$_('profile.reviews')})</span>
+				<!-- Reviews Section -->
+				<div class="section-card">
+					<h3>{$_('profile.reviews')} ({reviews.length})</h3>
+					{#if reviews.length === 0}
+						<p class="no-reviews-text">{$_('profile.no_reviews')}</p>
+					{:else}
+						<div class="review-list">
+							{#each reviews as review}
+								<div class="review-item">
+									<div class="review-item-header">
+										<a href="/profile/{review.reviewer_id}" class="reviewer-name">{review.reviewer.display_name}</a>
+										<span class="review-item-stars">{renderStars(review.rating)}</span>
+										<span class="review-item-date">{formatDate(review.created_at)}</span>
+									</div>
+									{#if review.comment}
+										<p class="review-item-comment">{review.comment}</p>
+									{/if}
+								</div>
+							{/each}
+						</div>
 					{/if}
-					{#each skill.owner_trust.badges as badge}
-						<span class="trust-badge-mini">{BADGE_ICONS[badge] ?? '🏆'}</span>
-					{/each}
-					<span class="trust-level">{skill.owner_trust.reputation_level}</span>
 				</div>
-			{/if}
-			{#if $isLoggedIn && $user?.id !== skill.owner_id}
-				<button class="btn-message-owner" onclick={() => startConversation(skill!.owner_id, skill!.id)}>
-					Message {skill.skill_type === 'offer' ? 'Tutor' : 'Requester'}
-				</button>
-			{/if}
-		</div>
 
-		<div class="meta">
-			<span>Listed {formatDate(skill.created_at)}</span>
-		</div>
-
-		<!-- Reviews Section -->
-		<div class="section-card">
-			<h3>{$_('profile.reviews')} ({reviews.length})</h3>
-			{#if reviews.length === 0}
-				<p class="no-reviews-text">{$_('profile.no_reviews')}</p>
-			{:else}
-				<div class="review-list">
-					{#each reviews as review}
-						<div class="review-item">
-							<div class="review-item-header">
-								<a href="/profile/{review.reviewer_id}" class="reviewer-name">{review.reviewer.display_name}</a>
-								<span class="review-item-stars">{renderStars(review.rating)}</span>
-								<span class="review-item-date">{formatDate(review.created_at)}</span>
+				<!-- Leave a Review -->
+				{#if $isLoggedIn && !isOwner && !hasReviewed}
+					<div class="section-card">
+						<h3>{$_('review.leave_review')}</h3>
+						{#if reviewError}
+							<p class="error">{reviewError}</p>
+						{/if}
+						{#if reviewSuccess}
+							<p class="success">{reviewSuccess}</p>
+						{/if}
+						<div class="review-form">
+							<div class="star-picker">
+								<span class="star-label">{$_('review.your_rating')}</span>
+								{#each [1, 2, 3, 4, 5] as star}
+									<button
+										class="star-btn"
+										class:active={star <= reviewRating}
+										onclick={() => (reviewRating = star)}
+										type="button"
+									>★</button>
+								{/each}
 							</div>
-							{#if review.comment}
-								<p class="review-item-comment">{review.comment}</p>
+							<textarea
+								bind:value={reviewComment}
+								rows="3"
+								placeholder={$_('review.comment_placeholder')}
+								maxlength="5000"
+							></textarea>
+							<button class="btn-primary" onclick={submitReview} disabled={submittingReview}>
+								{submittingReview ? $_('common.loading') : $_('review.submit')}
+							</button>
+						</div>
+					</div>
+				{:else if hasReviewed}
+					<p class="already-reviewed">{$_('review.already_reviewed')}</p>
+				{/if}
+			</div>
+
+			<aside class="detail-side">
+				<!-- Owner card -->
+				<div class="section-card owner-card">
+					<h3>{$_('profile.listed_by')}</h3>
+					<div class="owner-row">
+						<span class="owner-avatar" aria-hidden="true">{skill.owner.display_name.charAt(0).toUpperCase()}</span>
+						<div class="owner-id">
+							<a href="/profile/{skill.owner_id}" class="owner-name-link">{skill.owner.display_name}</a>
+							{#if skill.owner.neighbourhood}
+								<p class="owner-neighbourhood">{skill.owner.neighbourhood}</p>
 							{/if}
 						</div>
-					{/each}
-				</div>
-			{/if}
-		</div>
-
-		<!-- Leave a Review -->
-		{#if $isLoggedIn && !isOwner && !hasReviewed}
-			<div class="section-card">
-				<h3>{$_('review.leave_review')}</h3>
-				{#if reviewError}
-					<p class="error">{reviewError}</p>
-				{/if}
-				{#if reviewSuccess}
-					<p class="success">{reviewSuccess}</p>
-				{/if}
-				<div class="review-form">
-					<div class="star-picker">
-						<span class="star-label">{$_('review.your_rating')}</span>
-						{#each [1, 2, 3, 4, 5] as star}
-							<button
-								class="star-btn"
-								class:active={star <= reviewRating}
-								onclick={() => (reviewRating = star)}
-								type="button"
-							>★</button>
-						{/each}
 					</div>
-					<textarea
-						bind:value={reviewComment}
-						rows="3"
-						placeholder={$_('review.comment_placeholder')}
-						maxlength="5000"
-					></textarea>
-					<button class="btn-primary" onclick={submitReview} disabled={submittingReview}>
-						{submittingReview ? $_('common.loading') : $_('review.submit')}
-					</button>
-				</div>
-			</div>
-		{:else if hasReviewed}
-			<p class="already-reviewed">{$_('review.already_reviewed')}</p>
-		{/if}
-
-		<!-- Owner actions -->
-		{#if isOwner}
-			<div class="section-card owner-panel">
-				<h3>{$_('skills.manage')}</h3>
-				<div class="owner-actions">
-					{#if confirmDelete}
-						<span class="confirm-text">{$_('common.confirm_delete')}</span>
-						<button class="btn-danger" onclick={deleteSkill}>{$_('common.delete')}</button>
-						<button class="btn-secondary" onclick={() => confirmDelete = false}>{$_('common.cancel')}</button>
-					{:else}
-						<button class="btn-danger" onclick={deleteSkill}>{$_('skills.delete_listing')}</button>
+					{#if skill.owner_trust}
+						<div class="owner-trust-row">
+							{#if skill.owner_trust.total_reviews > 0}
+								<span class="trust-stars">★ {skill.owner_trust.average_rating.toFixed(1)}</span>
+								<span class="trust-count">({skill.owner_trust.total_reviews} {$_('profile.reviews')})</span>
+							{/if}
+							{#each skill.owner_trust.badges as badge}
+								<span class="trust-badge-mini">{BADGE_ICONS[badge] ?? '🏆'}</span>
+							{/each}
+							<span class="trust-level">{skill.owner_trust.reputation_level}</span>
+						</div>
+					{/if}
+					{#if $isLoggedIn && $user?.id !== skill.owner_id}
+						<button class="btn-message-owner" onclick={() => startConversation(skill!.owner_id, skill!.id)}>
+							Message {skill.skill_type === 'offer' ? 'Tutor' : 'Requester'}
+						</button>
 					{/if}
 				</div>
-			</div>
-		{/if}
+
+				<!-- Owner actions -->
+				{#if isOwner}
+					<div class="section-card owner-panel">
+						<h3>{$_('skills.manage')}</h3>
+						<div class="owner-actions">
+							{#if confirmDelete}
+								<span class="confirm-text">{$_('common.confirm_delete')}</span>
+								<button class="btn-danger" onclick={deleteSkill}>{$_('common.delete')}</button>
+								<button class="btn-secondary" onclick={() => confirmDelete = false}>{$_('common.cancel')}</button>
+							{:else}
+								<button class="btn-danger" onclick={deleteSkill}>{$_('skills.delete_listing')}</button>
+							{/if}
+						</div>
+					</div>
+				{/if}
+			</aside>
+		</div>
 	</article>
 {/if}
 
@@ -291,13 +300,41 @@
 	}
 
 	.skill-detail {
-		max-width: 680px;
+		max-width: 960px;
+	}
+
+	.detail-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 320px;
+		gap: 2rem;
+		align-items: start;
+	}
+
+	.detail-main {
+		min-width: 0;
+	}
+
+	.detail-side {
+		position: sticky;
+		top: 5rem;
+	}
+
+	@media (max-width: 860px) {
+		.detail-grid {
+			grid-template-columns: 1fr;
+			gap: 0;
+		}
+
+		.detail-side {
+			position: static;
+		}
 	}
 
 	.detail-header {
 		display: flex;
-		gap: 1.5rem;
-		margin-bottom: 1.5rem;
+		align-items: flex-start;
+		gap: 1.25rem;
+		margin-bottom: 2rem;
 	}
 
 	.icon-section {
@@ -305,8 +342,14 @@
 	}
 
 	.skill-icon {
-		font-size: 3rem;
-		display: block;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 64px;
+		height: 64px;
+		border-radius: var(--radius-lg);
+		background: var(--color-primary-light);
+		font-size: 1.9rem;
 	}
 
 	.header-content {
@@ -314,7 +357,13 @@
 	}
 
 	.detail-header h1 {
-		font-size: 1.75rem;
+		font-size: 2.1rem;
+		margin-top: 0.65rem;
+	}
+
+	.meta {
+		font-size: 0.85rem;
+		color: var(--color-text-muted);
 		margin-top: 0.5rem;
 	}
 
@@ -353,9 +402,9 @@
 	.section-card {
 		background: var(--color-surface);
 		border: 1px solid var(--color-border);
-		border-radius: var(--radius);
-		padding: 1.25rem;
-		margin-bottom: 1.25rem;
+		border-radius: var(--radius-lg);
+		padding: 1.5rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.section-card p {
@@ -364,23 +413,36 @@
 	}
 
 	.section-card h3 {
-		font-size: 0.85rem;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		color: var(--color-text-muted);
-		margin-bottom: 0.75rem;
-	}
-
-	.owner-section {
-		margin-bottom: 1rem;
-	}
-
-	.owner-section h3 {
 		font-size: 0.8rem;
+		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.07em;
 		color: var(--color-text-muted);
-		margin-bottom: 0.25rem;
+		margin-bottom: 0.9rem;
+	}
+
+	.owner-row {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+	}
+
+	.owner-avatar {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		background: var(--color-primary);
+		color: white;
+		font-weight: 600;
+		font-size: 1.1rem;
+		flex-shrink: 0;
+	}
+
+	.owner-id {
+		min-width: 0;
 	}
 
 	.owner-name-link {
@@ -403,8 +465,9 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		margin-top: 0.35rem;
+		margin-top: 0.85rem;
 		font-size: 0.85rem;
+		flex-wrap: wrap;
 	}
 
 	.trust-stars {
@@ -430,8 +493,9 @@
 	}
 
 	.btn-message-owner {
-		margin-top: 0.5rem;
-		padding: 0.4rem 0.9rem;
+		margin-top: 1rem;
+		width: 100%;
+		padding: 0.5rem 0.9rem;
 		background: var(--color-surface);
 		border: 1px solid var(--color-primary);
 		border-radius: var(--radius);
@@ -445,12 +509,6 @@
 	.btn-message-owner:hover {
 		background: var(--color-primary);
 		color: white;
-	}
-
-	.meta {
-		font-size: 0.85rem;
-		color: var(--color-text-muted);
-		margin-bottom: 1.25rem;
 	}
 
 	/* Review list */

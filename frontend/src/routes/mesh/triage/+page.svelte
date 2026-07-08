@@ -131,7 +131,7 @@
 	}
 
 	.triage-header h1 {
-		font-family: Georgia, 'Times New Roman', serif;
+		font-family: var(--font-heading);
 		font-weight: 400;
 		font-size: 1.6rem;
 		color: var(--color-text);

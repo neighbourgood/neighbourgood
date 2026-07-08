@@ -76,18 +76,30 @@
 
 <style>
 	.auth-page {
-		max-width: 400px;
-		margin: 2rem auto;
+		max-width: 420px;
+		margin: 3rem auto;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		padding: 2.25rem 2rem;
+		box-shadow: var(--shadow-sm);
 	}
 
 	h1 {
-		font-size: 1.75rem;
+		font-size: 1.9rem;
 		margin-bottom: 0.25rem;
 	}
 
 	.subtitle {
 		color: var(--color-text-muted);
-		margin-bottom: 1.5rem;
+		margin-bottom: 1.75rem;
+	}
+
+	@media (max-width: 480px) {
+		.auth-page {
+			margin: 1rem auto;
+			padding: 1.5rem 1.25rem;
+		}
 	}
 
 	form {
