@@ -166,12 +166,14 @@
 
 		<div class="detail-grid">
 			<div class="detail-main">
-				{#if skill.description}
-					<div class="section-card">
-						<h3>About</h3>
+				<div class="section-card">
+					<h3>About</h3>
+					{#if skill.description}
 						<p>{skill.description}</p>
-					</div>
-				{/if}
+					{:else}
+						<p class="no-description">No description added yet.</p>
+					{/if}
+				</div>
 
 				<!-- Reviews Section -->
 				<div class="section-card">
@@ -410,6 +412,11 @@
 	.section-card p {
 		line-height: 1.7;
 		white-space: pre-wrap;
+	}
+
+	.no-description {
+		color: var(--color-text-muted);
+		font-style: italic;
 	}
 
 	.section-card h3 {

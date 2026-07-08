@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.1] - 2026-07-08
+
+### Fixed
+
+- **Empty main column on bare resource pages** — a resource with no photo, no description and no bookings rendered a completely empty left column on the detail page, pushing all content into the sidebar. The "About this item" card now always renders, with an italic "The owner hasn't added a description yet." fallback (same treatment on skill detail pages)
+- **End-date picker overflowing the borrow card** — date inputs have a large intrinsic width (especially in locales like German's TT.MM.JJJJ format), so the second picker in the "Request to Borrow" form overflowed the 320px sidebar card. The form-row grid columns now use `minmax(0, 1fr)` and inputs `width: 100%` so both pickers shrink to fit
+
 ## [2.2.0] - 2026-07-08
 
 ### Added
