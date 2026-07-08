@@ -341,21 +341,25 @@
 		max-width: 900px;
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
+		gap: 2rem;
 	}
 
 	h1 {
-		font-size: 1.9rem;
+		font-size: 2.1rem;
 		font-weight: 400;
 		color: var(--color-text);
 		margin: 0;
 	}
 
+	/* Section labels: quiet uppercase kickers so the serif page title keeps
+	   the spotlight and the page scans in clear blocks. */
 	h2 {
-		font-size: 1.2rem;
-		font-weight: 500;
-		color: var(--color-text);
-		margin: 0 0 0.75rem 0;
+		font-size: 0.8rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.07em;
+		color: var(--color-text-muted);
+		margin: 0 0 0.9rem 0;
 	}
 
 	.loading {

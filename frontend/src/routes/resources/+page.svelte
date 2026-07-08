@@ -146,7 +146,10 @@
 	{/if}
 
 	<div class="page-header">
-		<h1>{$t('resources.title')}</h1>
+		<div>
+			<h1>{$t('resources.title')}</h1>
+			<p class="subtitle">{$t('resources.subtitle')}</p>
+		</div>
 		{#if $isLoggedIn}
 			<button class="btn-primary" onclick={() => (showCreateForm = !showCreateForm)}>
 				{showCreateForm ? $t('common.cancel') : $t('resources.add')}
@@ -277,6 +280,7 @@
 						{#if resource.description}
 							<p class="description">{resource.description}</p>
 						{/if}
+						<div class="card-spacer"></div>
 						<div class="card-footer">
 							<span class="owner">by {resource.owner.display_name}</span>
 							{#if resource.owner_trust && resource.owner_trust.total_reviews > 0}
@@ -302,19 +306,18 @@
 	.browse-tabs {
 		display: flex;
 		gap: 0.25rem;
-		border-bottom: 2px solid var(--color-border);
-		margin-top: 0.5rem;
-		margin-bottom: 1.5rem;
+		border-bottom: 1px solid var(--color-border);
+		margin-bottom: 2rem;
 	}
 
 	.browse-tab {
-		padding: 0.6rem 1.25rem;
+		padding: 0.65rem 1.25rem;
 		font-size: 0.95rem;
 		font-weight: 500;
 		color: var(--color-text-muted);
 		text-decoration: none;
-		border-bottom: 3px solid transparent;
-		margin-bottom: -2px;
+		border-bottom: 2px solid transparent;
+		margin-bottom: -1px;
 		transition: all var(--transition-fast);
 	}
 
@@ -330,16 +333,11 @@
 	}
 
 	.resources-page {
-		max-width: 900px;
+		max-width: 960px;
 	}
 
 	.page-header {
-		margin-bottom: 0.75rem;
-	}
-
-	h1 {
-		font-size: 1.9rem;
-		font-weight: 400;
+		margin-bottom: 1.25rem;
 	}
 
 	.btn-primary {
@@ -347,13 +345,17 @@
 		color: white;
 		border: none;
 		border-radius: var(--radius);
-		padding: 0.5rem 1rem;
+		padding: 0.55rem 1.2rem;
 		font-size: 0.9rem;
+		font-weight: 600;
 		cursor: pointer;
+		box-shadow: var(--shadow-sm);
+		transition: all var(--transition-fast);
 	}
 
 	.btn-primary:hover {
 		background: var(--color-primary-hover);
+		box-shadow: var(--shadow-md);
 	}
 
 	.create-form-card {
@@ -416,7 +418,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		margin-bottom: 1.5rem;
+		margin-bottom: 2rem;
 		flex-wrap: wrap;
 	}
 
@@ -425,16 +427,21 @@
 		min-width: 0;
 	}
 
+	.filter-bar input,
 	.filter-bar select {
-		padding: 0.5rem 0.75rem;
+		padding: 0.6rem 0.9rem;
+	}
+
+	.filter-bar select {
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius);
-		font-size: 0.85rem;
+		font-size: 0.88rem;
 		background: var(--color-surface);
 		color: var(--color-text);
 	}
 
 	.result-count {
+		margin-left: auto;
 		font-size: 0.85rem;
 		color: var(--color-text-muted);
 		white-space: nowrap;
@@ -442,8 +449,8 @@
 
 	.resource-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-		gap: 1rem;
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+		gap: 1.5rem;
 	}
 
 	.resource-card {
@@ -451,23 +458,23 @@
 		flex-direction: column;
 		background: var(--color-surface);
 		border: 1px solid var(--color-border);
-		border-radius: var(--radius);
+		border-radius: var(--radius-lg);
 		text-decoration: none;
 		color: var(--color-text);
-		transition: border-color 0.15s;
+		transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 		overflow: hidden;
 	}
 
 	.resource-card:hover {
 		border-color: var(--color-primary);
 		box-shadow: var(--shadow-md);
-		transform: translateY(-2px);
+		transform: translateY(-3px);
 		text-decoration: none;
 	}
 
 	.card-image {
 		width: 100%;
-		height: 140px;
+		height: 160px;
 		overflow: hidden;
 		background: var(--color-bg);
 	}
@@ -482,29 +489,37 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		background: linear-gradient(135deg, var(--color-primary-light), var(--color-bg));
 	}
 
 	.placeholder-icon {
 		font-size: 2.5rem;
-		opacity: 0.5;
+		opacity: 0.55;
 	}
 
 	.card-body {
-		padding: 0.75rem 1rem 1rem;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		padding: 1.1rem 1.25rem 1.25rem;
+	}
+
+	.card-spacer {
+		flex: 1;
 	}
 
 	.card-header {
 		display: flex;
 		gap: 0.5rem;
-		margin-bottom: 0.35rem;
+		margin-bottom: 0.6rem;
 	}
 
 	.category-badge {
 		font-size: 0.7rem;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		background: var(--color-bg);
-		padding: 0.1rem 0.45rem;
+		background: var(--color-primary-light);
+		padding: 0.15rem 0.55rem;
 		border-radius: 999px;
 		color: var(--color-primary);
 		font-weight: 600;
@@ -514,23 +529,24 @@
 		font-size: 0.7rem;
 		background: var(--color-error-bg);
 		color: var(--color-error);
-		padding: 0.1rem 0.45rem;
+		padding: 0.15rem 0.55rem;
 		border-radius: 999px;
 	}
 
 	.resource-card h3 {
-		font-size: 1rem;
-		margin-bottom: 0.25rem;
+		font-size: 1.05rem;
+		margin-bottom: 0.35rem;
+		line-height: 1.35;
 	}
 
 	.description {
-		font-size: 0.82rem;
+		font-size: 0.84rem;
 		color: var(--color-text-muted);
+		line-height: 1.55;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
-		margin-bottom: 0.4rem;
 	}
 
 	.card-footer {
@@ -540,6 +556,9 @@
 		flex-wrap: wrap;
 		font-size: 0.78rem;
 		color: var(--color-text-muted);
+		border-top: 1px solid var(--color-border);
+		padding-top: 0.7rem;
+		margin-top: 0.85rem;
 	}
 
 	.trust-stars {

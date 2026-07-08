@@ -8,14 +8,13 @@
 	import { api } from '$lib/api';
 	import { t } from 'svelte-i18n';
 	import { get } from 'svelte/store';
-	import { setupI18n, detectInitialLocale, AVAILABLE_LOCALES } from '$lib/i18n';
+	import { AVAILABLE_LOCALES } from '$lib/i18n';
 	import { setLocale, hydrateLocale, currentLocale } from '$lib/stores/locale';
 	import { isOnline, offlineQueue, queueCount, flushQueue, initOfflineTracking } from '$lib/stores/offline';
 	import { meshMessages, clearMeshMessages, getMeshMessages } from '$lib/stores/mesh';
 
-	// Initialise svelte-i18n as early as possible.
-	// detectInitialLocale safely reads localStorage (browser-only) and navigator.language.
-	setupI18n(detectInitialLocale());
+	// svelte-i18n is initialised (and its dictionary awaited) in +layout.ts
+	// so the first SSR render never races the locale loader.
 
 	let { children } = $props();
 	interface FedAlert {
@@ -245,6 +244,12 @@
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+		{#if $platformMode !== 'red'}
+			<!-- Display serif for heros & page headers only. Deliberately not
+			     loaded in Red Sky mode: the crisis UI must render fast on bad
+			     connections, and Georgia (the --font-heading fallback) is free. -->
+			<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet" />
+		{/if}
 	{/if}
 </svelte:head>
 
@@ -504,7 +509,7 @@
 	}
 
 	.brand-text {
-		font-family: Georgia, 'Times New Roman', serif;
+		font-family: var(--font-heading);
 		font-weight: 400;
 		font-size: 1.2rem;
 		letter-spacing: -0.01em;

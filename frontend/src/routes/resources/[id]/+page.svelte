@@ -159,12 +159,6 @@
 	<article class="resource-detail">
 		<a href="/resources" class="back-link">&larr; Back to resources</a>
 
-		{#if resource.image_url && $bandwidth !== 'low'}
-			<div class="detail-image">
-				<img src="/api{resource.image_url}" alt={resource.title} />
-			</div>
-		{/if}
-
 		<div class="detail-header">
 			<div class="badges">
 				<span class="category-badge">{resource.category}</span>
@@ -176,151 +170,168 @@
 				</span>
 			</div>
 			<h1>{resource.title}</h1>
+			<p class="meta">Listed {new Date(resource.created_at).toLocaleDateString()}</p>
 		</div>
 
-		{#if resource.description}
-			<div class="section-card">
-				<p>{resource.description}</p>
-			</div>
-		{/if}
-
-		<div class="owner-section">
-			<h3>Shared by</h3>
-			<a href="/profile/{resource.owner_id}" class="owner-name-link">{resource.owner.display_name}</a>
-			{#if resource.owner.neighbourhood}
-				<p class="owner-neighbourhood">{resource.owner.neighbourhood}</p>
-			{/if}
-			{#if resource.owner_trust}
-				<div class="owner-trust-row">
-					{#if resource.owner_trust.total_reviews > 0}
-						<span class="trust-stars">★ {resource.owner_trust.average_rating.toFixed(1)}</span>
-						<span class="trust-count">({resource.owner_trust.total_reviews} reviews)</span>
-					{/if}
-					{#each resource.owner_trust.badges as badge}
-						<span class="trust-badge-mini">{badge === 'skilled_helper' ? '⭐' : badge === 'trusted_lender' ? '📦' : '🤝'}</span>
-					{/each}
-					<span class="trust-level">{resource.owner_trust.reputation_level}</span>
-				</div>
-			{/if}
-			{#if $isLoggedIn && $user?.id !== resource.owner_id}
-				<button class="btn-message-owner" onclick={() => startConversation(resource!.owner_id)}>
-					Message Owner
-				</button>
-			{/if}
-		</div>
-
-		<div class="meta">
-			<span>Listed {new Date(resource.created_at).toLocaleDateString()}</span>
-		</div>
-
-		<!-- Owner actions -->
-		{#if isOwner}
-			<div class="section-card owner-panel">
-				<h3>Manage Resource</h3>
-				<div class="owner-actions">
-					<button class="btn-secondary" onclick={toggleAvailability}>
-						{resource.is_available ? 'Mark Unavailable' : 'Mark Available'}
-					</button>
-					<label class="btn-secondary upload-btn">
-						Upload Image
-						<input
-							type="file"
-							accept="image/jpeg,image/png,image/webp,image/gif"
-							bind:this={imageInput}
-							onchange={handleImageUpload}
-							hidden
-						/>
-					</label>
-					{#if confirmDelete}
-						<span class="confirm-text">{$t('common.confirm_delete')}</span>
-						<button class="btn-danger" onclick={deleteResource}>{$t('common.delete')}</button>
-						<button class="btn-secondary" onclick={() => confirmDelete = false}>{$t('common.cancel')}</button>
-					{:else}
-						<button class="btn-danger" onclick={deleteResource}>{$t('common.delete')}</button>
-					{/if}
-				</div>
-			</div>
-		{/if}
-
-		<!-- Booking section -->
-		{#if isOwner || bookings.length > 0}
-			<div class="section-card" class:owner-bookings-card={isOwner}>
-				<h3>{isOwner ? 'Who Has This Item?' : 'Booked Dates'}</h3>
-				{#if bookings.length > 0}
-					<div class="booking-list">
-						{#each bookings as b}
-							{@const days = Math.ceil((new Date(b.end_date).getTime() - new Date(b.start_date).getTime()) / 86400000)}
-							<div class="booking-item">
-								<span class="booking-dates">{b.start_date} &rarr; {b.end_date}</span>
-								<span class="booking-duration">({days} day{days !== 1 ? 's' : ''})</span>
-								<span class="booking-status" style="color: {statusColor(b.status)}">{b.status}</span>
-								{#if isOwner}
-									<span class="booking-who">{b.borrower.display_name}</span>
-								{/if}
-							</div>
-						{/each}
+		<div class="detail-grid">
+			<div class="detail-main">
+				{#if resource.image_url && $bandwidth !== 'low'}
+					<div class="detail-image">
+						<img src="/api{resource.image_url}" alt={resource.title} />
 					</div>
-					{#if isOwner && bookings.some(b => b.status === 'pending')}
-						<p class="pending-alert">Pending requests waiting — <a href="/bookings">review in Bookings</a>.</p>
-					{/if}
-				{:else if isOwner}
-					<p class="empty-bookings">No current bookings. Your item is available to borrow.</p>
+				{/if}
+
+				{#if resource.description}
+					<div class="section-card">
+						<h3>About this item</h3>
+						<p>{resource.description}</p>
+					</div>
+				{/if}
+
+				<!-- Booking section -->
+				{#if isOwner || bookings.length > 0}
+					<div class="section-card" class:owner-bookings-card={isOwner}>
+						<h3>{isOwner ? 'Who Has This Item?' : 'Booked Dates'}</h3>
+						{#if bookings.length > 0}
+							<div class="booking-list">
+								{#each bookings as b}
+									{@const days = Math.ceil((new Date(b.end_date).getTime() - new Date(b.start_date).getTime()) / 86400000)}
+									<div class="booking-item">
+										<span class="booking-dates">{b.start_date} &rarr; {b.end_date}</span>
+										<span class="booking-duration">({days} day{days !== 1 ? 's' : ''})</span>
+										<span class="booking-status" style="color: {statusColor(b.status)}">{b.status}</span>
+										{#if isOwner}
+											<span class="booking-who">{b.borrower.display_name}</span>
+										{/if}
+									</div>
+								{/each}
+							</div>
+							{#if isOwner && bookings.some(b => b.status === 'pending')}
+								<p class="pending-alert">Pending requests waiting — <a href="/bookings">review in Bookings</a>.</p>
+							{/if}
+						{:else if isOwner}
+							<p class="empty-bookings">No current bookings. Your item is available to borrow.</p>
+						{/if}
+					</div>
+				{/if}
+
+				{#if bookQueued}
+					<div class="section-card queued-notice">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+						<div class="queued-notice-body">
+							<strong>Request saved for later</strong>
+							<p>Your borrow request will be sent automatically when you reconnect.</p>
+						</div>
+						<button class="queued-dismiss" onclick={() => (bookQueued = false)} aria-label="Dismiss">&times;</button>
+					</div>
 				{/if}
 			</div>
-		{/if}
 
-		{#if bookQueued}
-			<div class="section-card queued-notice">
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-				<div class="queued-notice-body">
-					<strong>Request saved for later</strong>
-					<p>Your borrow request will be sent automatically when you reconnect.</p>
+			<aside class="detail-side">
+				<!-- Owner card -->
+				<div class="section-card owner-card">
+					<h3>Shared by</h3>
+					<div class="owner-row">
+						<span class="owner-avatar" aria-hidden="true">{resource.owner.display_name.charAt(0).toUpperCase()}</span>
+						<div class="owner-id">
+							<a href="/profile/{resource.owner_id}" class="owner-name-link">{resource.owner.display_name}</a>
+							{#if resource.owner.neighbourhood}
+								<p class="owner-neighbourhood">{resource.owner.neighbourhood}</p>
+							{/if}
+						</div>
+					</div>
+					{#if resource.owner_trust}
+						<div class="owner-trust-row">
+							{#if resource.owner_trust.total_reviews > 0}
+								<span class="trust-stars">★ {resource.owner_trust.average_rating.toFixed(1)}</span>
+								<span class="trust-count">({resource.owner_trust.total_reviews} reviews)</span>
+							{/if}
+							{#each resource.owner_trust.badges as badge}
+								<span class="trust-badge-mini">{badge === 'skilled_helper' ? '⭐' : badge === 'trusted_lender' ? '📦' : '🤝'}</span>
+							{/each}
+							<span class="trust-level">{resource.owner_trust.reputation_level}</span>
+						</div>
+					{/if}
+					{#if $isLoggedIn && $user?.id !== resource.owner_id}
+						<button class="btn-message-owner" onclick={() => startConversation(resource!.owner_id)}>
+							Message Owner
+						</button>
+					{/if}
 				</div>
-				<button class="queued-dismiss" onclick={() => (bookQueued = false)} aria-label="Dismiss">&times;</button>
-			</div>
-		{/if}
 
-		{#if canBook && !bookQueued}
-			<div class="section-card">
-				{#if showBookingForm}
-					<h3>Request to Borrow</h3>
-					{#if bookError}
-						<p class="error">{bookError}</p>
-					{/if}
-					{#if !$isOnline}
-						<p class="offline-note">
-							You're offline. Your request will be saved and sent when you reconnect.
-						</p>
-					{/if}
-					<form onsubmit={handleBooking} class="booking-form">
-						<div class="form-row">
-							<label>
-								<span>Start Date</span>
-								<input type="date" bind:value={bookStartDate} required />
-							</label>
-							<label>
-								<span>End Date</span>
-								<input type="date" bind:value={bookEndDate} required />
-							</label>
-						</div>
-						<label>
-							<span>Message (optional)</span>
-							<textarea bind:value={bookMessage} rows="2" placeholder="Hi! I'd like to borrow this for..."></textarea>
-						</label>
-						<div class="form-actions">
-							<button type="submit" class="btn-primary">
-								{$isOnline ? 'Send Request' : 'Queue Request'}
+				<!-- Borrow card -->
+				{#if canBook && !bookQueued}
+					<div class="section-card borrow-card">
+						{#if showBookingForm}
+							<h3>Request to Borrow</h3>
+							{#if bookError}
+								<p class="error">{bookError}</p>
+							{/if}
+							{#if !$isOnline}
+								<p class="offline-note">
+									You're offline. Your request will be saved and sent when you reconnect.
+								</p>
+							{/if}
+							<form onsubmit={handleBooking} class="booking-form">
+								<div class="form-row">
+									<label>
+										<span>Start Date</span>
+										<input type="date" bind:value={bookStartDate} required />
+									</label>
+									<label>
+										<span>End Date</span>
+										<input type="date" bind:value={bookEndDate} required />
+									</label>
+								</div>
+								<label>
+									<span>Message (optional)</span>
+									<textarea bind:value={bookMessage} rows="2" placeholder="Hi! I'd like to borrow this for..."></textarea>
+								</label>
+								<div class="form-actions">
+									<button type="submit" class="btn-primary">
+										{$isOnline ? 'Send Request' : 'Queue Request'}
+									</button>
+									<button type="button" class="btn-secondary" onclick={() => (showBookingForm = false)}>Cancel</button>
+								</div>
+							</form>
+						{:else}
+							<button class="btn-primary btn-borrow" onclick={() => (showBookingForm = true)}>
+								Request to Borrow
 							</button>
-							<button type="button" class="btn-secondary" onclick={() => (showBookingForm = false)}>Cancel</button>
-						</div>
-					</form>
-				{:else}
-					<button class="btn-primary" onclick={() => (showBookingForm = true)}>
-						Request to Borrow
-					</button>
+						{/if}
+					</div>
 				{/if}
-			</div>
-		{/if}
+
+				<!-- Owner actions -->
+				{#if isOwner}
+					<div class="section-card owner-panel">
+						<h3>Manage Resource</h3>
+						<div class="owner-actions">
+							<button class="btn-secondary" onclick={toggleAvailability}>
+								{resource.is_available ? 'Mark Unavailable' : 'Mark Available'}
+							</button>
+							<label class="btn-secondary upload-btn">
+								Upload Image
+								<input
+									type="file"
+									accept="image/jpeg,image/png,image/webp,image/gif"
+									bind:this={imageInput}
+									onchange={handleImageUpload}
+									hidden
+								/>
+							</label>
+							{#if confirmDelete}
+								<span class="confirm-text">{$t('common.confirm_delete')}</span>
+								<button class="btn-danger" onclick={deleteResource}>{$t('common.delete')}</button>
+								<button class="btn-secondary" onclick={() => confirmDelete = false}>{$t('common.cancel')}</button>
+							{:else}
+								<button class="btn-danger" onclick={deleteResource}>{$t('common.delete')}</button>
+							{/if}
+						</div>
+					</div>
+				{/if}
+			</aside>
+		</div>
 	</article>
 {/if}
 
@@ -338,14 +349,42 @@
 	}
 
 	.resource-detail {
-		max-width: 900px;
+		max-width: 960px;
+	}
+
+	.detail-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 320px;
+		gap: 2rem;
+		align-items: start;
+	}
+
+	.detail-main {
+		min-width: 0;
+	}
+
+	.detail-side {
+		position: sticky;
+		top: 5rem;
+	}
+
+	@media (max-width: 860px) {
+		.detail-grid {
+			grid-template-columns: 1fr;
+			gap: 0;
+		}
+
+		.detail-side {
+			position: static;
+		}
 	}
 
 	.detail-image {
-		border-radius: var(--radius);
+		border-radius: var(--radius-lg);
 		overflow: hidden;
 		margin-bottom: 1.5rem;
-		max-height: 350px;
+		max-height: 420px;
+		border: 1px solid var(--color-border);
 	}
 
 	.detail-image img {
@@ -355,13 +394,13 @@
 	}
 
 	.detail-header {
-		margin-bottom: 1.5rem;
+		margin-bottom: 2rem;
 	}
 
 	.detail-header h1 {
-		font-size: 1.9rem;
+		font-size: 2.1rem;
 		font-weight: 400;
-		margin-top: 0.5rem;
+		margin-top: 0.65rem;
 	}
 
 	.badges {
@@ -405,9 +444,9 @@
 	.section-card {
 		background: var(--color-surface);
 		border: 1px solid var(--color-border);
-		border-radius: var(--radius);
-		padding: 1.25rem;
-		margin-bottom: 1.25rem;
+		border-radius: var(--radius-lg);
+		padding: 1.5rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.section-card p {
@@ -416,23 +455,36 @@
 	}
 
 	.section-card h3 {
-		font-size: 0.85rem;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		color: var(--color-text-muted);
-		margin-bottom: 0.75rem;
-	}
-
-	.owner-section {
-		margin-bottom: 1rem;
-	}
-
-	.owner-section h3 {
 		font-size: 0.8rem;
+		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.07em;
 		color: var(--color-text-muted);
-		margin-bottom: 0.25rem;
+		margin-bottom: 0.9rem;
+	}
+
+	.owner-row {
+		display: flex;
+		align-items: center;
+		gap: 0.85rem;
+	}
+
+	.owner-avatar {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		background: var(--color-primary);
+		color: white;
+		font-weight: 600;
+		font-size: 1.1rem;
+		flex-shrink: 0;
+	}
+
+	.owner-id {
+		min-width: 0;
 	}
 
 	.owner-name-link {
@@ -450,8 +502,9 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		margin-top: 0.35rem;
+		margin-top: 0.85rem;
 		font-size: 0.85rem;
+		flex-wrap: wrap;
 	}
 
 	.trust-stars {
@@ -482,8 +535,9 @@
 	}
 
 	.btn-message-owner {
-		margin-top: 0.5rem;
-		padding: 0.4rem 0.9rem;
+		margin-top: 1rem;
+		width: 100%;
+		padding: 0.5rem 0.9rem;
 		background: var(--color-surface);
 		border: 1px solid var(--color-primary);
 		border-radius: var(--radius);
@@ -502,7 +556,7 @@
 	.meta {
 		font-size: 0.85rem;
 		color: var(--color-text-muted);
-		margin-bottom: 1.25rem;
+		margin-top: 0.5rem;
 	}
 
 	.owner-panel {
@@ -516,17 +570,31 @@
 	}
 
 	.btn-primary {
-		padding: 0.5rem 1rem;
+		padding: 0.55rem 1.2rem;
 		background: var(--color-primary);
 		color: white;
 		border: none;
 		border-radius: var(--radius);
 		font-size: 0.9rem;
+		font-weight: 600;
 		cursor: pointer;
+		box-shadow: var(--shadow-sm);
+		transition: all var(--transition-fast);
 	}
 
 	.btn-primary:hover {
 		background: var(--color-primary-hover);
+		box-shadow: var(--shadow-md);
+	}
+
+	.btn-borrow {
+		width: 100%;
+		padding: 0.7rem 1.2rem;
+		font-size: 0.95rem;
+	}
+
+	.borrow-card {
+		border-color: var(--color-primary);
 	}
 
 	.btn-secondary, .upload-btn {

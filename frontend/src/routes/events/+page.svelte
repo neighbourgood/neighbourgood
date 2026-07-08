@@ -380,7 +380,7 @@
 		justify-content: space-between;
 		align-items: flex-start;
 		gap: 1rem;
-		margin-bottom: 0.75rem;
+		margin-bottom: 1.5rem;
 		flex-wrap: wrap;
 	}
 
