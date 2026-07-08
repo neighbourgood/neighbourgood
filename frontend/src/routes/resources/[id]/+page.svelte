@@ -181,12 +181,14 @@
 					</div>
 				{/if}
 
-				{#if resource.description}
-					<div class="section-card">
-						<h3>About this item</h3>
+				<div class="section-card">
+					<h3>About this item</h3>
+					{#if resource.description}
 						<p>{resource.description}</p>
-					</div>
-				{/if}
+					{:else}
+						<p class="no-description">The owner hasn't added a description yet.</p>
+					{/if}
+				</div>
 
 				<!-- Booking section -->
 				{#if isOwner || bookings.length > 0}
@@ -454,6 +456,11 @@
 		white-space: pre-wrap;
 	}
 
+	.no-description {
+		color: var(--color-text-muted);
+		font-style: italic;
+	}
+
 	.section-card h3 {
 		font-size: 0.8rem;
 		font-weight: 600;
@@ -699,8 +706,14 @@
 
 	.form-row {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		/* minmax(0, …) lets the columns shrink below the date input's large
+		   intrinsic width so the second picker can't overflow the sidebar. */
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		gap: 0.75rem;
+	}
+
+	.form-row label {
+		min-width: 0;
 	}
 
 	label {
@@ -715,6 +728,8 @@
 	}
 
 	input, textarea {
+		width: 100%;
+		min-width: 0;
 		padding: 0.5rem 0.75rem;
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius);
