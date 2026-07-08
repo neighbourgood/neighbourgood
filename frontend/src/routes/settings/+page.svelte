@@ -485,7 +485,7 @@
 	}
 
 	h1 {
-		font-size: 1.9rem;
+		font-size: 2.1rem;
 		font-weight: 400;
 		color: var(--color-text);
 		margin: 0 0 2rem 0;

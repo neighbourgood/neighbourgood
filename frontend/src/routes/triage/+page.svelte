@@ -551,7 +551,7 @@
 	}
 
 	h1 {
-		font-size: 1.9rem;
+		font-size: 2.1rem;
 		font-weight: 400;
 		margin-bottom: 0.25rem;
 	}

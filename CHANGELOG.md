@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.0] - 2026-07-08
+
+### Added
+
+- **Fraunces display serif for heros and page titles** — the PWA adopts the website's heading font, deliberately restricted to `h1` page titles and the landing hero; section headings inside pages stay in Inter so long pages read calmly. The font is only fetched in Blue Sky mode with normal bandwidth — in Red Sky (crisis) mode it is never requested and headings render instantly in the Georgia fallback
+- **Editorial landing page** — the centred hero is now an asymmetric split: mono uppercase kicker with a rule, oversized three-line headline with an italic violet accent, and a text-free composition of floating listing cards on the right (replacing the hotlinked GitHub social-preview image, which broke on self-hosted and offline instances). Feature cards get serif index numbers (01–06) with hairline header rules
+- **Two-column detail pages** — resource and skill detail pages now use a main column (image, description, bookings / reviews) plus a sticky sidebar (owner card with avatar, trust signals and a full-width message button; borrow request card; owner management panel), collapsing to a single column on mobile
+
+### Changed
+
+- **Shared items/skills overviews re-spaced** — wider grid gaps (1rem → 1.5rem), taller card images, roomier card padding, bottom-aligned owner/condition footers separated by a hairline rule, tinted icon tiles on skill cards, category badges on a violet tint, hover lift with shadow on both card types, and a subtitle under "Shared Resources"
+- **Consistent page headers** — all list pages share a 2.1rem serif title with 2rem breathing room below; dashboard section headings become quiet uppercase kickers
+- **Login and registration** are presented as centred cards on the page background
+- **Logged-in visitors to `/` are redirected to their dashboard** instead of seeing the marketing page
+
+### Fixed
+
+- **First request after a server restart no longer returns a 500** — svelte-i18n's locale dictionary is now awaited in a universal layout `load` (`waitLocale()`), fixing "[svelte-i18n] Cannot format a message without first setting the initial locale" which crashed SSR for whoever hit a freshly restarted instance first (typically a returning logged-in user opening the app)
+
 ## [2.1.1] - 2026-06-22
 
 ### Fixed
