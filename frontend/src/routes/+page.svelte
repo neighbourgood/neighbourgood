@@ -5,6 +5,7 @@
 	import { bandwidth, platformMode } from '$lib/stores/theme';
 	import { t } from 'svelte-i18n';
 	import { api } from '$lib/api';
+	import MeshBackground from '$lib/components/MeshBackground.svelte';
 
 	interface PlatformStatus {
 		status: string;
@@ -45,6 +46,9 @@
 
 <main class="landing">
 	<section class="hero">
+		{#if $bandwidth !== 'low'}
+			<MeshBackground />
+		{/if}
 		<div class="hero-copy slide-up">
 			<p class="hero-eyebrow">{$t('home.hero_title')}</p>
 			<h1>{$t('home.hero_tag1')}<br />{$t('home.hero_tag2')}<br /><em class="hero-accent">{$t('home.hero_tag3')}</em></h1>
@@ -58,34 +62,25 @@
 		</div>
 
 		{#if $bandwidth !== 'low'}
-			<div class="hero-panel slide-up" style="animation-delay: 0.08s" aria-hidden="true">
-				<div class="mock-card mock-card-1">
+			<div class="hero-panel" aria-hidden="true">
+				<div class="mock-card mock-card-1 slide-up" style="animation-delay: 0.15s">
 					<span class="mock-icon">🔧</span>
-					<span class="mock-lines">
-						<span class="mock-line" style="width: 72%"></span>
-						<span class="mock-line mock-line-dim" style="width: 48%"></span>
-					</span>
+					<span class="mock-text">{$t('home.hero_activity_1')}</span>
 					<span class="mock-dot mock-dot-green"></span>
 				</div>
-				<div class="mock-card mock-card-2">
+				<div class="mock-card mock-card-2 slide-up" style="animation-delay: 0.35s">
 					<span class="mock-icon">🚲</span>
-					<span class="mock-lines">
-						<span class="mock-line" style="width: 58%"></span>
-						<span class="mock-line mock-line-dim" style="width: 70%"></span>
-					</span>
+					<span class="mock-text">{$t('home.hero_activity_2')}</span>
 					<span class="mock-dot mock-dot-green"></span>
 				</div>
-				<div class="mock-card mock-card-3">
+				<div class="mock-card mock-card-3 slide-up" style="animation-delay: 0.55s">
 					<span class="mock-icon">🎹</span>
-					<span class="mock-lines">
-						<span class="mock-line" style="width: 64%"></span>
-						<span class="mock-line mock-line-dim" style="width: 40%"></span>
-					</span>
+					<span class="mock-text">{$t('home.hero_activity_3')}</span>
 					<span class="mock-dot mock-dot-violet"></span>
 				</div>
-				<div class="mock-bubble">
+				<div class="mock-bubble slide-up" style="animation-delay: 0.75s">
 					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-					<span class="mock-line" style="width: 5.5rem"></span>
+					<span class="mock-bubble-text">{$t('home.hero_activity_message')}</span>
 				</div>
 			</div>
 		{/if}
@@ -134,11 +129,21 @@
 	/* ── Hero: asymmetric editorial split ─────────────────────────── */
 
 	.hero {
+		position: relative;
 		display: grid;
 		grid-template-columns: 1.15fr 0.85fr;
 		align-items: center;
 		gap: 3rem;
 		padding: 3.5rem 0 4rem;
+		overflow: hidden;
+	}
+
+	/* Explicit stacking so the mesh background canvas (an absolutely
+	   positioned, non-grid sibling painted first) stays behind these
+	   grid items instead of on top of them. */
+	.hero-copy {
+		position: relative;
+		z-index: 1;
 	}
 
 	.hero-eyebrow {
@@ -233,6 +238,7 @@
 
 	.hero-panel {
 		position: relative;
+		z-index: 1;
 		display: flex;
 		flex-direction: column;
 		gap: 0.9rem;
@@ -276,22 +282,12 @@
 		flex-shrink: 0;
 	}
 
-	.mock-lines {
-		display: flex;
-		flex-direction: column;
-		gap: 0.45rem;
+	.mock-text {
 		flex: 1;
-	}
-
-	.mock-line {
-		display: block;
-		height: 0.5rem;
-		border-radius: 999px;
-		background: var(--color-border);
-	}
-
-	.mock-line-dim {
-		opacity: 0.55;
+		font-size: 0.85rem;
+		font-weight: 500;
+		color: var(--color-text);
+		line-height: 1.4;
 	}
 
 	.mock-dot {
@@ -318,9 +314,10 @@
 		transform: rotate(1.5deg) translateX(-0.75rem);
 	}
 
-	.mock-bubble .mock-line {
-		background: rgba(255, 255, 255, 0.45);
-		height: 0.45rem;
+	.mock-bubble-text {
+		font-size: 0.82rem;
+		font-weight: 500;
+		white-space: nowrap;
 	}
 
 	/* ── Features: flat editorial cards ───────────────────────────── */
