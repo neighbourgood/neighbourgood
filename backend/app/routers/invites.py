@@ -13,6 +13,7 @@ from app.models.invite import Invite
 from app.models.user import User
 from app.schemas.invite import InviteCreate, InviteOut, InviteRedeemResult
 from app.services.activity import record_activity
+from app.utils.authorization import get_active_community_membership
 
 router = APIRouter(prefix="/invites", tags=["invites"])
 
@@ -132,6 +133,15 @@ def redeem_invite(
             community_id=community.id,
             community_name=community.name,
             message="You are already a member of this community.",
+        )
+
+    other_membership = get_active_community_membership(
+        db, current_user.id, exclude_community_id=invite.community_id
+    )
+    if other_membership:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="You're already a member of a community. Leave your current community before joining another.",
         )
 
     # Join the community

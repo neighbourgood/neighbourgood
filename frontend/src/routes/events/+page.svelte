@@ -50,8 +50,11 @@
 	let createError = $state('');
 	let rsvpError = $state('');
 	let myCommunities = $state<MyCommunity[]>([]);
+	let myCommunitiesLoaded = $state(false);
+	let requestId = 0;
 
 	async function loadEvents() {
+		const thisRequest = ++requestId;
 		loading = true;
 		try {
 			const params = new URLSearchParams();
@@ -66,13 +69,15 @@
 				`/events${qs ? '?' + qs : ''}`,
 				{ auth: true }
 			);
+			if (thisRequest !== requestId) return; // superseded by a newer request
 			events = Array.isArray(data?.items) ? data.items : [];
 			total = data?.total ?? 0;
 		} catch {
+			if (thisRequest !== requestId) return;
 			events = [];
 			total = 0;
 		} finally {
-			loading = false;
+			if (thisRequest === requestId) loading = false;
 		}
 	}
 
@@ -86,6 +91,8 @@
 			}
 		} catch {
 			myCommunities = [];
+		} finally {
+			myCommunitiesLoaded = true;
 		}
 	}
 
@@ -195,13 +202,13 @@
 			return;
 		}
 		loadMyCommunities();
-		loadEvents();
 	});
 
 	$effect(() => {
 		filterCategory;
 		filterUpcoming;
 		filterCommunity;
+		if (!myCommunitiesLoaded) return;
 		loadEvents();
 	});
 </script>

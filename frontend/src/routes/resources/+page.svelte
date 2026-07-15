@@ -31,6 +31,8 @@
 	let searchQuery = $state('');
 	let searchTimeout: ReturnType<typeof setTimeout> | null = $state(null);
 	let showCreateForm = $state(false);
+	let myCommunitiesLoaded = $state(false);
+	let requestId = 0;
 
 	// Create form
 	let newTitle = $state('');
@@ -42,6 +44,7 @@
 	let myCommunities = $state<MyCommunity[]>([]);
 
 	async function loadResources() {
+		const thisRequest = ++requestId;
 		loading = true;
 		fromCache = false;
 		try {
@@ -53,11 +56,13 @@
 			// Use raw fetch so we can inspect the X-Served-From header the
 			// service worker sets when replaying a cached response.
 			const rawRes = await fetch(`/api/resources?${params.toString()}`);
+			if (thisRequest !== requestId) return; // superseded by a newer request
 			if (rawRes.headers.get('X-Served-From') === 'offline-cache') {
 				fromCache = true;
 			}
 			if (rawRes.ok) {
 				const data: { items: Resource[]; total: number } = await rawRes.json();
+				if (thisRequest !== requestId) return;
 				resources = data.items;
 				total = data.total;
 			} else {
@@ -65,10 +70,11 @@
 				total = 0;
 			}
 		} catch {
+			if (thisRequest !== requestId) return;
 			resources = [];
 			total = 0;
 		} finally {
-			loading = false;
+			if (thisRequest === requestId) loading = false;
 		}
 	}
 
@@ -116,19 +122,23 @@
 			}
 		} catch {
 			myCommunities = [];
+		} finally {
+			myCommunitiesLoaded = true;
 		}
 	}
 
 	onMount(async () => {
 		if ($isLoggedIn) {
 			await loadMyCommunities();
+		} else {
+			myCommunitiesLoaded = true;
 		}
-		loadResources();
 	});
 
 	$effect(() => {
 		filterCategory;
 		filterCommunity;
+		if (!myCommunitiesLoaded) return;
 		loadResources();
 	});
 </script>
