@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.2] - 2026-07-15
+
+### Fixed
+
+- **Users could join more than one community, breaking the resources/skills pages** — `POST /communities/{id}/join` and `POST /invites/{code}/redeem` only checked whether a user was already a member of *that specific* community, never whether they belonged to any other active community. A user with multiple memberships would see `/resources` and `/skills` flicker between a full grid and an empty one on load, because the pages raced an unfiltered fetch (union of all the user's communities) against a community-filtered fetch (scoped to whichever community happened to land first in a non-deterministic list), with whichever response arrived last winning
+- Joining a second community while already an active member of one is now blocked with a `409` and a clear message; leaving the current community (existing "Leave Community" button) is required before joining another. Community merges remain unaffected — merging still migrates members into the target community directly
+- `GET /communities/my/memberships` now returns a deterministic, oldest-first order and excludes stale rows left behind in merged-away communities
+- `resources/+page.svelte`, `skills/+page.svelte` and `events/+page.svelte` no longer race an unfiltered fetch against a community-filtered one on mount; a request-sequencing guard also prevents any out-of-order response from clobbering a newer one
+- One-time data migration retroactively cleans up existing multi-membership users, keeping each user's oldest active community membership
+- 4 new backend tests (444 total)
+
 ## [2.2.1] - 2026-07-08
 
 ### Fixed

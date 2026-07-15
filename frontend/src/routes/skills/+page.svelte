@@ -51,6 +51,8 @@
 	let searchQuery = $state('');
 	let searchTimeout: ReturnType<typeof setTimeout> | null = $state(null);
 	let showCreateForm = $state(false);
+	let myCommunitiesLoaded = $state(false);
+	let requestId = 0;
 
 	// Create form
 	let newTitle = $state('');
@@ -62,6 +64,7 @@
 	let myCommunities = $state<MyCommunity[]>([]);
 
 	async function loadSkills() {
+		const thisRequest = ++requestId;
 		loading = true;
 		try {
 			const params = new URLSearchParams();
@@ -72,12 +75,14 @@
 			const res = await api<{ items: Skill[]; total: number }>(
 				`/skills?${params.toString()}`
 			);
+			if (thisRequest !== requestId) return; // superseded by a newer request
 			skills = res.items;
 			total = res.total;
 		} catch {
+			if (thisRequest !== requestId) return;
 			skills = [];
 		} finally {
-			loading = false;
+			if (thisRequest === requestId) loading = false;
 		}
 	}
 
@@ -128,20 +133,24 @@
 			}
 		} catch {
 			myCommunities = [];
+		} finally {
+			myCommunitiesLoaded = true;
 		}
 	}
 
 	onMount(async () => {
 		if ($isLoggedIn) {
 			await loadMyCommunities();
+		} else {
+			myCommunitiesLoaded = true;
 		}
-		loadSkills();
 	});
 
 	$effect(() => {
 		filterCategory;
 		filterType;
 		filterCommunity;
+		if (!myCommunitiesLoaded) return;
 		loadSkills();
 	});
 </script>

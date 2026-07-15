@@ -147,6 +147,27 @@ def test_redeem_invite_already_member(client, auth_headers):
     assert "already a member" in res.json()["message"]
 
 
+def test_redeem_invite_blocked_when_already_in_different_community(client, auth_headers):
+    """Redeeming an invite for a different community is blocked while already a member elsewhere."""
+    community_a_id = _create_community(client, auth_headers, name="Community A")
+    other = _register(client, "otheradmin@test.com", "OtherAdmin")
+    community_b_id = _create_community(client, other, name="Community B")
+
+    joiner = _register(client, "joiner@test.com", "Joiner")
+    res_a = client.post(f"/communities/{community_a_id}/join", headers=joiner)
+    assert res_a.status_code == 200
+
+    invite_b = client.post(
+        "/invites", headers=other,
+        json={"community_id": community_b_id},
+    )
+    code = invite_b.json()["code"]
+
+    res_b = client.post(f"/invites/{code}/redeem", headers=joiner)
+    assert res_b.status_code == 409
+    assert "already a member of a community" in res_b.json()["detail"]
+
+
 def test_redeem_invite_increments_use_count(client, auth_headers):
     """Redeeming increments the use_count."""
     community_id = _create_community(client, auth_headers)

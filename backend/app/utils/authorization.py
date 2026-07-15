@@ -52,3 +52,25 @@ def require_admin_or_leader(
             status_code=403, detail="Admin or leader access required"
         )
     return member
+
+
+def get_active_community_membership(
+    db: Session, user_id: int, *, exclude_community_id: int | None = None
+) -> CommunityMember | None:
+    """Return the user's membership in an active, non-merged community, if any.
+
+    Excludes stale membership rows left behind in merged-away (inactive)
+    communities, since a merge legitimately leaves the old row in place.
+    """
+    query = (
+        db.query(CommunityMember)
+        .join(Community, Community.id == CommunityMember.community_id)
+        .filter(
+            CommunityMember.user_id == user_id,
+            Community.is_active == True,  # noqa: E712
+            Community.merged_into_id == None,  # noqa: E711
+        )
+    )
+    if exclude_community_id is not None:
+        query = query.filter(CommunityMember.community_id != exclude_community_id)
+    return query.first()

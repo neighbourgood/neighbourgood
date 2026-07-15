@@ -127,6 +127,32 @@ def test_join_community_already_member(client, auth_headers):
     assert "Already a member" in res.json()["detail"]
 
 
+def test_join_community_blocked_when_already_in_different_community(client, auth_headers):
+    community_a = _create_community(client, auth_headers, name="Group A", plz="10115", city="Berlin")
+    community_b = _create_community(client, auth_headers, name="Group B", plz="10999", city="Berlin")
+    other = _register(client, "joiner@test.com", "Joiner")
+
+    res_a = client.post(f"/communities/{community_a['id']}/join", headers=other)
+    assert res_a.status_code == 200
+
+    res_b = client.post(f"/communities/{community_b['id']}/join", headers=other)
+    assert res_b.status_code == 409
+    assert "already a member of a community" in res_b.json()["detail"]
+
+
+def test_join_community_after_leaving_allowed(client, auth_headers):
+    community_a = _create_community(client, auth_headers, name="Group A", plz="10115", city="Berlin")
+    community_b = _create_community(client, auth_headers, name="Group B", plz="10999", city="Berlin")
+    other = _register(client, "switcher@test.com", "Switcher")
+
+    client.post(f"/communities/{community_a['id']}/join", headers=other)
+    leave_res = client.delete(f"/communities/{community_a['id']}/leave", headers=other)
+    assert leave_res.status_code == 204
+
+    res_b = client.post(f"/communities/{community_b['id']}/join", headers=other)
+    assert res_b.status_code == 200
+
+
 def test_leave_community(client, auth_headers):
     created = _create_community(client, auth_headers)
     other = _register(client, "leaver@test.com", "Leaver")
@@ -301,6 +327,33 @@ def test_join_merged_community_redirects(client, auth_headers):
     res = client.post(f"/communities/{source['id']}/join", headers=other)
     assert res.status_code == 409
     assert str(target["id"]) in res.json()["detail"]
+
+
+def test_merge_migrated_member_not_blocked_and_memberships_filtered(client, auth_headers):
+    source = _create_community(client, auth_headers, name="Old Group", plz="10115", city="Berlin")
+    target = _create_community(client, auth_headers, name="New Group", plz="10115", city="Berlin")
+
+    member = _register(client, "migrated@test.com", "Migrated")
+    join_res = client.post(f"/communities/{source['id']}/join", headers=member)
+    assert join_res.status_code == 200
+
+    merge_res = client.post(
+        "/communities/merge",
+        headers=auth_headers,
+        json={"source_id": source["id"], "target_id": target["id"]},
+    )
+    assert merge_res.status_code == 200
+
+    # The member now has a stale row in the merged (inactive) source community
+    # plus a fresh row in the active target — /my/memberships must only report
+    # the active one, and repeated calls must return a stable order.
+    res1 = client.get("/communities/my/memberships", headers=member)
+    res2 = client.get("/communities/my/memberships", headers=member)
+    assert res1.status_code == 200 and res2.status_code == 200
+    names1 = [c["name"] for c in res1.json()]
+    names2 = [c["name"] for c in res2.json()]
+    assert names1 == ["New Group"]
+    assert names1 == names2
 
 
 # ── Merge Suggestions ──────────────────────────────────────────────

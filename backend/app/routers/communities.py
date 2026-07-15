@@ -12,6 +12,7 @@ from app.models.skill import Skill
 from app.models.user import User
 from app.services.activity import record_activity
 from app.services.webhooks import dispatch_event
+from app.utils.authorization import get_active_community_membership
 from app.schemas.community import (
     CommunityCreate,
     CommunityList,
@@ -241,10 +242,16 @@ def my_communities(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """List communities the current user belongs to."""
+    """List communities the current user belongs to, oldest membership first."""
     memberships = (
         db.query(CommunityMember)
-        .filter(CommunityMember.user_id == current_user.id)
+        .join(Community, Community.id == CommunityMember.community_id)
+        .filter(
+            CommunityMember.user_id == current_user.id,
+            Community.is_active == True,  # noqa: E712
+            Community.merged_into_id == None,  # noqa: E711
+        )
+        .order_by(CommunityMember.joined_at.asc(), CommunityMember.id.asc())
         .all()
     )
     community_ids = [m.community_id for m in memberships]
@@ -257,7 +264,9 @@ def my_communities(
         .filter(Community.id.in_(community_ids))
         .all()
     )
-    return [_community_to_out(c) for c in communities]
+    by_id = {c.id: c for c in communities}
+    ordered = [by_id[cid] for cid in community_ids if cid in by_id]
+    return [_community_to_out(c) for c in ordered]
 
 
 # ── Merge suggestions (must be before /{community_id} to avoid path conflict) ──
@@ -342,6 +351,15 @@ def join_community(
     )
     if existing:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Already a member")
+
+    other_membership = get_active_community_membership(
+        db, current_user.id, exclude_community_id=community_id
+    )
+    if other_membership:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="You're already a member of a community. Leave your current community before joining another.",
+        )
 
     membership = CommunityMember(
         community_id=community_id,
