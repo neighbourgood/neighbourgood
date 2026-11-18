@@ -26,7 +26,7 @@ How to run your own NeighbourGood instance: install, update, put it behind a dom
 
 A small VPS (around 5 € a month, e.g. Hetzner or DigitalOcean) is plenty for a neighbourhood, and can host several neighbourhoods side by side. Running NeighbourGood takes about 250 MB of memory plus the database; on one CPU core it serves around 100 page views a second, far more than even a busy neighbourhood needs. PostgreSQL runs inside Docker, so you don't need a separate database server.
 
-Installing and updating build the app on the server, and that step briefly needs about 1 GB of memory on its own. The one-line installer takes care of this: when the server has less than 2 GB of memory and swap together, it adds a 2 GB swap file at `/swapfile` (asking for your sudo password if needed) and keeps it across reboots. Set `NG_NO_SWAP=1` to skip that. If you install by hand, add 1–2 GB of swap first (your provider's docs explain how) so the build isn't stopped halfway.
+The backend and frontend come as ready-made images (for amd64 and arm64, so a Raspberry Pi or an ARM VPS works too), so nothing is built on your server. Only if you [build the images yourself](#building-the-images-yourself) does the server need about 1 GB of memory for the build. The one-line installer does that only when it can't download the images, and then adds a 2 GB swap file at `/swapfile` on servers with less than 2 GB of memory and swap together (asking for your sudo password if needed; set `NG_NO_SWAP=1` to skip that).
 
 ## Install with the one-line installer
 
@@ -63,10 +63,10 @@ Make your own account a platform admin (use the email you will sign up with):
 echo 'NG_ADMIN_EMAILS=["you@example.com"]' >> .env
 ```
 
-Build and start everything (the first run takes 2–3 minutes):
+Download and start everything:
 
 ```bash
-docker compose up --build
+docker compose up
 ```
 
 When the backend logs `Application startup complete`, the stack is ready:
@@ -92,7 +92,7 @@ Before you open it to your neighbours, also fill in the instance identity in `.e
 Start in the background:
 
 ```bash
-docker compose up --build -d
+docker compose up -d
 ```
 
 Follow the logs:
@@ -113,18 +113,27 @@ Stop and delete **all** data:
 docker compose down -v
 ```
 
-Rebuild one service after a code change:
-
-```bash
-docker compose up --build backend
-```
-
 ## Updating
 
 ```bash
 git pull
-docker compose up --build -d
+docker compose pull
+docker compose up -d
 ```
+
+`git pull` brings the latest `docker-compose.yml`, `docker compose pull` the latest images. Running the one-line installer again does the same.
+
+To stay on one release instead of following `latest`, set `NG_IMAGE_TAG` in `.env` (for example `NG_IMAGE_TAG=2.9.0`). Available versions are the tags listed on [GitHub](https://github.com/neighbourgood/neighbourgood/tags).
+
+### Building the images yourself
+
+For a fork, local changes, or no access to `ghcr.io`, build from your checkout with the override file:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.build.yml up --build -d
+```
+
+The frontend build needs about 1 GB of memory, so on a 1 GB server add 1–2 GB of swap first (your provider's docs explain how).
 
 New database columns are added automatically when the backend starts (the log shows `Added missing column …`), so a normal update needs no extra step. Alembic migrations remain the source of truth for everything else (constraints, indexes, data migrations). To apply them on a running stack:
 

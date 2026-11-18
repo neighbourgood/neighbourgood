@@ -12,6 +12,7 @@ NeighbourGood is configured with environment variables, all prefixed `NG_`. Put 
 | `NG_ADMIN_EMAILS` | `[]` | JSON array. Accounts with these emails become platform admins on their next request |
 | `NG_FRONTEND_URL` | `http://localhost:3800` | Public URL of the web app, used in email links |
 | `NG_CORS_ORIGINS` | `["http://localhost:3800","http://localhost:5173"]` | JSON array of allowed browser origins; set it to your public URL |
+| `NG_IMAGE_TAG` | `latest` | Docker Compose only: which published image release to run, e.g. `2.9.0` to stay on one version |
 
 ## Crisis mode
 

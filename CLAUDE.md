@@ -20,7 +20,7 @@ Token efficiency matters. Use the right model for the right task:
 
 ## Project Overview
 
-**NeighbourGood v2.8.4** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
+**NeighbourGood v2.9.0** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
 
 - **Blue Sky Mode** (normal operation): resource library, skill exchange, calendar bookings, community events, reputation/trust scores, community feed, direct messaging
 - **Red Sky Mode** (crisis operation): per-community crisis toggle or 60%-threshold community vote, emergency ticketing (request / offer / ping), neighbourhood leader roles, cross-instance Red Sky alerts
@@ -44,7 +44,7 @@ Current test count: **713 tests** across 40 test files (plus 15 frontend `node:t
 | Frontend | SvelteKit 2 + Svelte 5 + TypeScript | Node adapter in Docker; static adapter option |
 | Build tool | Vite 6 | Dev proxy rewrites `/api` → backend |
 | i18n | svelte-i18n | 12 languages + RTL (ar, fa); `npm run check:i18n` enforces key parity |
-| Deployment | Docker Compose | 3 services: `db` (pg), `backend`, `frontend` |
+| Deployment | Docker Compose | 3 services: `db` (pg), `backend`, `frontend`; backend/frontend pulled from `ghcr.io/neighbourgood/neighbourgood-{backend,frontend}` (published on `v*.*.*` tags by `.github/workflows/docker-publish.yml`) |
 
 ---
 
@@ -64,7 +64,8 @@ neighbourgood/
 ├── CODE_OF_CONDUCT.md      # Community code of conduct
 ├── .env.example            # Config template — copy to .env before running
 ├── install.sh              # One-line installer (Docker, or native fallback)
-├── docker-compose.yml      # Production-style 3-service stack
+├── docker-compose.yml      # Production-style 3-service stack (pulls published images)
+├── docker-compose.build.yml # Override: build backend/frontend from the checkout
 │
 ├── backend/
 │   ├── Dockerfile
@@ -148,7 +149,8 @@ npm run dev          # Vite dev server on :5173; /api proxy → :8300
 ```bash
 cp .env.example .env
 echo "NG_SECRET_KEY=$(openssl rand -hex 32)" >> .env
-docker compose up --build
+# Build from your checkout (plain `docker compose up` pulls the published images)
+docker compose -f docker-compose.yml -f docker-compose.build.yml up --build
 # Frontend:       http://localhost:3800
 # Backend API:    http://localhost:8300
 # Swagger docs:   http://localhost:8300/docs
@@ -208,6 +210,7 @@ All prefixed `NG_`. The app reads from `.env` via pydantic-settings.
 | `NG_MESH_MAX_MESSAGE_AGE_HOURS` | No | `72` | Mesh messages older than this are refused on sync |
 | `NG_WEBHOOK_ALLOW_PRIVATE` | No | `false` | Allow outbound webhooks to private/LAN addresses (SSRF guard off) |
 | `NG_MAX_REQUEST_BODY_BYTES` | No | `1048576` | JSON request body limit (413 above); multipart uploads use the image limit |
+| `NG_IMAGE_TAG` | No | `latest` | Docker Compose only: published image release to run (e.g. `2.9.0`) |
 
 ---
 
@@ -491,6 +494,7 @@ Current test files (29): `test_activity`, `test_auth`, `test_bookings`, `test_co
 
 | Version | Date | Highlights |
 |---------|------|-----------|
+| 2.9.0 | 2026-11-18 | Prebuilt Docker images: `docker-publish.yml` builds backend + frontend for amd64/arm64 on `v*.*.*` tags and pushes to ghcr.io; compose pulls them (`NG_IMAGE_TAG` pins a release), `docker-compose.build.yml` override builds locally, installer pulls and only builds as a fallback (713 tests) |
 | 2.8.4 | 2026-11-18 | `install.sh` adds a 2 GB swap file (kept in `/etc/fstab`) when RAM + swap is under 2 GB, so the ~1 GB frontend build doesn't get killed on small VPSes; `NG_NO_SWAP=1` opts out (713 tests) |
 | 2.8.3 | 2026-11-17 | Fix connection leak (webhook/Telegram fan-out reused the closed request session, ~15 shared items or messages emptied the pool) and burst stall (thread pool vs. connection pool deadlock above ~55 in-flight requests) with `ConcurrencyLimitMiddleware` capping requests at the pool size (713 tests) |
 | 2.8.2 | 2026-11-17 | Honest server sizing in README and self-hosting guide: a 5 € server is plenty for a neighbourhood (not "a few hundred people"), minimum RAM 1 GB, swap note for the on-server build (711 tests) |

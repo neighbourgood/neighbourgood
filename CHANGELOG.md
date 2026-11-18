@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.9.0] - 2026-11-18
+
+### Added
+
+- **Ready-made Docker images** — a new GitHub Actions workflow (`.github/workflows/docker-publish.yml`) builds the backend and frontend for amd64 and arm64 when a version tag (`v*.*.*`) is pushed and publishes them as `ghcr.io/neighbourgood/neighbourgood-backend` and `ghcr.io/neighbourgood/neighbourgood-frontend` (tags `X.Y.Z`, `X.Y`, `latest`). Servers no longer need about 1 GB of memory for the frontend build on install and update
+- `NG_IMAGE_TAG` in `.env` pins a release instead of `latest`
+
+### Changed
+
+- `docker-compose.yml` uses the published images. Updating is now `git pull && docker compose pull && docker compose up -d`. To build from the checkout instead (development, forks), use the new `docker-compose.build.yml` override: `docker compose -f docker-compose.yml -f docker-compose.build.yml up --build -d`
+- The one-line installer pulls the images and only builds on the server (with the swap step from 2.8.4) when they can't be downloaded, e.g. before the first release is published
+
 ## [2.8.4] - 2026-11-18
 
 ### Added
