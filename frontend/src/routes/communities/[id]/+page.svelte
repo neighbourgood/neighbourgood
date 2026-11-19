@@ -774,7 +774,6 @@
 		font-size: 0.8rem;
 		color: var(--color-text-muted);
 		margin-top: 0.25rem;
-		font-style: italic;
 	}
 
 	.btn-merge {
@@ -844,8 +843,6 @@
 
 	.res-category {
 		font-size: 0.65rem;
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
 		color: var(--color-primary-text);
 		font-weight: 600;
 	}
@@ -908,7 +905,6 @@
 	.ticket-urgency {
 		font-size: 0.72rem;
 		font-weight: 600;
-		text-transform: uppercase;
 	}
 
 	.ticket-status {
@@ -961,8 +957,6 @@
 		font-size: 0.8rem;
 		font-weight: 600;
 		color: var(--color-text-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
 		margin: 0 0 0.75rem;
 	}
 

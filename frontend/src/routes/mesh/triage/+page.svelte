@@ -197,6 +197,7 @@
 	}
 
 	.ticket-urgency {
+		text-transform: uppercase;
 		color: var(--u);
 		background: color-mix(in srgb, var(--u) 14%, transparent);
 		border-color: color-mix(in srgb, var(--u) 45%, transparent);

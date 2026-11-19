@@ -431,8 +431,6 @@
 	.stat-label {
 		font-size: 0.78rem;
 		color: var(--color-text-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
 	}
 
 	/* Review Cards */

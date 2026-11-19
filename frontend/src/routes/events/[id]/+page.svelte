@@ -255,8 +255,6 @@
 
 	.event-info dt {
 		font-size: 0.75rem;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
 		color: var(--color-text-muted);
 		margin: 0;
 	}

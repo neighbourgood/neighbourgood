@@ -761,8 +761,6 @@
 	.stat-label {
 		font-size: 0.72rem;
 		color: var(--color-text-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.03em;
 	}
 
 	.instance-footer {

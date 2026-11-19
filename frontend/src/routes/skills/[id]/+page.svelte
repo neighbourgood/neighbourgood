@@ -481,14 +481,11 @@
 
 	.no-description {
 		color: var(--color-text-muted);
-		font-style: italic;
 	}
 
 	.section-card h3 {
 		font-size: 0.8rem;
 		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.07em;
 		color: var(--color-text-muted);
 		margin-bottom: 0.9rem;
 	}
@@ -673,7 +670,6 @@
 	.already-reviewed {
 		font-size: 0.85rem;
 		color: var(--color-text-muted);
-		font-style: italic;
 		margin-bottom: 1rem;
 	}
 
