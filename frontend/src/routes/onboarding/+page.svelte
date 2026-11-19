@@ -657,8 +657,6 @@
 	.step-label {
 		font-size: 0.7rem;
 		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
 	}
 
 	.progress-step.done .step-label,

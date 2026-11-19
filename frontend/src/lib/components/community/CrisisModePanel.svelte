@@ -137,7 +137,6 @@
     color: var(--color-text-muted);
   }
   .vote-threshold {
-    font-style: italic;
   }
   .vote-actions {
     display: flex;

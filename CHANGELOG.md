@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.9.0] - 2026-11-19
+
+### Changed
+
+- **Headline without the italic accent** — "Share more. Own less. Help each other." on the home page is three upright lines in one colour. The italic violet last line was the most generated-looking detail in the app
+- **One straight product card in the hero** — the three tilted activity cards, the speech bubble and the violet glow behind them are replaced by one plain "Recent activity" card
+- **No decoration that says nothing** — the 01–06 numbers on the feature cards, their hover lift and the double dot in the version line are gone; the version line is a quiet footer
+- **No italic, no shouting labels** — italic meta text (unassigned tickets, empty states, notes, quotes) is upright, and uppercase letter-spaced labels (page kickers, badges, table and section labels, calendar months, the home eyebrow) are sentence case. Red Sky urgency labels (CRITICAL, HIGH, …) and the Red Sky nav pill stay uppercase on purpose
+- **Sentence case in English** — about 150 English UI strings move from Title Case to sentence case ("Sign up", "Share a resource", "Account settings", "Activate crisis mode"); other languages keep their own conventions
+- `docs/design.md` describes the plain-type rule
+
 ## [2.8.4] - 2026-11-18
 
 ### Added

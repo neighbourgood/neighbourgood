@@ -351,14 +351,12 @@
 	}
 
 	.role-tag {
-		font-style: italic;
 	}
 
 	.message {
 		font-size: 0.85rem;
 		color: var(--color-text-muted);
 		margin-top: 0.35rem;
-		font-style: italic;
 	}
 
 	.booking-actions {
@@ -458,8 +456,6 @@
 		font-size: 0.9rem;
 		font-weight: 700;
 		color: var(--color-warning);
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
 		margin-bottom: 0.25rem;
 	}
 

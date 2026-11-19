@@ -103,7 +103,6 @@
 		color: var(--sev);
 		font-size: 0.8rem;
 		font-weight: 700;
-		text-transform: uppercase;
 	}
 
 	h1 {
@@ -112,7 +111,6 @@
 
 	.inactive-note {
 		color: var(--color-text-muted);
-		font-style: italic;
 	}
 
 	.description {

@@ -435,7 +435,6 @@
   .type-label {
     font-size: 0.8rem;
     color: var(--color-text-muted);
-    font-style: italic;
   }
 
   .ticket-title {
@@ -502,7 +501,6 @@
 
   .unassigned {
     color: var(--color-text-muted);
-    font-style: italic;
   }
 
   .assignment-actions {
@@ -536,7 +534,6 @@
 
   .no-comments {
     color: var(--color-text-muted);
-    font-style: italic;
     margin-bottom: 1.5rem;
   }
 

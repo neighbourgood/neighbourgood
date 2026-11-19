@@ -570,7 +570,7 @@
 									{#if ticket.assigned_to}
 										<Icon name="arrow-right" size={12} class="flip-rtl" /> {ticket.assigned_to.display_name}
 									{:else}
-										· <em>{$t('crisis.unassigned')}</em>
+										· {$t('crisis.unassigned')}
 									{/if}
 									{#if ticket.status !== 'resolved' && isOverdue(ticket.due_at)}
 										· <span class="tk-overdue">{$t('crisis.overdue')}</span>

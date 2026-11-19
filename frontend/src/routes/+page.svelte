@@ -52,7 +52,7 @@
 		{/if}
 		<div class="hero-copy slide-up">
 			<p class="hero-eyebrow">{$t('home.hero_title')}</p>
-			<h1>{$t('home.hero_tag1')}<br />{$t('home.hero_tag2')}<br /><em class="hero-accent">{$t('home.hero_tag3')}</em></h1>
+			<h1>{$t('home.hero_tag1')}<br />{$t('home.hero_tag2')}<br />{$t('home.hero_tag3')}</h1>
 			<p class="hero-subtitle">
 				{$t('home.hero_subtitle')}
 			</p>
@@ -63,25 +63,23 @@
 		</div>
 
 		{#if $bandwidth !== 'low'}
-			<div class="hero-panel" aria-hidden="true">
-				<div class="mock-card mock-card-1 slide-up" style="animation-delay: 0.15s">
-					<span class="mock-icon"><Icon name="tool" size={20} /></span>
-					<span class="mock-text">{$t('home.hero_activity_1')}</span>
-					<span class="mock-dot mock-dot-green"></span>
+			<div class="hero-panel slide-up" aria-hidden="true">
+				<p class="panel-title">{$t('home.recent_activity')}</p>
+				<div class="panel-row">
+					<span class="panel-icon"><Icon name="tool" size={18} /></span>
+					<span class="panel-text">{$t('home.hero_activity_1')}</span>
 				</div>
-				<div class="mock-card mock-card-2 slide-up" style="animation-delay: 0.35s">
-					<span class="mock-icon"><Icon name="bike" size={20} /></span>
-					<span class="mock-text">{$t('home.hero_activity_2')}</span>
-					<span class="mock-dot mock-dot-green"></span>
+				<div class="panel-row">
+					<span class="panel-icon"><Icon name="bike" size={18} /></span>
+					<span class="panel-text">{$t('home.hero_activity_2')}</span>
 				</div>
-				<div class="mock-card mock-card-3 slide-up" style="animation-delay: 0.55s">
-					<span class="mock-icon"><Icon name="music" size={20} /></span>
-					<span class="mock-text">{$t('home.hero_activity_3')}</span>
-					<span class="mock-dot mock-dot-violet"></span>
+				<div class="panel-row">
+					<span class="panel-icon"><Icon name="music" size={18} /></span>
+					<span class="panel-text">{$t('home.hero_activity_3')}</span>
 				</div>
-				<div class="mock-bubble slide-up" style="animation-delay: 0.75s">
-					<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-					<span class="mock-bubble-text">{$t('home.hero_activity_message')}</span>
+				<div class="panel-row">
+					<span class="panel-icon is-quiet"><Icon name="message" size={18} /></span>
+					<span class="panel-text">{$t('home.hero_activity_message')}</span>
 				</div>
 			</div>
 		{/if}
@@ -93,7 +91,6 @@
 			{#each FEATURES as feature, i}
 				<div class="card feature-card slide-up" style="animation-delay: {0.05 * (i + 1)}s">
 					<div class="feature-card-top">
-						<span class="feature-index">0{i + 1}</span>
 						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="feature-mark"><path d={feature.icon}/></svg>
 					</div>
 					<h3>{$t(`home.feat_${feature.key}_title`)}</h3>
@@ -113,8 +110,7 @@
 		</section>
 	{:else if platformStatus}
 		<section class="status-banner status-ok fade-in">
-			<span class="status-dot"></span>
-			<span class="status-text">
+			<span class="status-line">
 				v{platformStatus.version} &middot; <span class={modeClass}>{modeLabel}</span>
 			</span>
 		</section>
@@ -148,24 +144,10 @@
 	}
 
 	.hero-eyebrow {
-		font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-		font-size: 0.75rem;
+		font-size: 0.9rem;
 		font-weight: 500;
-		text-transform: uppercase;
-		letter-spacing: 0.12em;
 		color: var(--color-accent);
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.hero-eyebrow::before {
-		content: '';
-		width: 2rem;
-		height: 1px;
-		background: var(--color-accent);
-		flex-shrink: 0;
+		margin-bottom: 1.25rem;
 	}
 
 	.hero h1 {
@@ -173,11 +155,6 @@
 		line-height: 1.08;
 		color: var(--color-text);
 		margin-bottom: 1.25rem;
-	}
-
-	.hero-accent {
-		font-style: italic;
-		color: var(--color-primary-text);
 	}
 
 	.hero-subtitle {
@@ -194,92 +171,55 @@
 		flex-wrap: wrap;
 	}
 
-	/* ── Hero panel: text-free listing-card composition ───────────── */
+	/* ── Hero panel: one straight product card ───────────────────── */
 
 	.hero-panel {
 		position: relative;
 		z-index: 1;
-		display: flex;
-		flex-direction: column;
-		gap: 0.9rem;
-		/* Room for the cards' offsets and tilt: .hero clips its overflow, so a
-		   card shifted or rotated past the panel edge would be cut off. */
-		padding: 1.5rem 1.5rem;
-	}
-
-	.hero-panel::before {
-		content: '';
-		position: absolute;
-		inset: -2rem;
-		background: radial-gradient(closest-side, var(--color-primary-light), transparent);
-		opacity: 0.65;
-		pointer-events: none;
-	}
-
-	.mock-card {
-		position: relative;
-		display: flex;
-		align-items: center;
-		gap: 0.9rem;
 		background: var(--color-surface);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-lg);
-		padding: 0.9rem 1.1rem;
 		box-shadow: var(--shadow-md);
+		overflow: hidden;
 	}
 
-	.mock-card-1 { transform: rotate(-1.2deg) translateX(-0.5rem); }
-	.mock-card-2 { transform: rotate(0.8deg) translateX(1rem); }
-	.mock-card-3 { transform: rotate(-0.6deg); }
+	.panel-title {
+		margin: 0;
+		padding: 1.1rem 1.25rem 0.75rem;
+		font-family: var(--font-heading);
+		font-size: 1.15rem;
+		color: var(--color-text);
+	}
 
-	.mock-icon {
+	.panel-row {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		width: 40px;
-		height: 40px;
-		border-radius: var(--radius);
+		gap: 0.8rem;
+		padding: 0.8rem 1.25rem;
+		border-top: 1px solid var(--color-border);
+	}
+
+	.panel-icon {
+		display: grid;
+		place-items: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: var(--radius-sm);
 		background: var(--color-primary-light);
 		color: var(--color-primary-text);
 		flex-shrink: 0;
 	}
 
-	.mock-text {
-		flex: 1;
-		font-size: 0.85rem;
+	.panel-icon.is-quiet {
+		background: var(--color-surface-raised);
+		color: var(--color-text-muted);
+	}
+
+	.panel-text {
+		font-size: 0.875rem;
 		font-weight: 500;
 		color: var(--color-text);
 		line-height: 1.4;
-	}
-
-	.mock-dot {
-		width: 9px;
-		height: 9px;
-		border-radius: 50%;
-		flex-shrink: 0;
-	}
-
-	.mock-dot-green { background: var(--color-success); }
-	.mock-dot-violet { background: var(--color-primary); }
-
-	.mock-bubble {
-		position: relative;
-		align-self: flex-end;
-		display: flex;
-		align-items: center;
-		gap: 0.6rem;
-		background: var(--color-primary);
-		color: var(--color-on-primary);
-		border-radius: 999px;
-		padding: 0.55rem 1rem;
-		box-shadow: var(--shadow-md);
-		transform: rotate(1.5deg) translateX(-0.75rem);
-	}
-
-	.mock-bubble-text {
-		font-size: 0.82rem;
-		font-weight: 500;
-		white-space: nowrap;
 	}
 
 	/* ── Features: flat editorial cards ───────────────────────────── */
@@ -302,29 +242,16 @@
 
 	.feature-card {
 		padding: 1.4rem 1.5rem 1.5rem;
-		transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+		transition: border-color var(--transition);
 	}
 
 	.feature-card:hover {
 		border-color: var(--color-border-hover);
-		box-shadow: var(--shadow-md);
-		transform: translateY(-2px);
 	}
 
 	.feature-card-top {
 		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		border-bottom: 1px solid var(--color-border);
-		padding-bottom: 0.75rem;
-		margin-bottom: 0.9rem;
-	}
-
-	.feature-index {
-		font-family: var(--font-heading);
-		font-style: italic;
-		font-size: 1rem;
-		color: var(--color-text-subtle);
+		margin-bottom: 0.75rem;
 	}
 
 	.feature-mark {
@@ -356,23 +283,16 @@
 	}
 
 	.status-ok {
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		color: var(--color-text-muted);
+		padding-inline: 0;
+		border-top: 1px solid var(--color-border);
+		border-radius: 0;
+		color: var(--color-text-subtle);
 	}
 
 	.status-error {
 		background: var(--color-error-bg);
 		border: 1px solid var(--color-error);
 		color: var(--color-error);
-	}
-
-	.status-dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: var(--color-success);
-		flex-shrink: 0;
 	}
 
 	.status-icon {
