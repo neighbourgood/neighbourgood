@@ -77,7 +77,7 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 5. **Database** — For Docker-based testing:
    ```bash
-   docker compose up --build
+   docker compose -f docker-compose.yml -f docker-compose.build.yml up --build
    # Frontend: http://localhost:3800
    # Backend API: http://localhost:8300/docs
    ```

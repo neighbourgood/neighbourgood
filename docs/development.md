@@ -59,7 +59,27 @@ cd frontend && npm test
 cd frontend && npm run check:i18n
 ```
 
-`pytest` runs the backend suite (711 tests, in-memory SQLite, no database needed). `npm run check` runs svelte-check and TypeScript, `npm test` the frontend unit tests, and `check:i18n` makes sure every UI string exists in all 12 languages.
+`pytest` runs the backend suite (713 tests, in-memory SQLite, no database needed). `npm run check` runs svelte-check and TypeScript, `npm test` the frontend unit tests, and `check:i18n` makes sure every UI string exists in all 12 languages.
+
+## Releasing Docker images
+
+Servers pull ready-made images from `ghcr.io/neighbourgood/neighbourgood-backend` and `ghcr.io/neighbourgood/neighbourgood-frontend` instead of building them. The **Publish Docker images** workflow (`.github/workflows/docker-publish.yml`) builds both for amd64 and arm64 when a version tag is pushed:
+
+```bash
+git checkout main && git pull
+git tag v2.10.0          # matches the version in CHANGELOG.md
+git push origin v2.10.0
+```
+
+That publishes the tags `2.10.0`, `2.10` and `latest`. Arm64 is built under emulation, so a run takes a while. You can also start the workflow by hand from the Actions tab; pick the version tag (not a branch) as the ref, or no image tags are produced.
+
+After the very first publish, GitHub makes new packages private: open each package's settings and set its visibility to **Public**, or servers can't pull them.
+
+To try your own changes in Docker, build from the checkout instead of pulling:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.build.yml up --build
+```
 
 ## Database migrations
 

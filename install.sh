@@ -79,10 +79,10 @@ wait_for_status() {
   done
 }
 
-# The frontend image is built on the server (`docker compose up --build`) on
-# install and on every update, and that build alone peaks at about 1 GB. On a
-# small VPS without swap the kernel kills it halfway. Below 2 GB of RAM + swap,
-# add a 2 GB swap file and keep it across reboots. Opt out with NG_NO_SWAP=1.
+# Only needed when the images can't be pulled and are built on the server
+# instead: the frontend build alone peaks at about 1 GB, and on a small VPS
+# without swap the kernel kills it halfway. Below 2 GB of RAM + swap, add a
+# 2 GB swap file and keep it across reboots. Opt out with NG_NO_SWAP=1.
 SWAP_FILE="/swapfile"
 SWAP_MIN_KB=$((2 * 1024 * 1024))
 SWAP_SIZE_MB=2048
@@ -137,10 +137,17 @@ ensure_swap() {
 }
 
 setup_docker() {
-  ensure_swap
-  log "Docker detected — building and starting containers (this can take a few minutes on first run)..."
   cd "$INSTALL_DIR"
-  docker compose up --build -d
+  log "Docker detected — downloading the ready-made images..."
+  if docker compose pull; then
+    docker compose up -d
+  else
+    # No published images reachable (no release yet, a fork, no access to
+    # ghcr.io): build them from this checkout instead
+    warn "Couldn't download the images — building them on this server instead (this can take a few minutes)."
+    ensure_swap
+    docker compose -f docker-compose.yml -f docker-compose.build.yml up --build -d
+  fi
 
   log "Waiting for the backend to come up..."
   wait_for_status "http://localhost:8300/status" || true

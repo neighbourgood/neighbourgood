@@ -15,8 +15,11 @@ services:
       timeout: 3s
       retries: 5
 
+  # Ready-made images from GitHub's container registry. Set NG_IMAGE_TAG in
+  # .env to pin a release (e.g. 2.10.0). To build from this checkout instead:
+  #   docker compose -f docker-compose.yml -f docker-compose.build.yml up --build -d
   backend:
-    build: ./backend
+    image: ghcr.io/neighbourgood/neighbourgood-backend:${NG_IMAGE_TAG:-latest}
     container_name: ng-backend
     ports:
       - "8300:8300"
@@ -41,7 +44,7 @@ services:
       retries: 3
 
   frontend:
-    build: ./frontend
+    image: ghcr.io/neighbourgood/neighbourgood-frontend:${NG_IMAGE_TAG:-latest}
     container_name: ng-frontend
     ports:
       - "3800:3800"
