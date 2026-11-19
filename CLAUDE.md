@@ -20,7 +20,7 @@ Token efficiency matters. Use the right model for the right task:
 
 ## Project Overview
 
-**NeighbourGood v2.9.0** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
+**NeighbourGood v2.10.0** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
 
 - **Blue Sky Mode** (normal operation): resource library, skill exchange, calendar bookings, community events, reputation/trust scores, community feed, direct messaging
 - **Red Sky Mode** (crisis operation): per-community crisis toggle or 60%-threshold community vote, emergency ticketing (request / offer / ping), neighbourhood leader roles, cross-instance Red Sky alerts
@@ -210,7 +210,7 @@ All prefixed `NG_`. The app reads from `.env` via pydantic-settings.
 | `NG_MESH_MAX_MESSAGE_AGE_HOURS` | No | `72` | Mesh messages older than this are refused on sync |
 | `NG_WEBHOOK_ALLOW_PRIVATE` | No | `false` | Allow outbound webhooks to private/LAN addresses (SSRF guard off) |
 | `NG_MAX_REQUEST_BODY_BYTES` | No | `1048576` | JSON request body limit (413 above); multipart uploads use the image limit |
-| `NG_IMAGE_TAG` | No | `latest` | Docker Compose only: published image release to run (e.g. `2.9.0`) |
+| `NG_IMAGE_TAG` | No | `latest` | Docker Compose only: published image release to run (e.g. `2.10.0`) |
 
 ---
 
@@ -494,7 +494,8 @@ Current test files (29): `test_activity`, `test_auth`, `test_bookings`, `test_co
 
 | Version | Date | Highlights |
 |---------|------|-----------|
-| 2.9.0 | 2026-11-18 | Prebuilt Docker images: `docker-publish.yml` builds backend + frontend for amd64/arm64 on `v*.*.*` tags and pushes to ghcr.io; compose pulls them (`NG_IMAGE_TAG` pins a release), `docker-compose.build.yml` override builds locally, installer pulls and only builds as a fallback (713 tests) |
+| 2.10.0 | 2026-11-19 | Prebuilt Docker images: `docker-publish.yml` builds backend + frontend for amd64/arm64 on `v*.*.*` tags and pushes to ghcr.io; compose pulls them (`NG_IMAGE_TAG` pins a release), `docker-compose.build.yml` override builds locally, installer pulls and only builds as a fallback (713 tests) |
+| 2.9.0 | 2026-11-19 | Unslop pass: upright one-colour hero headline, one straight "Recent activity" card instead of tilted toasts, no 01–06 feature numbers or hover lift, no italic anywhere, sentence-case kickers/labels/badges (Red Sky urgency labels stay uppercase), English UI strings in sentence case, quiet version line on the home page (713 tests) |
 | 2.8.4 | 2026-11-18 | `install.sh` adds a 2 GB swap file (kept in `/etc/fstab`) when RAM + swap is under 2 GB, so the ~1 GB frontend build doesn't get killed on small VPSes; `NG_NO_SWAP=1` opts out (713 tests) |
 | 2.8.3 | 2026-11-17 | Fix connection leak (webhook/Telegram fan-out reused the closed request session, ~15 shared items or messages emptied the pool) and burst stall (thread pool vs. connection pool deadlock above ~55 in-flight requests) with `ConcurrencyLimitMiddleware` capping requests at the pool size (713 tests) |
 | 2.8.2 | 2026-11-17 | Honest server sizing in README and self-hosting guide: a 5 € server is plenty for a neighbourhood (not "a few hundred people"), minimum RAM 1 GB, swap note for the on-server build (711 tests) |

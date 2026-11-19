@@ -568,7 +568,6 @@
 	.date-block span {
 		font-size: 0.7rem;
 		font-weight: 600;
-		text-transform: uppercase;
 	}
 
 	.event-text {

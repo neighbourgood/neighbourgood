@@ -677,8 +677,6 @@
 		font-size: 0.85rem;
 		font-weight: 600;
 		color: var(--color-text-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
 		margin-bottom: 0.5rem;
 	}
 
@@ -693,7 +691,6 @@
 		font-size: 0.85rem;
 		color: var(--color-text-muted);
 		margin: 0.5rem 0 0 0;
-		font-style: italic;
 	}
 
 	.section-divider {

@@ -772,7 +772,6 @@
 	.sync-offline-hint {
 		color: var(--color-warning);
 		font-size: 0.85rem;
-		font-style: italic;
 	}
 
 	.sync-result {

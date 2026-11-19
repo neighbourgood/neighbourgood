@@ -274,26 +274,12 @@ h3, h4, h5, h6 {
 
 /* ── Design A primitives: kicker, serif section titles, list panels ── */
 
-/* Small mono label above a page title, with a short rule */
+/* Small sentence-case label above a page title */
 .kicker {
-	display: flex;
-	align-items: center;
-	gap: 0.6rem;
 	margin: 0 0 0.35rem;
-	font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-	font-size: 0.7rem;
+	font-size: 0.85rem;
 	font-weight: 500;
-	text-transform: uppercase;
-	letter-spacing: 0.12em;
 	color: var(--color-accent);
-}
-
-.kicker::before {
-	content: '';
-	width: 1.5rem;
-	height: 1px;
-	background: currentColor;
-	flex: none;
 }
 
 /* Section title: quiet serif, never uppercase */
@@ -1022,7 +1008,7 @@ label.field,
 .badge-warning { color: var(--color-warning); }
 .badge-error { color: var(--color-error); }
 .badge-accent { color: var(--color-accent); }
-.badge-caps { text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.68rem; }
+.badge-caps { font-size: 0.72rem; }
 
 .badge-solid {
 	background: var(--color-primary);

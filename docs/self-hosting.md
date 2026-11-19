@@ -82,7 +82,7 @@ Before you open it to your neighbours, also fill in the instance identity in `.e
 
 ## First steps after installing
 
-1. Open the web app and click **Sign Up**. An account whose email is in `NG_ADMIN_EMAILS` becomes a platform admin, which is needed to manage the federation directory and send cross-instance Red Sky alerts.
+1. Open the web app and click **Sign up**. An account whose email is in `NG_ADMIN_EMAILS` becomes a platform admin, which is needed to manage the federation directory and send cross-instance Red Sky alerts.
 2. The onboarding wizard lets you search for a community near you, join one, or create one. As the creator you are the community's admin.
 3. Create invite links on the community page and share them with your neighbours.
 4. Optional: connect the Telegram bot ([telegram-setup.md](telegram-setup.md)).
@@ -123,7 +123,7 @@ docker compose up -d
 
 `git pull` brings the latest `docker-compose.yml`, `docker compose pull` the latest images. Running the one-line installer again does the same.
 
-To stay on one release instead of following `latest`, set `NG_IMAGE_TAG` in `.env` (for example `NG_IMAGE_TAG=2.9.0`). Available versions are the tags listed on [GitHub](https://github.com/neighbourgood/neighbourgood/tags).
+To stay on one release instead of following `latest`, set `NG_IMAGE_TAG` in `.env` (for example `NG_IMAGE_TAG=2.10.0`). Available versions are the tags listed on [GitHub](https://github.com/neighbourgood/neighbourgood/tags).
 
 ### Building the images yourself
 

@@ -643,14 +643,11 @@
 
 	.no-description {
 		color: var(--color-text-muted);
-		font-style: italic;
 	}
 
 	.section-card h3 {
 		font-size: 0.8rem;
 		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.07em;
 		color: var(--color-text-muted);
 		margin-bottom: 0.9rem;
 	}
@@ -851,7 +848,6 @@
 	.empty-bookings {
 		font-size: 0.88rem;
 		color: var(--color-text-muted);
-		font-style: italic;
 		margin: 0;
 	}
 

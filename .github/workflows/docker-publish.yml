@@ -3,9 +3,9 @@
 # build alone needs about 1 GB of memory).
 #
 # Runs when a version tag is pushed:
-#   git tag v2.9.0 && git push origin v2.9.0
+#   git tag v2.10.0 && git push origin v2.10.0
 # and produces ghcr.io/neighbourgood/neighbourgood-{backend,frontend} tagged
-# 2.9.0, 2.9 and latest, for amd64 and arm64 (Raspberry Pi, ARM VPSes).
+# 2.10.0, 2.10 and latest, for amd64 and arm64 (Raspberry Pi, ARM VPSes).
 name: Publish Docker images
 
 on:

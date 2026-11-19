@@ -67,11 +67,11 @@ Servers pull ready-made images from `ghcr.io/neighbourgood/neighbourgood-backend
 
 ```bash
 git checkout main && git pull
-git tag v2.9.0          # matches the version in CHANGELOG.md
-git push origin v2.9.0
+git tag v2.10.0          # matches the version in CHANGELOG.md
+git push origin v2.10.0
 ```
 
-That publishes the tags `2.9.0`, `2.9` and `latest`. Arm64 is built under emulation, so a run takes a while. You can also start the workflow by hand from the Actions tab; pick the version tag (not a branch) as the ref, or no image tags are produced.
+That publishes the tags `2.10.0`, `2.10` and `latest`. Arm64 is built under emulation, so a run takes a while. You can also start the workflow by hand from the Actions tab; pick the version tag (not a branch) as the ref, or no image tags are produced.
 
 After the very first publish, GitHub makes new packages private: open each package's settings and set its visibility to **Public**, or servers can't pull them.
 
