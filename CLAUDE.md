@@ -20,14 +20,14 @@ Token efficiency matters. Use the right model for the right task:
 
 ## Project Overview
 
-**NeighbourGood v2.10.0** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
+**NeighbourGood v2.10.1** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
 
 - **Blue Sky Mode** (normal operation): resource library, skill exchange, calendar bookings, community events, reputation/trust scores, community feed, direct messaging
 - **Red Sky Mode** (crisis operation): per-community crisis toggle or 60%-threshold community vote, emergency ticketing (request / offer / ping), neighbourhood leader roles, cross-instance Red Sky alerts
 
 Each instance exposes `/instance/info` so instances can discover and federate with each other.
 
-Current test count: **713 tests** across 40 test files (plus 15 frontend `node:test` tests via `npm test`) (all backend, pytest + in-memory SQLite).
+Current test count: **715 tests** across 41 test files (plus 15 frontend `node:test` tests via `npm test`) (all backend, pytest + in-memory SQLite).
 
 ---
 
@@ -494,6 +494,7 @@ Current test files (29): `test_activity`, `test_auth`, `test_bookings`, `test_co
 
 | Version | Date | Highlights |
 |---------|------|-----------|
+| 2.10.1 | 2026-11-25 | `alembic upgrade head` works on an empty SQLite/PostgreSQL database: revisions that relied on the startup `create_all()` now check with `sa.inspect()` and create missing tables where first needed (`emergency_tickets`, `mesh_synced_messages`), named FK for SQLite batch, new head `d4e5f6a7b8c9` creates `mesh_checkins` and the federation sync tables, `tests/test_migrations.py` (715 tests) |
 | 2.10.0 | 2026-11-19 | Prebuilt Docker images: `docker-publish.yml` builds backend + frontend for amd64/arm64 on `v*.*.*` tags and pushes to ghcr.io; compose pulls them (`NG_IMAGE_TAG` pins a release), `docker-compose.build.yml` override builds locally, installer pulls and only builds as a fallback (713 tests) |
 | 2.9.0 | 2026-11-19 | Unslop pass: upright one-colour hero headline, one straight "Recent activity" card instead of tilted toasts, no 01–06 feature numbers or hover lift, no italic anywhere, sentence-case kickers/labels/badges (Red Sky urgency labels stay uppercase), English UI strings in sentence case, quiet version line on the home page (713 tests) |
 | 2.8.4 | 2026-11-18 | `install.sh` adds a 2 GB swap file (kept in `/etc/fstab`) when RAM + swap is under 2 GB, so the ~1 GB frontend build doesn't get killed on small VPSes; `NG_NO_SWAP=1` opts out (713 tests) |
