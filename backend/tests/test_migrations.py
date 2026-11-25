@@ -12,7 +12,7 @@ from app.config import settings
 from app.database import Base
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent
-PREVIOUS_HEAD = "c0d1e2f3a4b5"
+PREVIOUS_HEAD = "7a8b9c0d1e2f"
 
 
 @pytest.fixture

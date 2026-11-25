@@ -20,14 +20,14 @@ Token efficiency matters. Use the right model for the right task:
 
 ## Project Overview
 
-**NeighbourGood v2.10.1** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
+**NeighbourGood v2.11.1** — a self-hostable, federation-ready community resource-sharing platform with a **dual-state architecture**:
 
 - **Blue Sky Mode** (normal operation): resource library, skill exchange, calendar bookings, community events, reputation/trust scores, community feed, direct messaging
 - **Red Sky Mode** (crisis operation): per-community crisis toggle or 60%-threshold community vote, emergency ticketing (request / offer / ping), neighbourhood leader roles, cross-instance Red Sky alerts
 
 Each instance exposes `/instance/info` so instances can discover and federate with each other.
 
-Current test count: **715 tests** across 41 test files (plus 15 frontend `node:test` tests via `npm test`) (all backend, pytest + in-memory SQLite).
+Current test count: **754 tests** across 43 test files (plus 15 frontend `node:test` tests via `npm test`) (all backend, pytest + in-memory SQLite).
 
 ---
 
@@ -211,6 +211,7 @@ All prefixed `NG_`. The app reads from `.env` via pydantic-settings.
 | `NG_WEBHOOK_ALLOW_PRIVATE` | No | `false` | Allow outbound webhooks to private/LAN addresses (SSRF guard off) |
 | `NG_MAX_REQUEST_BODY_BYTES` | No | `1048576` | JSON request body limit (413 above); multipart uploads use the image limit |
 | `NG_IMAGE_TAG` | No | `latest` | Docker Compose only: published image release to run (e.g. `2.10.0`) |
+| `NG_WHATSAPP_BRIDGE_URL` | No | unset | WAHA bridge (`http://waha:3000` in Compose); WhatsApp bot off while unset. With `NG_WHATSAPP_API_KEY`, `NG_WHATSAPP_WEBHOOK_SECRET` (HMAC), optional `NG_WHATSAPP_BOT_NUMBER`; `COMPOSE_PROFILES=whatsapp` starts the `waha` container |
 
 ---
 
@@ -267,7 +268,11 @@ def get_item(id: int, db: Session = Depends(get_db), current_user: User = Depend
 | `notifications.py` | `send_notification()` — logs to console when SMTP unconfigured |
 | `activity.py` | `log_activity()` — call after writes to generate community feed entries |
 | `telegram.py` | `send_message()`, `is_configured()`, `set_webhook()` — Telegram Bot API client |
-| `webhooks.py` | Outbound webhook delivery, HMAC-SHA256 signature verification, event broadcasting |
+| `webhooks.py` | Outbound webhook delivery, HMAC-SHA256 signature verification, event broadcasting (also calls the WhatsApp fan-out) |
+| `actions.py` | Write rules shared by routers and chat bots (bookings, listings, tickets, crisis votes, RSVP, join); raise `HTTPException`, take a `defer` callable for fan-out |
+| `whatsapp.py` | WAHA bridge client: paced send queue, HMAC webhook check, session status/QR |
+| `chat_commands.py` / `chat_i18n.py` | WhatsApp command engine; command words and replies in `app/i18n/chat/<lang>.json` (12 locales, key parity tested) |
+| `whatsapp_notify.py` / `whatsapp_digest.py` | Private messages + urgent group posts; daily/weekly group digest loop (started in lifespan) |
 
 ### Configuration (`app/config.py`)
 
@@ -353,11 +358,11 @@ Shared TypeScript interfaces that mirror backend Pydantic schemas. Always import
 
 | Model | Key fields | Notes |
 |-------|-----------|-------|
-| `User` | id, email, hashed_password, display_name, neighbourhood, role, is_active, telegram_chat_id, preferred_language | roles: `member`, `admin` |
+| `User` | id, email, hashed_password, display_name, neighbourhood, role, is_active, telegram_chat_id, whatsapp_id, account_type, preferred_language | roles: `member`, `admin`; `account_type` `whatsapp` = light account created by the bot (placeholder `@whatsapp.invalid` email, no login) |
 | `Resource` | id, title, category, condition, image_url, is_available, owner_id, community_id | community_id nullable (personal items) |
 | `Booking` | id, resource_id, borrower_id, start_date, end_date, status, message | statuses: pending → approved/rejected → completed/cancelled |
 | `Message` | id, sender_id, recipient_id, booking_id, body, is_read | only between users sharing a community |
-| `Community` | id, name, postal_code, city, country_code, mode, latitude, longitude, merged_into_id, is_active | mode: blue/red |
+| `Community` | id, name, postal_code, city, country_code, mode, latitude, longitude, merged_into_id, is_active, whatsapp_group_id, whatsapp_digest | mode: blue/red; digest: off/daily/weekly |
 | `CommunityMember` | id, community_id, user_id, role | roles: member, leader, admin |
 | `Skill` | id, user_id, community_id, title, category, skill_type, description | skill_type: offer/request; 10 categories |
 | `Activity` | id, community_id, user_id, action_type, object_type, object_id, summary | auto-generated feed entries |
@@ -403,6 +408,7 @@ Full reference: `docs/api.md`. Interactive: `http://localhost:8300/docs`.
 | `/mesh` | mesh_sync.py | BLE mesh message sync, check-ins |
 | `/matching` | matching.py | Smart suggestions, unmet needs, AI status |
 | `/users/me/telegram` | telegram.py | link/unlink Telegram account |
+| `/whatsapp/*`, `/users/me/whatsapp`, `/communities/{id}/whatsapp`, `/auth/claim/{token}` | whatsapp.py | WAHA webhook, WhatsApp linking, group link + digest, light-account claim, bridge pairing |
 
 ---
 
@@ -486,7 +492,7 @@ def test_not_found(client, auth_headers):
     assert res.status_code == 404
 ```
 
-Current test files (29): `test_activity`, `test_auth`, `test_bookings`, `test_communities`, `test_crisis`, `test_events`, `test_federation`, `test_federation_sync`, `test_instance`, `test_inventory`, `test_invites`, `test_matching`, `test_mesh_sync`, `test_messages`, `test_notifications`, `test_reputation`, `test_resource_community`, `test_resources`, `test_resources_phase2`, `test_reviews`, `test_security_phase4b`, `test_skills`, `test_status`, `test_telegram`, `test_telegram_ai`, `test_triage`, `test_trust`, `test_users`, `test_webhooks`.
+Current test files (29): `test_activity`, `test_auth`, `test_bookings`, `test_communities`, `test_crisis`, `test_events`, `test_federation`, `test_federation_sync`, `test_instance`, `test_inventory`, `test_invites`, `test_matching`, `test_mesh_sync`, `test_messages`, `test_notifications`, `test_reputation`, `test_resource_community`, `test_resources`, `test_resources_phase2`, `test_reviews`, `test_security_phase4b`, `test_skills`, `test_status`, `test_telegram`, `test_telegram_ai`, `test_triage`, `test_trust`, `test_users`, `test_webhooks`, `test_whatsapp`, `test_whatsapp_digest`.
 
 ---
 
@@ -494,7 +500,8 @@ Current test files (29): `test_activity`, `test_auth`, `test_bookings`, `test_co
 
 | Version | Date | Highlights |
 |---------|------|-----------|
-| 2.10.1 | 2026-11-25 | `alembic upgrade head` works on an empty SQLite/PostgreSQL database: revisions that relied on the startup `create_all()` now check with `sa.inspect()` and create missing tables where first needed (`emergency_tickets`, `mesh_synced_messages`), named FK for SQLite batch, new head `d4e5f6a7b8c9` creates `mesh_checkins` and the federation sync tables, `tests/test_migrations.py` (715 tests) |
+| 2.11.1 | 2026-11-25 | `alembic upgrade head` works on an empty SQLite/PostgreSQL database: revisions that relied on the startup `create_all()` now check with `sa.inspect()` and create missing tables where first needed (`emergency_tickets`, `mesh_synced_messages`), named FK for SQLite batch, new head `d4e5f6a7b8c9` creates `mesh_checkins` and the federation sync tables, `tests/test_migrations.py` (754 tests) |
+| 2.11.0 | 2026-11-25 | WhatsApp bot via self-hosted WAHA bridge (separate opt-in installer step, `whatsapp` Compose profile): commands in 12 languages in groups and private chats, WhatsApp-only light accounts with claim link, daily/weekly group digest + immediate Red Sky/urgent posts, paced sending; write rules moved into `services/actions.py` (752 tests) |
 | 2.10.0 | 2026-11-19 | Prebuilt Docker images: `docker-publish.yml` builds backend + frontend for amd64/arm64 on `v*.*.*` tags and pushes to ghcr.io; compose pulls them (`NG_IMAGE_TAG` pins a release), `docker-compose.build.yml` override builds locally, installer pulls and only builds as a fallback (713 tests) |
 | 2.9.0 | 2026-11-19 | Unslop pass: upright one-colour hero headline, one straight "Recent activity" card instead of tilted toasts, no 01–06 feature numbers or hover lift, no italic anywhere, sentence-case kickers/labels/badges (Red Sky urgency labels stay uppercase), English UI strings in sentence case, quiet version line on the home page (713 tests) |
 | 2.8.4 | 2026-11-18 | `install.sh` adds a 2 GB swap file (kept in `/etc/fstab`) when RAM + swap is under 2 GB, so the ~1 GB frontend build doesn't get killed on small VPSes; `NG_NO_SWAP=1` opts out (713 tests) |

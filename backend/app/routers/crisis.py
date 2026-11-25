@@ -3,10 +3,10 @@
 import datetime
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Response, status
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
+from app.services import actions
 from app.dependencies import get_current_user
 from app.models.community import Community, CommunityMember
 from app.models.crisis import CrisisVote, EmergencyTicket, TicketComment
@@ -15,7 +15,6 @@ from app.services.activity import record_activity
 from app.services.crisis_votes import (  # noqa: F401 – apply_vote_threshold re-exported
     VOTE_THRESHOLD_PCT,
     apply_vote_threshold,
-    is_noop_vote,
     set_community_mode,
 )
 from app.services.mode import effective_mode, is_global_red
@@ -111,24 +110,7 @@ def _crisis_status(db: Session, community: Community) -> CrisisModeStatus:
 # ── Local helpers ─────────────────────────────────────────────────
 
 
-def _ticket_by_client_id(db: Session, author_id: int, client_id: str | None) -> EmergencyTicket | None:
-    if not client_id:
-        return None
-    return (
-        db.query(EmergencyTicket)
-        .options(joinedload(EmergencyTicket.author), joinedload(EmergencyTicket.assigned_to))
-        .filter(EmergencyTicket.author_id == author_id, EmergencyTicket.client_id == client_id)
-        .first()
-    )
-
-
-def _get_community(db: Session, community_id: int) -> Community:
-    community = db.query(Community).filter(Community.id == community_id).first()
-    if not community or not community.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Community not found"
-        )
-    return community
+_get_community = actions.get_active_community
 
 
 # ── Crisis mode toggle (admin only) ──────────────────────────────
@@ -201,70 +183,10 @@ def cast_crisis_vote(
     db: Session = Depends(get_db),
 ):
     """Cast a vote to activate or deactivate crisis mode. One vote per member."""
-    community = _get_community(db, community_id)
-    require_membership(db, community_id, current_user.id)
-
-    # Votes act on the stored mode: "activate" while red (or "deactivate" while
-    # blue) could never change anything and would linger as a stale vote
-    if is_noop_vote(community.mode, body.vote_type):
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"Community is already in {'Red' if community.mode == 'red' else 'Blue'} Sky mode",
-        )
-
-    # Check for existing vote (replace if different)
-    existing = (
-        db.query(CrisisVote)
-        .filter(
-            CrisisVote.community_id == community_id,
-            CrisisVote.user_id == current_user.id,
-        )
-        .first()
+    vote, _ = actions.cast_crisis_vote(
+        db, current_user, community_id=community_id, vote_type=body.vote_type, defer=background_tasks.add_task
     )
-    if existing:
-        if existing.vote_type == body.vote_type:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="You have already voted this way",
-            )
-        existing.vote_type = body.vote_type
-        db.commit()
-        db.refresh(existing)
-        vote = existing
-    else:
-        vote = CrisisVote(
-            community_id=community_id,
-            user_id=current_user.id,
-            vote_type=body.vote_type,
-        )
-        db.add(vote)
-        db.commit()
-        db.refresh(vote)
-
-    # Eagerly load user before threshold check (which may delete the vote)
-    _ = vote.user
-
-    # Build response before potential deletion
-    vote_response = CrisisVoteOut.model_validate(vote)
-
-    new_mode = apply_vote_threshold(db, community_id, body.vote_type, current_user.id)
-    if new_mode == "red":
-        member_ids = [
-            row[0]
-            for row in db.query(CommunityMember.user_id)
-            .filter(CommunityMember.community_id == community_id)
-            .all()
-        ]
-        background_tasks.add_task(
-            dispatch_event,
-            db,
-            "crisis.mode_changed",
-            {"community_name": community.name, "new_mode": new_mode},
-            member_ids,
-            community_id,
-        )
-
-    return vote_response
+    return CrisisVoteOut.model_validate(vote)
 
 
 @router.delete("/crisis/vote", status_code=status.HTTP_204_NO_CONTENT)
@@ -306,70 +228,20 @@ def create_ticket(
     db: Session = Depends(get_db),
 ):
     """Create an emergency ticket (request, offer, or emergency ping)."""
-    community = _get_community(db, community_id)
-    require_membership(db, community_id, current_user.id)
-
-    # Emergency pings require crisis mode to be active
-    if body.ticket_type == "emergency_ping" and effective_mode(community) != "red":
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Emergency pings are only available in Red Sky (crisis) mode",
-        )
-
-    # Idempotent replay (offline queue, Background Sync, or the mesh copy of the
-    # same ticket already synced): return the existing ticket
-    existing = _ticket_by_client_id(db, current_user.id, body.client_id)
-    if existing is not None:
-        response.status_code = status.HTTP_200_OK
-        return _ticket_to_out(existing)
-
-    ticket = EmergencyTicket(
+    ticket, created = actions.create_ticket(
+        db,
+        current_user,
         community_id=community_id,
-        author_id=current_user.id,
         ticket_type=body.ticket_type,
         title=body.title,
         description=body.description,
         urgency=body.urgency,
         due_at=body.due_at,
         client_id=body.client_id,
+        defer=background_tasks.add_task,
     )
-    db.add(ticket)
-    try:
-        db.commit()
-    except IntegrityError:
-        # A concurrent replay with the same client_id won the race
-        db.rollback()
-        existing = _ticket_by_client_id(db, current_user.id, body.client_id)
-        if existing is None:
-            raise
+    if not created:
         response.status_code = status.HTTP_200_OK
-        return _ticket_to_out(existing)
-    db.refresh(ticket)
-    _ = ticket.author
-    _ = ticket.assigned_to
-
-    record_activity(
-        db,
-        event_type="ticket_created",
-        summary=f'created {body.ticket_type} ticket "{body.title}"',
-        actor_id=current_user.id,
-        community_id=community_id,
-    )
-
-    background_tasks.add_task(
-        dispatch_event,
-        db,
-        "ticket.created",
-        {
-            "title": body.title,
-            "ticket_type": body.ticket_type,
-            "urgency": body.urgency,
-            "community_name": community.name,
-        },
-        [],
-        community_id,
-    )
-
     return _ticket_to_out(ticket)
 
 

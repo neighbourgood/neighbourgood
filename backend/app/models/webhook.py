@@ -12,7 +12,7 @@ class Webhook(Base):
     __tablename__ = "webhooks"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    owner_type: Mapped[str] = mapped_column(String(20), nullable=False)   # "user" | "community"
+    owner_type: Mapped[str] = mapped_column(String(20), nullable=False)   # "user" | "community" | "wa_user" | "wa_group" | "wa_claim"
     owner_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
     url: Mapped[str] = mapped_column(String(500), nullable=False)
     secret: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -28,7 +28,7 @@ class TelegramLinkToken(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     token: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
-    token_type: Mapped[str] = mapped_column(String(20), nullable=False)  # "user" | "community"
+    token_type: Mapped[str] = mapped_column(String(20), nullable=False)  # "user" | "community" | "wa_user" | "wa_group" | "wa_claim"
     owner_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
     expires_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=False)
     used: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

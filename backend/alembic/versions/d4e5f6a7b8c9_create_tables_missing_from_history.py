@@ -7,7 +7,7 @@ created only when missing, so existing installs (where the startup
 create_all already made them) just record the new revision.
 
 Revision ID: d4e5f6a7b8c9
-Revises: c0d1e2f3a4b5
+Revises: 7a8b9c0d1e2f
 Create Date: 2026-11-25 00:00:00.000000
 
 """
@@ -19,7 +19,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = 'd4e5f6a7b8c9'
-down_revision: Union[str, None] = 'c0d1e2f3a4b5'
+down_revision: Union[str, None] = '7a8b9c0d1e2f'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

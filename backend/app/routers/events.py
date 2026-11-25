@@ -7,6 +7,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
+from app.services import actions
 from app.dependencies import get_current_user, get_current_user_optional
 from app.models.community import CommunityMember
 from app.models.event import Event, EventAttendee
@@ -23,7 +24,6 @@ from app.schemas.event import (
 )
 from app.services.activity import record_activity
 from app.services.webhooks import dispatch_event
-from app.utils.authorization import is_community_member
 
 router = APIRouter(prefix="/events", tags=["events"])
 
@@ -62,19 +62,7 @@ def _event_to_out(
     )
 
 
-def _load_event(event_id: int, db: Session) -> Event:
-    event = (
-        db.query(Event)
-        .options(
-            joinedload(Event.organizer),
-            joinedload(Event.attendees).joinedload(EventAttendee.user),
-        )
-        .filter(Event.id == event_id)
-        .first()
-    )
-    if not event:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
-    return event
+_load_event = actions.load_event
 
 
 @router.get("/categories", response_model=list[EventCategoryInfo])
@@ -286,35 +274,7 @@ def attend_event(
     db: Session = Depends(get_db),
 ):
     """RSVP to an event."""
-    event = _load_event(event_id, db)
-
-    if not is_community_member(db, event.community_id, current_user.id):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You must be a member of this community to RSVP to its events",
-        )
-
-    already = (
-        db.query(EventAttendee)
-        .filter(EventAttendee.event_id == event_id, EventAttendee.user_id == current_user.id)
-        .first()
-    )
-    if already:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Already attending this event"
-        )
-
-    if event.max_attendees is not None and len(event.attendees) >= event.max_attendees:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Event is full"
-        )
-
-    attendee = EventAttendee(event_id=event_id, user_id=current_user.id)
-    db.add(attendee)
-    db.commit()
-
-    # reload to get fresh attendee list
-    event = _load_event(event_id, db)
+    event = actions.attend_event(db, current_user, event_id)
     return _event_to_out(event, current_user.id)
 
 
