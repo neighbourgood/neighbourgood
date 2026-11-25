@@ -1,5 +1,6 @@
 """NeighbourGood API – main application entry point."""
 
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -11,7 +12,7 @@ from sqlalchemy.exc import DataError
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.config import settings
-from app.database import MAX_OVERFLOW, POOL_SIZE, Base, engine
+from app.database import MAX_OVERFLOW, POOL_SIZE, Base, SessionLocal, engine
 
 logger = logging.getLogger(__name__)
 from app.middleware.body_limit import BodySizeLimitMiddleware
@@ -22,6 +23,9 @@ from app.middleware.rate_limit import RateLimitMiddleware
 from app.models import Activity, Booking, Community, CommunityMember, CrisisVote, EmergencyTicket, Event, EventAttendee, FederatedResource, FederatedSkill, InstanceSyncLog, Invite, KnownInstance, MeshCheckin, MeshDeviceKey, MeshSyncedMessage, PasswordResetToken, Message, RedSkyAlert, Resource, SentAlert, Review, Skill, TelegramLinkToken, User, Webhook  # noqa: F401 – ensure models are registered
 from app.routers import activity, auth, bookings, communities, crisis, events, federation, federation_sync, instance, invites, matching, mesh_sync, messages, resources, reviews, skills, status, users, webhooks
 from app.routers import telegram as telegram_router
+from app.routers import whatsapp as whatsapp_router
+from app.services import whatsapp as whatsapp_service
+from app.services import whatsapp_digest
 
 
 # ── Security headers middleware ────────────────────────────────────
@@ -114,7 +118,12 @@ def _add_missing_columns(bind=None) -> list[str]:
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     _add_missing_columns()
+    digest_task = None
+    if whatsapp_service.is_configured():
+        digest_task = asyncio.create_task(whatsapp_digest.digest_loop(SessionLocal))
     yield
+    if digest_task is not None:
+        digest_task.cancel()
 
 
 app = FastAPI(
@@ -169,3 +178,4 @@ app.include_router(webhooks.router)
 app.include_router(mesh_sync.router)
 app.include_router(matching.router)
 app.include_router(telegram_router.router)
+app.include_router(whatsapp_router.router)

@@ -5,16 +5,12 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
+from app.services import actions
 from app.dependencies import get_current_user, get_current_user_optional
 from app.models.community import CommunityMember
-from app.models.message import Message
-from app.models.review import Review
 from app.models.skill import Skill
 from app.models.user import User
 from app.routers.users import compute_owner_trust
-from app.services.activity import record_activity
-from app.services.webhooks import dispatch_event
-from app.utils.authorization import require_active_membership
 from app.schemas.skill import (
     SKILL_CATEGORY_META,
     VALID_SKILL_CATEGORIES,
@@ -134,44 +130,16 @@ def create_skill(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Invalid skill_type. Must be one of: {VALID_SKILL_TYPES}",
         )
-    require_active_membership(db, body.community_id, current_user.id)
-
-    skill = Skill(
+    skill = actions.create_skill(
+        db,
+        current_user,
         title=body.title,
         description=body.description,
         category=body.category,
         skill_type=body.skill_type,
-        owner_id=current_user.id,
         community_id=body.community_id,
+        defer=background_tasks.add_task,
     )
-    db.add(skill)
-    db.commit()
-    db.refresh(skill)
-    _ = skill.owner
-    event_type = "skill_offered" if skill.skill_type == "offer" else "skill_requested"
-    verb = "offered" if skill.skill_type == "offer" else "is looking for"
-    record_activity(
-        db,
-        event_type=event_type,
-        summary=f"{verb} \"{skill.title}\"",
-        actor_id=current_user.id,
-        community_id=skill.community_id,
-    )
-
-    if skill.community_id:
-        background_tasks.add_task(
-            dispatch_event,
-            db,
-            "skill.created",
-            {
-                "actor_name": current_user.display_name,
-                "title": skill.title,
-                "category": skill.category,
-                "skill_type": skill.skill_type,
-            },
-            [],
-            skill.community_id,
-        )
 
     trust_map = {skill.owner_id: compute_owner_trust(db, skill.owner_id)}
     return SkillOut(**_skill_to_out(skill, trust_map))
@@ -240,14 +208,4 @@ def delete_skill(
     db: Session = Depends(get_db),
 ):
     """Delete a skill listing (owner only)."""
-    skill = db.query(Skill).filter(Skill.id == skill_id).first()
-    if not skill:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Skill not found")
-    if skill.owner_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not your skill listing")
-    # Messages and endorsements keep existing after the listing is gone; detach
-    # them so the foreign keys (enforced on PostgreSQL) do not block the delete.
-    db.query(Message).filter(Message.skill_id == skill_id).update({Message.skill_id: None})
-    db.query(Review).filter(Review.skill_id == skill_id).update({Review.skill_id: None})
-    db.delete(skill)
-    db.commit()
+    actions.delete_skill(db, current_user, skill_id)

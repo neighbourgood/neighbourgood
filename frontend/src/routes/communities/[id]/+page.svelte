@@ -10,6 +10,7 @@
 	import CrisisModePanel from '$lib/components/community/CrisisModePanel.svelte';
 	import MembersList from '$lib/components/community/MembersList.svelte';
 	import InviteLinks from '$lib/components/community/InviteLinks.svelte';
+	import WhatsAppGroupPanel from '$lib/components/community/WhatsAppGroupPanel.svelte';
 	import { t } from 'svelte-i18n';
 	import Icon from '$lib/components/Icon.svelte';
 	import { RESOURCE_CATEGORY_ICON } from '$lib/icons';
@@ -590,6 +591,7 @@
 					invites = await api<InviteOut[]>(`/invites?community_id=${communityId}`, { auth: true });
 				}}
 			/>
+			<WhatsAppGroupPanel {communityId} />
 
 			{#if suggestions.length > 0}
 			<section class="merge-section slide-up" style="animation-delay: 0.1s">

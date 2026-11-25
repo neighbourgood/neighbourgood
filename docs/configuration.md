@@ -60,6 +60,22 @@ Details in [telegram-setup.md](telegram-setup.md).
 | `NG_AI_MODEL` | `llama3.2` | |
 | `NG_AI_API_KEY` | unset | Needed for OpenAI, not for Ollama |
 
+## WhatsApp
+
+Optional bot through an unofficial WhatsApp Web bridge (WAHA). Read [whatsapp-setup.md](whatsapp-setup.md) first; `bash install.sh --whatsapp` sets the first four for you.
+
+| Variable | Default | Notes |
+|----------|---------|-------|
+| `NG_WHATSAPP_BRIDGE_URL` | unset | Bridge address, `http://waha:3000` in Docker Compose; the integration is off while unset |
+| `NG_WHATSAPP_API_KEY` | unset | Sent to the bridge as `X-Api-Key`; Compose passes it to WAHA as `WAHA_API_KEY` |
+| `NG_WHATSAPP_WEBHOOK_SECRET` | unset | HMAC key the bridge signs webhook calls with; unsigned calls are rejected |
+| `COMPOSE_PROFILES` | unset | `whatsapp` starts the `waha` container (Docker Compose setting, not read by the app) |
+| `NG_WHATSAPP_BOT_NUMBER` | read from the paired phone | International format without `+`, for `wa.me` links |
+| `NG_WHATSAPP_SESSION` | `default` | WAHA session name |
+| `NG_WHATSAPP_SEND_INTERVAL_MS` | `1500` | Minimum gap between outgoing messages (random up to twice this) |
+| `NG_WHATSAPP_HOURLY_LIMIT_PER_CHAT` | `20` | Messages per chat and hour before the bot holds back |
+| `NG_WAHA_IMAGE` | `devlikeapro/waha:latest-2026.9.2` | Docker Compose only: bridge image (use an `arm` tag on ARM servers) |
+
 ## Limits and safety
 
 | Variable | Default | Notes |

@@ -5,6 +5,7 @@ from sqlalchemy import func, or_
 from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
+from app.services import actions
 from app.dependencies import get_current_user
 from app.models.activity import Activity
 from app.models.community import Community, CommunityMember
@@ -12,9 +13,7 @@ from app.models.event import Event
 from app.models.resource import Resource
 from app.models.skill import Skill
 from app.models.user import User
-from app.services.activity import record_activity
 from app.services.crisis_votes import handle_member_removed
-from app.services.webhooks import dispatch_event
 from app.utils.authorization import (
     get_active_community_membership,
     require_admin,
@@ -346,61 +345,7 @@ def join_community(
     db: Session = Depends(get_db),
 ):
     """Join a community."""
-    community = db.query(Community).filter(Community.id == community_id).first()
-    if not community:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Community not found")
-    if community.merged_into_id is not None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=f"This community has been merged. Join community #{community.merged_into_id} instead.",
-        )
-    if not community.is_active:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Community not found")
-
-    existing = (
-        db.query(CommunityMember)
-        .filter(CommunityMember.community_id == community_id, CommunityMember.user_id == current_user.id)
-        .first()
-    )
-    if existing:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Already a member")
-
-    other_membership = get_active_community_membership(
-        db, current_user.id, exclude_community_id=community_id
-    )
-    if other_membership:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="You're already a member of a community. Leave your current community before joining another.",
-        )
-
-    membership = CommunityMember(
-        community_id=community_id,
-        user_id=current_user.id,
-        role="member",
-    )
-    db.add(membership)
-    db.commit()
-    db.refresh(membership)
-    _ = membership.user
-    record_activity(
-        db,
-        event_type="member_joined",
-        summary=f"joined \"{community.name}\"",
-        actor_id=current_user.id,
-        community_id=community_id,
-    )
-
-    background_tasks.add_task(
-        dispatch_event,
-        db,
-        "member.joined",
-        {"actor_name": current_user.display_name, "community_name": community.name},
-        [],
-        community_id,
-    )
-
-    return membership
+    return actions.join_community(db, current_user, community_id, defer=background_tasks.add_task)
 
 
 @router.delete("/{community_id}/leave", status_code=status.HTTP_204_NO_CONTENT)

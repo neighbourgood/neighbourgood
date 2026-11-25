@@ -153,7 +153,7 @@ def test_vote_threshold_switch_dispatches_crisis_event(
     client, auth_headers, community_id, register_user
 ):
     _join(client, register_user(2), community_id)
-    with patch("app.routers.crisis.dispatch_event") as dispatch:
+    with patch("app.services.actions.dispatch_event") as dispatch:
         res = client.post(
             f"/communities/{community_id}/crisis/vote",
             headers=auth_headers,
@@ -164,7 +164,7 @@ def test_vote_threshold_switch_dispatches_crisis_event(
         dispatch.assert_not_called()
     h2 = register_user(3)
     _join(client, h2, community_id)  # now 3 members, need 2
-    with patch("app.routers.crisis.dispatch_event") as dispatch:
+    with patch("app.services.actions.dispatch_event") as dispatch:
         client.post(
             f"/communities/{community_id}/crisis/vote",
             headers=h2,

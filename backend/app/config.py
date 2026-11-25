@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Settings(BaseSettings):
     app_name: str = "NeighbourGood"
-    app_version: str = "2.10.0"
+    app_version: str = "2.11.0"
     debug: bool = False
     database_url: str = "sqlite:///./neighbourgood.db"
 
@@ -67,6 +67,16 @@ class Settings(BaseSettings):
     telegram_bot_name: str = ""        # Username without @, e.g. "NeighbourGoodBot"
     # Validates inbound webhook calls; derived from secret_key + bot token when unset
     telegram_webhook_secret: str = ""
+
+    # WhatsApp bridge (WAHA, optional — leave whatsapp_bridge_url empty to disable).
+    # Unofficial WhatsApp Web bridge: see docs/whatsapp-setup.md for the risks.
+    whatsapp_bridge_url: str = ""       # e.g. "http://waha:3000" inside Docker Compose
+    whatsapp_api_key: str = ""          # WAHA_API_KEY, sent as X-Api-Key
+    whatsapp_webhook_secret: str = ""   # HMAC key WAHA signs webhook calls with
+    whatsapp_session: str = "default"
+    whatsapp_bot_number: str = ""       # International format without +, for wa.me links
+    whatsapp_send_interval_ms: int = 1500  # Minimum gap between outgoing messages
+    whatsapp_hourly_limit_per_chat: int = 20
 
     # AI / LLM integration (optional — matching works rule-based when unset)
     ai_provider: str | None = None      # "ollama" or "openai" (any OpenAI-compatible API)

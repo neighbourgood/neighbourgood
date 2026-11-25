@@ -217,3 +217,11 @@ def _dispatch_event(
                     tg.send_message(community.telegram_group_id, group_text)
             except Exception as exc:  # noqa: BLE001
                 logger.warning("Telegram group notify error: %s", exc)
+
+    # ── 4. WhatsApp (private messages + urgent group posts) ──────
+    try:
+        from app.services.whatsapp_notify import fan_out as whatsapp_fan_out
+
+        whatsapp_fan_out(db, event_type, payload, user_ids, community_id)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("WhatsApp notify error: %s", exc)

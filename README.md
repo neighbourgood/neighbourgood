@@ -9,9 +9,9 @@
 
 NeighbourGood is a free, self-hostable web app for neighbourhoods. People lend each other tools and equipment, offer skills, organise local events and get to know each other. When a flood, storm or power cut hits, the same community switches to crisis mode with one action and coordinates help, even over Bluetooth when the internet is down.
 
-v2.10.0 · 12 languages · [GPL-3.0](LICENSE)
+v2.11.0 · 12 languages · [GPL-3.0](LICENSE)
 
-[What it does](#what-it-does) · [Everyday: Blue Sky](#everyday-blue-sky) · [Crisis: Red Sky](#crisis-red-sky) · [Telegram](#use-it-from-telegram) · [Connected communities](#connected-communities) · [Get started](#get-started) · [Documentation](#documentation) · [Roadmap](#roadmap) · [Contributing](#contributing)
+[What it does](#what-it-does) · [Everyday: Blue Sky](#everyday-blue-sky) · [Crisis: Red Sky](#crisis-red-sky) · [Telegram](#use-it-from-telegram) · [WhatsApp](#use-it-from-whatsapp) · [Connected communities](#connected-communities) · [Get started](#get-started) · [Documentation](#documentation) · [Roadmap](#roadmap) · [Contributing](#contributing)
 
 ## What it does
 
@@ -80,6 +80,16 @@ Many neighbours already live in Telegram, so NeighbourGood comes to them there o
 
 The bot never acts without your confirmation, never shares private details such as emails, and only sees your own communities. Setup for admins: [docs/telegram-setup.md](docs/telegram-setup.md).
 
+## Use it from WhatsApp
+
+In many places the neighbourhood already meets in a WhatsApp group. With the optional WhatsApp bot, neighbours can take part without ever opening the app:
+
+- **In the group.** `!search ladder`, `!lend drill`, `!borrow 12`, `!sos no water on 3rd floor`, `!vote` for Red Sky. Commands work in all 12 languages (`!suche Leiter`, `!cherche échelle` …). Ordinary chat is left alone.
+- **Just a name.** `!join Anna` makes you a member; no email or password needed. You can set up an app login later.
+- **Not too chatty.** A daily or weekly summary of what's new, and only Red Sky and urgent requests right away.
+
+Photos, reviews, invites and admin settings stay in the app. The bot runs through an unofficial bridge with a spare phone number, so read the trade-offs first: [docs/whatsapp-setup.md](docs/whatsapp-setup.md).
+
 ## Connected communities
 
 Every NeighbourGood server is independent: your data stays with whoever runs your instance. Instances can still find each other and stay in touch. They list each other in a directory, show each other's shared items and skills, and send **verified Red Sky alerts** across instances, so a neighbouring town learns about a crisis quickly.
@@ -105,6 +115,7 @@ A small rented server (1 CPU, 1 GB RAM, around 5 € a month) is plenty for a ne
 | [Self-hosting](docs/self-hosting.md) | Install with Docker, updates, reverse proxy (nginx/Caddy), backups, local AI |
 | [Configuration](docs/configuration.md) | All `NG_` settings |
 | [Telegram setup](docs/telegram-setup.md) · [Telegram assistant](docs/telegram-agent.md) | Connect the bot; customise its tone and abilities |
+| [WhatsApp bot](docs/whatsapp-setup.md) | Bring NeighbourGood into neighbourhood WhatsApp groups; commands, risks, privacy |
 | [Mesh networking](docs/mesh-networking.md) | Offline crisis communication over Bluetooth |
 | [Brand and design](docs/design.md) | Logo, colours, typefaces; brand kit in [`brand/`](brand/) |
 | [Development](docs/development.md) | Tech stack, local setup, tests, project structure |

@@ -23,6 +23,7 @@ _AUTH_ENDPOINTS: frozenset[str] = frozenset({
     "/auth/password-reset/request",
     "/auth/password-reset/confirm",
 })
+_SIGNED_BRIDGE_PATHS: frozenset[str] = frozenset({"/whatsapp/webhook"})
 _WINDOW_SECONDS = 60
 
 _AUTH_LIMIT = 5
@@ -129,6 +130,10 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
         ip = _client_ip(request)
         path = request.url.path
+        # The WhatsApp bridge forwards every group message from one IP; its
+        # calls are HMAC-signed and checked before any work is done.
+        if path in _SIGNED_BRIDGE_PATHS:
+            return await call_next(request)
 
         allowed, retry_after = _store.check_and_record(ip, path, request.method)
         if not allowed:

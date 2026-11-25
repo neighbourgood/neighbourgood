@@ -86,6 +86,7 @@ Before you open it to your neighbours, also fill in the instance identity in `.e
 2. The onboarding wizard lets you search for a community near you, join one, or create one. As the creator you are the community's admin.
 3. Create invite links on the community page and share them with your neighbours.
 4. Optional: connect the Telegram bot ([telegram-setup.md](telegram-setup.md)).
+5. Optional: the WhatsApp bot for neighbourhood groups. The installer asks about it separately; add it later with `bash install.sh --whatsapp`. It uses an unofficial bridge and a spare phone number, so read [whatsapp-setup.md](whatsapp-setup.md) first.
 
 ## Everyday Docker commands
 

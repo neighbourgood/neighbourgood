@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { isLoggedIn, token, user, logout, type UserProfile } from '$lib/stores/auth';
 	import { api } from '$lib/api';
-	import type { Webhook } from '$lib/types';
+	import type { Webhook, WhatsAppBridgeStatus, WhatsAppLinkStart } from '$lib/types';
 	import { meshEnabled } from '$lib/stores/mesh-settings';
 	import { t } from 'svelte-i18n';
 	import Icon from '$lib/components/Icon.svelte';
@@ -32,6 +32,19 @@
 		error: '',
 		success: ''
 	});
+
+	let whatsappState = $state({
+		message: '',
+		botUrl: '' as string | null,
+		loading: false,
+		error: '',
+		success: ''
+	});
+
+	let bridge = $state<WhatsAppBridgeStatus | null>(null);
+	let bridgeQr = $state('');
+	let bridgeError = $state('');
+	let bridgeTimer: ReturnType<typeof setInterval> | null = null;
 
 	let webhooks = $state<Webhook[]>([]);
 	let webhookForm = $state({
@@ -69,6 +82,7 @@
 		} catch {
 			// Ignore – stale data fine
 		}
+		if ($user?.role === 'admin') loadBridge();
 		// Load webhooks
 		try {
 			webhooks = await api<Webhook[]>('/webhooks', { auth: true });
@@ -108,6 +122,82 @@
 			telegramState.unlinking = false;
 		}
 	}
+
+	async function startWhatsAppLink() {
+		whatsappState.loading = true;
+		whatsappState.error = '';
+		try {
+			const data = await api<WhatsAppLinkStart>('/users/me/whatsapp/start-link', { method: 'POST', auth: true });
+			whatsappState.message = data.message;
+			whatsappState.botUrl = data.bot_url;
+		} catch (err) {
+			whatsappState.error = err instanceof Error ? err.message : $t('whatsapp.not_configured');
+		} finally {
+			whatsappState.loading = false;
+		}
+	}
+
+	async function setWhatsAppNotify(on: boolean) {
+		whatsappState.error = '';
+		try {
+			const profile = await api('/users/me/whatsapp', { method: 'PATCH', body: { whatsapp_notify: on }, auth: true });
+			user.set(profile as any);
+		} catch (err) {
+			whatsappState.error = err instanceof Error ? err.message : $t('whatsapp.failed');
+		}
+	}
+
+	async function unlinkWhatsApp() {
+		whatsappState.loading = true;
+		whatsappState.error = '';
+		try {
+			await api('/users/me/whatsapp', { method: 'DELETE', auth: true });
+			user.update(u => u ? { ...u, whatsapp_linked: false } : u);
+			whatsappState.message = '';
+			whatsappState.success = $t('whatsapp.unlinked');
+			setTimeout(() => { whatsappState.success = ''; }, 3000);
+		} catch (err) {
+			whatsappState.error = err instanceof Error ? err.message : $t('whatsapp.failed');
+		} finally {
+			whatsappState.loading = false;
+		}
+	}
+
+	async function loadBridge() {
+		bridgeError = '';
+		try {
+			bridge = await api<WhatsAppBridgeStatus>('/whatsapp/bridge/status', { auth: true });
+			if (bridge.status === 'SCAN_QR_CODE') {
+				const qr = await api<{ mimetype: string; data: string }>('/whatsapp/bridge/qr', { auth: true });
+				bridgeQr = `data:${qr.mimetype};base64,${qr.data}`;
+			} else {
+				bridgeQr = '';
+			}
+			// Keep polling while pairing; QR codes rotate every 20 seconds
+			const pairing = bridge.status === 'SCAN_QR_CODE' || bridge.status === 'STARTING';
+			if (pairing && !bridgeTimer) bridgeTimer = setInterval(loadBridge, 5000);
+			if (!pairing && bridgeTimer) {
+				clearInterval(bridgeTimer);
+				bridgeTimer = null;
+			}
+		} catch (err) {
+			bridgeError = err instanceof Error ? err.message : $t('whatsapp.failed');
+		}
+	}
+
+	async function startBridge() {
+		bridgeError = '';
+		try {
+			bridge = await api<WhatsAppBridgeStatus>('/whatsapp/bridge/start', { method: 'POST', auth: true });
+			await loadBridge();
+		} catch (err) {
+			bridgeError = err instanceof Error ? err.message : $t('whatsapp.failed');
+		}
+	}
+
+	onDestroy(() => {
+		if (bridgeTimer) clearInterval(bridgeTimer);
+	});
 
 	async function addWebhook(e: Event) {
 		e.preventDefault();
@@ -475,6 +565,78 @@
 	<hr class="section-divider" />
 
 	<div class="settings-section">
+		<h2>{$t('whatsapp.settings_title')}</h2>
+		<p class="section-desc">{$t('whatsapp.settings_desc')}</p>
+
+		{#if whatsappState.success}
+			<div class="alert alert-success">{whatsappState.success}</div>
+		{:else if whatsappState.error}
+			<div class="alert alert-error">{whatsappState.error}</div>
+		{/if}
+
+		{#if $user?.whatsapp_linked}
+			<div class="telegram-linked">
+				<span class="badge badge-success"><Icon name="check" size={13} />{$t('whatsapp.linked')}</span>
+				{#if $user?.account_type !== 'whatsapp'}
+					<button class="btn btn-danger-outline" onclick={unlinkWhatsApp} disabled={whatsappState.loading}>
+						{$t('whatsapp.unlink')}
+					</button>
+				{/if}
+			</div>
+			<label class="checkbox-row">
+				<input
+					type="checkbox"
+					checked={$user?.whatsapp_notify ?? true}
+					onchange={(e) => setWhatsAppNotify((e.currentTarget as HTMLInputElement).checked)}
+				/>
+				<span>{$t('whatsapp.notify')}</span>
+			</label>
+		{:else if whatsappState.message}
+			<div class="telegram-link-step">
+				<p>{$t('whatsapp.send_hint')}</p>
+				<p><code class="wa-code">{whatsappState.message}</code></p>
+				{#if whatsappState.botUrl}
+					<a href={whatsappState.botUrl} target="_blank" rel="noopener" class="btn btn-primary">{$t('whatsapp.open')}</a>
+				{/if}
+				<p class="info-hint">{$t('whatsapp.reload_hint')}</p>
+			</div>
+		{:else}
+			<button class="btn btn-primary" onclick={startWhatsAppLink} disabled={whatsappState.loading}>
+				{whatsappState.loading ? $t('settings.changing') : $t('whatsapp.link')}
+			</button>
+		{/if}
+	</div>
+
+	<!-- Shown when the bridge is configured, or when it is set up but unreachable (502) -->
+	{#if $user?.role === 'admin' && (bridge?.configured || bridgeError)}
+		<hr class="section-divider" />
+
+		<div class="settings-section">
+			<h2>{$t('whatsapp.bridge_title')}</h2>
+			<p class="section-desc">{$t('whatsapp.bridge_desc')}</p>
+			{#if bridgeError}
+				<div class="alert alert-error">{bridgeError}</div>
+			{/if}
+			{#if bridge?.status === 'WORKING'}
+				<span class="badge badge-success">
+					<Icon name="check" size={13} />
+					{bridge?.bot_number ? $t('whatsapp.bridge_connected', { values: { number: bridge.bot_number } }) : $t('whatsapp.bridge_connected_plain')}
+				</span>
+			{:else if bridgeQr}
+				<p>{$t('whatsapp.bridge_scan')}</p>
+				<img class="wa-qr" src={bridgeQr} alt={$t('whatsapp.bridge_qr_alt')} width="240" height="240" />
+			{:else}
+				{#if bridge}
+					<p class="info-hint">{$t('whatsapp.bridge_status', { values: { status: bridge.status } })}</p>
+				{/if}
+				<button class="btn btn-primary" onclick={startBridge}>{$t('whatsapp.bridge_start')}</button>
+			{/if}
+		</div>
+	{/if}
+
+	<hr class="section-divider" />
+
+	<div class="settings-section">
 		<h2>{$t('settings.mesh_networking')}</h2>
 		<p class="section-desc">{$t('settings.mesh_desc')}</p>
 
@@ -759,6 +921,31 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.75rem;
+	}
+
+	.checkbox-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-top: 0.75rem;
+		font-size: 0.95rem;
+	}
+
+	.wa-code {
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		padding: 0.25rem 0.5rem;
+		font-size: 1rem;
+		user-select: all;
+	}
+
+	.wa-qr {
+		width: 240px;
+		height: 240px;
+		max-width: 100%;
+		background: var(--color-surface);
+		border-radius: var(--radius-sm);
 	}
 
 	.webhook-list {

@@ -13,6 +13,10 @@ export interface UserProfile {
 	neighbourhood: string | null;
 	role: string;
 	language_code: string;
+	telegram_chat_id?: string | null;
+	whatsapp_linked?: boolean;
+	whatsapp_notify?: boolean;
+	account_type?: 'full' | 'whatsapp';
 	created_at: string;
 }
 

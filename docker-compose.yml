@@ -67,6 +67,27 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # Optional WhatsApp bot: an unofficial WhatsApp Web bridge (WAHA). Only
+  # started with the "whatsapp" profile (COMPOSE_PROFILES=whatsapp in .env,
+  # which `bash install.sh --whatsapp` sets). See docs/whatsapp-setup.md.
+  waha:
+    image: ${NG_WAHA_IMAGE:-devlikeapro/waha:latest-2026.9.2}
+    container_name: ng-waha
+    profiles: ["whatsapp"]
+    environment:
+      WAHA_API_KEY: ${NG_WHATSAPP_API_KEY:-}
+      WHATSAPP_HOOK_URL: "http://backend:8300/whatsapp/webhook"
+      WHATSAPP_HOOK_EVENTS: "message"
+      WHATSAPP_HOOK_HMAC_KEY: ${NG_WHATSAPP_WEBHOOK_SECRET:-}
+      # No dashboard or Swagger UI: pairing happens in NeighbourGood's settings
+      WAHA_DASHBOARD_ENABLED: "false"
+      WHATSAPP_SWAGGER_ENABLED: "false"
+    # No published port: only the backend talks to the bridge
+    volumes:
+      - waha-sessions:/app/.sessions
+    restart: unless-stopped
+
 volumes:
   pg-data:
   backend-uploads:
+  waha-sessions:

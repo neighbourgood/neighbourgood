@@ -137,7 +137,8 @@ def request_password_reset(
         .filter(func.lower(User.email) == body.email.lower(), User.is_active == True)  # noqa: E712
         .first()
     )
-    if user:
+    # WhatsApp light accounts have no real email; they are claimed via the bot instead
+    if user and user.account_type == "full":
         now = _utcnow()
         # A new request supersedes any link that is still outstanding.
         db.query(PasswordResetToken).filter(
