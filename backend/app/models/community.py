@@ -23,6 +23,9 @@ class Community(Base):
     latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
     longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
     telegram_group_id: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    whatsapp_group_id: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
+    whatsapp_digest: Mapped[str] = mapped_column(String(10), default="weekly", server_default="weekly", nullable=False)  # off / daily / weekly
+    whatsapp_last_digest_at: Mapped[datetime.datetime | None] = mapped_column(DateTime, nullable=True)
     created_by_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     merged_into_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("communities.id"), nullable=True, index=True)
     created_at: Mapped[datetime.datetime] = mapped_column(

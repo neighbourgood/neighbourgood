@@ -1,6 +1,6 @@
 # Roadmap
 
-Where NeighbourGood stands (v2.10.0, November 2026) and what is still open. The detailed release history is in [CHANGELOG.md](../CHANGELOG.md); older planning documents are kept in [archive/](archive/).
+Where NeighbourGood stands (v2.11.0, November 2026) and what is still open. The detailed release history is in [CHANGELOG.md](../CHANGELOG.md); older planning documents are kept in [archive/](archive/).
 
 ## What's done
 
@@ -12,7 +12,7 @@ Where NeighbourGood stands (v2.10.0, November 2026) and what is still open. The 
 | **Red Sky** | Per-community crisis toggle and 60 % vote, instance-wide Red Sky (`NG_PLATFORM_MODE=red`), emergency tickets (request / offer / ping) with urgency triage, leader roles, low-bandwidth UI, a dedicated Emergency page |
 | **Offline** | Installable PWA, offline browsing, queued requests replayed on reconnect, BitChat BLE mesh with signed messages, fragmentation, check-ins and replay protection |
 | **Federation** | `/instance/info`, instance directory, pull-based sync of resources and skills, verified cross-instance Red Sky alerts with expiry |
-| **Integrations** | Telegram bot (notifications, group alerts, commands, natural-language assistant), smart matching with optional Ollama/OpenAI re-ranking, signed outbound webhooks |
+| **Integrations** | Telegram bot (notifications, group alerts, commands, natural-language assistant), WhatsApp bot for neighbourhood groups (commands in 12 languages, WhatsApp-only members, digest, Red Sky alerts; unofficial bridge), smart matching with optional Ollama/OpenAI re-ranking, signed outbound webhooks |
 | **Languages** | 12 languages incl. right-to-left Arabic and Farsi, enforced key parity across all locales |
 | **Accounts and privacy** | Password reset, session invalidation on password/email change, data export, account deletion with anonymisation |
 | **Security** | Password rules, security headers, upload validation, input length limits, rate limiting, per-(email, IP) lockout, CSRF protection, webhook SSRF guard, request body limits |

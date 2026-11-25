@@ -2,6 +2,10 @@
 # NeighbourGood one-line installer.
 #   curl -fsSL https://raw.githubusercontent.com/neighbourgood/neighbourgood/main/install.sh | bash
 #
+# Optional WhatsApp bot (asked separately at the end, or added later):
+#   curl -fsSL https://raw.githubusercontent.com/neighbourgood/neighbourgood/main/install.sh | bash -s -- --whatsapp
+#   NG_WHATSAPP=0 skips the question, NG_WHATSAPP=1 says yes without asking.
+#
 # Uses Docker Compose when Docker is available. Otherwise falls back to a
 # native install (Python venv + SQLite backend, npm dev server frontend) so
 # people without Docker or git preinstalled can still get running.
@@ -153,6 +157,7 @@ setup_docker() {
   wait_for_status "http://localhost:8300/status" || true
 
   print_summary
+  setup_whatsapp docker
 }
 
 setup_native() {
@@ -192,6 +197,88 @@ setup_native() {
   wait_for_status "http://localhost:8300/status" || true
 
   print_summary --native
+  setup_whatsapp native
+}
+
+random_hex() {
+  if command_exists openssl; then
+    openssl rand -hex 32
+  else
+    head -c32 /dev/urandom | od -An -tx1 | tr -d ' \n'
+  fi
+}
+
+# Set KEY=VALUE in .env, replacing an existing line (portable: no sed -i)
+set_env_value() {
+  local key="$1" value="$2" env_file="$INSTALL_DIR/.env"
+  if grep -q "^$key=" "$env_file"; then
+    grep -v "^$key=" "$env_file" > "$env_file.tmp"
+    mv "$env_file.tmp" "$env_file"
+  fi
+  echo "$key=$value" >> "$env_file"
+}
+
+# ── Optional WhatsApp bot ─────────────────────────────────────────────
+# A separate step on purpose: the bridge is unofficial, needs a spare phone
+# number, and WhatsApp may block that number. Nothing changes unless the
+# person says yes here (or passes --whatsapp / NG_WHATSAPP=1).
+want_whatsapp() {
+  case "${NG_WHATSAPP:-}" in
+    1|y|yes) return 0 ;;
+    0|n|no) return 1 ;;
+  esac
+  # Already enabled by an earlier run: keep it
+  [ "$(read_env_value COMPOSE_PROFILES)" = "whatsapp" ] && return 0
+  # curl | bash has no stdin to answer with; ask on the terminal if there is one
+  { : < /dev/tty; } 2>/dev/null || return 1
+
+  echo
+  printf "${BOLD}Optional: WhatsApp bot${RESET}\n"
+  echo "  Lets neighbours share, borrow and ask for help from their WhatsApp group,"
+  echo "  without opening the app. It runs an unofficial WhatsApp Web bridge (WAHA)"
+  echo "  next to NeighbourGood:"
+  echo "   - you need a spare phone number for the bot, not your personal one"
+  echo "   - this is against WhatsApp's terms of service; the number can get blocked"
+  echo "   - you pair the number afterwards in the app: Settings > WhatsApp bridge"
+  echo "  Details: docs/whatsapp-setup.md"
+  printf "Set up the WhatsApp bot now? [y/N] "
+  local answer=""
+  read -r answer < /dev/tty || return 1
+  case "$answer" in
+    y|Y|yes|Yes|j|J|ja|Ja) return 0 ;;
+  esac
+  return 1
+}
+
+setup_whatsapp() {
+  local mode="$1"
+  if ! want_whatsapp; then
+    log "WhatsApp bot not set up. Add it any time with: bash install.sh --whatsapp"
+    return
+  fi
+  if [ "$mode" != "docker" ]; then
+    warn "The WhatsApp bridge runs as a Docker container. Install Docker and run: bash install.sh --whatsapp"
+    warn "Or run WAHA yourself and set NG_WHATSAPP_* in .env (see docs/whatsapp-setup.md)."
+    return
+  fi
+
+  cd "$INSTALL_DIR"
+  log "Setting up the WhatsApp bridge..."
+  [ -n "$(read_env_value NG_WHATSAPP_API_KEY)" ] || set_env_value NG_WHATSAPP_API_KEY "$(random_hex)"
+  [ -n "$(read_env_value NG_WHATSAPP_WEBHOOK_SECRET)" ] || set_env_value NG_WHATSAPP_WEBHOOK_SECRET "$(random_hex)"
+  set_env_value NG_WHATSAPP_BRIDGE_URL "http://waha:3000"
+  set_env_value COMPOSE_PROFILES "whatsapp"
+  # Starts the bridge and recreates the backend so it picks up the new settings
+  docker compose up -d
+
+  echo
+  printf "${BOLD}WhatsApp bridge is running.${RESET}\n"
+  echo "  1. Log in to NeighbourGood with an admin account (NG_ADMIN_EMAILS in .env)."
+  echo "  2. Settings > WhatsApp bridge > Start pairing, then scan the QR code with"
+  echo "     WhatsApp on the bot's phone (Linked devices)."
+  echo "  3. In a community's Admin tab, create a link code and post it in your group."
+  echo "  Turn it off again: remove COMPOSE_PROFILES and NG_WHATSAPP_BRIDGE_URL from .env,"
+  echo "  then run: docker compose --profile whatsapp rm -sf waha && docker compose up -d"
 }
 
 print_summary() {
@@ -223,6 +310,12 @@ print_summary() {
 }
 
 main() {
+  for arg in "$@"; do
+    case "$arg" in
+      --whatsapp) NG_WHATSAPP=1 ;;
+      --no-whatsapp) NG_WHATSAPP=0 ;;
+    esac
+  done
   need_curl
   fetch_source
   prepare_env

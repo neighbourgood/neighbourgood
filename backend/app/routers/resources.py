@@ -12,16 +12,14 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.config import settings
 from app.database import get_db
+from app.services import actions
 from app.dependencies import get_current_user, get_current_user_optional
 from app.models.booking import Booking
 from app.models.community import CommunityMember
 from app.models.resource import Resource
 from app.models.user import User
 from app.routers.users import compute_owner_trust
-from app.services.activity import record_activity
 from app.services.file_upload import ALLOWED_EXTENSIONS, ALLOWED_IMAGE_TYPES, validate_image_magic
-from app.services.webhooks import dispatch_event
-from app.utils.authorization import require_active_membership
 from app.schemas.resource import (
     CATEGORY_META,
     VALID_CATEGORIES,
@@ -151,42 +149,18 @@ def create_resource(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Invalid condition. Must be one of: {VALID_CONDITIONS}",
         )
-    if body.community_id is not None:
-        require_active_membership(db, body.community_id, current_user.id)
-
-    resource = Resource(
+    resource = actions.create_resource(
+        db,
+        current_user,
         title=body.title,
         description=body.description,
         category=body.category,
         condition=body.condition,
-        owner_id=current_user.id,
         community_id=body.community_id,
         quantity_total=body.quantity_total,
-        quantity_available=body.quantity_total,  # start fully stocked
         reorder_threshold=body.reorder_threshold,
+        defer=background_tasks.add_task,
     )
-    db.add(resource)
-    db.commit()
-    db.refresh(resource)
-    _ = resource.owner
-    record_activity(
-        db,
-        event_type="resource_shared",
-        summary=f"shared \"{resource.title}\"",
-        actor_id=current_user.id,
-        community_id=resource.community_id,
-    )
-
-    if resource.community_id:
-        background_tasks.add_task(
-            dispatch_event,
-            db,
-            "resource.shared",
-            {"actor_name": current_user.display_name, "title": resource.title},
-            [],
-            resource.community_id,
-        )
-
     return ResourceOut(**_resource_to_out(resource))
 
 

@@ -163,6 +163,25 @@ export interface CrisisStatus {
 	threshold_pct: number;
 }
 
+export interface WhatsAppLinkStart {
+	code: string;
+	message: string;
+	bot_url: string | null;
+	expires_at: string;
+}
+
+export interface CommunityWhatsApp {
+	configured: boolean;
+	linked: boolean;
+	digest: 'off' | 'daily' | 'weekly';
+}
+
+export interface WhatsAppBridgeStatus {
+	configured: boolean;
+	status: string;
+	bot_number: string | null;
+}
+
 export interface InviteOut {
 	id: number;
 	community_id: number;

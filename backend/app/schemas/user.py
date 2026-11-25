@@ -16,6 +16,9 @@ class UserProfile(BaseModel):
     neighbourhood: str | None
     role: str
     telegram_chat_id: str | None = None
+    whatsapp_linked: bool = False
+    whatsapp_notify: bool = True
+    account_type: str = "full"
     language_code: str = "en"
     created_at: UTCDateTime
 

@@ -177,6 +177,8 @@ def _anonymise(user: User) -> None:
     user.hashed_password = hash_password(secrets.token_urlsafe(32))
     user.neighbourhood = None
     user.telegram_chat_id = None
+    user.whatsapp_id = None
+    user.whatsapp_dm_at = None
     user.language_code = "en"
     user.mesh_public_key = None
     user.role = "member"
@@ -213,7 +215,8 @@ def delete_account(db: Session, user: User) -> DeletionResult:
         synchronize_session=False
     )
     db.query(TelegramLinkToken).filter(
-        TelegramLinkToken.token_type == "user", TelegramLinkToken.owner_id == user.id
+        TelegramLinkToken.token_type.in_(["user", "wa_user", "wa_claim"]),
+        TelegramLinkToken.owner_id == user.id,
     ).delete(synchronize_session=False)
 
     _anonymise(user)

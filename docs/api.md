@@ -139,6 +139,26 @@ Full reference for the NeighbourGood REST API. Interactive docs available at `/d
 | `/alerts/outgoing/{alert_uid}` | GET   | No    | An alert this instance broadcast, with `expires_at` (used by receivers to verify) |
 | `/alerts/{id}/dismiss`        | PATCH  | Admin | Dismiss a Red Sky alert                  |
 
+## WhatsApp
+
+See [whatsapp-setup.md](whatsapp-setup.md). All endpoints answer 503 while `NG_WHATSAPP_BRIDGE_URL` is unset (the webhook answers 404).
+
+| Endpoint | Method | Auth | Description |
+| -------- | ------ | ---- | ----------- |
+| `/whatsapp/webhook` | POST | HMAC | Message events from the WAHA bridge; `X-Webhook-Hmac` must be the HMAC-SHA512 of the raw body with `NG_WHATSAPP_WEBHOOK_SECRET` |
+| `/users/me/whatsapp/start-link` | POST | Yes | Code (30 min) to send to the bot privately; returns `{code, message, bot_url, expires_at}` |
+| `/users/me/whatsapp` | PATCH | Yes | `{whatsapp_notify}`: private messages from the bot on/off |
+| `/users/me/whatsapp` | DELETE | Yes | Unlink WhatsApp (409 for WhatsApp-only accounts) |
+| `/communities/{id}/whatsapp` | GET | Admin/leader | `{configured, linked, digest}` |
+| `/communities/{id}/whatsapp/start-link` | POST | Admin/leader | Code to post in the group as `!link CODE` |
+| `/communities/{id}/whatsapp` | PATCH | Admin/leader | `{digest: "off" \| "daily" \| "weekly"}` |
+| `/communities/{id}/whatsapp` | DELETE | Admin/leader | Unlink the group |
+| `/auth/claim/{token}` | GET | No | Name of the WhatsApp-only account the link belongs to |
+| `/auth/claim/{token}` | POST | No | `{email, password}`: turn it into an app account; returns a JWT |
+| `/whatsapp/bridge/status` | GET | Platform admin | Bridge session status and bot number |
+| `/whatsapp/bridge/start` | POST | Platform admin | Create/start the bridge session |
+| `/whatsapp/bridge/qr` | GET | Platform admin | Pairing QR code `{mimetype, data}` (base64) |
+
 ## Data Export & Migration
 
 | Endpoint              | Method | Auth | Description                              |

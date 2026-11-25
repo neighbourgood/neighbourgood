@@ -120,6 +120,7 @@ def _origin_matches(request: Request) -> bool:
 # secrets, federation tokens) and are never called from a browser form.
 _M2M_EXEMPT_PATHS: frozenset[str] = frozenset({
     "/telegram/webhook",
+    "/whatsapp/webhook",
     "/federation/alerts/receive",
     "/federation/migrate/import",
     "/mesh/sync",

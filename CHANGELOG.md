@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.11.0] - 2026-11-25
+
+### Added
+
+- **WhatsApp bot for neighbourhood groups** — an optional bot that lives in the neighbourhood's existing WhatsApp group, for neighbours who rarely or never open the app. It runs through WAHA, a self-hosted WhatsApp Web bridge; WhatsApp has no official way for bots to join existing groups. The bridge is unofficial and against WhatsApp's terms, so it needs a spare phone number, and `docs/whatsapp-setup.md` explains the trade-off
+  - Commands in groups (prefixed with `!`, everything else is ignored) and in private chats: `help`, `join`, `search`, `lend`, `offer`, `need`, `borrow` (with optional dates), `yes`/`no`/`returned` for lenders, `remove`, `mine`, `events`, `rsvp`, `profile`, `sos`, `ping`, `status`, `vote`, `account`, `stop`/`start`, `delete`. Command words work in all 12 app languages (`!suche Leiter`, `!cherche`, `!buscar` …), and replies come in the member's language
+  - **WhatsApp-only members**: `!join Anna` creates a light account with only the WhatsApp ID and the name (no email, no login). `account` sends a one-hour link to set an email and password (`/claim/{token}` page); linking WhatsApp from an app account merges an earlier light account into it. `delete` removes a light account after a confirmation code
+  - Group posts: a daily or weekly digest of new items, skills, events and members (only when something happened), plus Red Sky switching on and high/critical emergency requests immediately. Private messages for borrow requests (with the `yes 5`/`no 5` answer), booking answers, assigned tickets and Red Sky, only to people who wrote to the bot first
+  - Ban-risk safeguards: never writes first, paces messages 1.5–3 s apart with a typing indicator, caps messages per chat and hour, and backs off when WhatsApp throttles the number
+  - App side: **Settings → WhatsApp** (link with a `wa.me` link and code, private messages on/off, unlink), **Settings → WhatsApp bridge** for platform admins (status and QR code pairing), **Admin tab → WhatsApp group** for community admins (link code, digest frequency, unlink); 39 new UI strings in all 12 languages
+  - The installer asks about the bot as a separate step at the end (`--whatsapp` adds it later, `NG_WHATSAPP=0/1` answers without asking). It generates the API key and webhook secret and starts the `waha` service, which only runs with the `whatsapp` Compose profile and publishes no port
+  - New settings `NG_WHATSAPP_BRIDGE_URL`, `NG_WHATSAPP_API_KEY`, `NG_WHATSAPP_WEBHOOK_SECRET`, `NG_WHATSAPP_BOT_NUMBER`, `NG_WHATSAPP_SESSION`, `NG_WHATSAPP_SEND_INTERVAL_MS`, `NG_WHATSAPP_HOURLY_LIMIT_PER_CHAT`, and `NG_WAHA_IMAGE` for Compose
+  - New columns `users.whatsapp_id`, `whatsapp_notify`, `whatsapp_dm_at`, `account_type` and `communities.whatsapp_group_id`, `whatsapp_digest`, `whatsapp_last_digest_at` (Alembic migration `7a8b9c0d1e2f`; also added automatically on start)
+
+### Changed
+
+- The rules for borrowing, booking answers, listing items and skills, emergency tickets, crisis votes, RSVPs and joining a community moved from the routers into `app/services/actions.py`, so the WhatsApp bot and the API follow exactly the same checks. API behaviour is unchanged
+- `booking.created` and `booking.status_changed` webhook payloads now include `booking_id`
+- The webhook endpoint `/whatsapp/webhook` is exempt from per-IP rate limiting (the bridge forwards every group message from one address; calls are HMAC-checked first)
+- Password reset requests are ignored for WhatsApp-only accounts, which have no real email address
+
+752 backend tests (39 new).
+
 ## [2.10.0] - 2026-11-19
 
 ### Added
