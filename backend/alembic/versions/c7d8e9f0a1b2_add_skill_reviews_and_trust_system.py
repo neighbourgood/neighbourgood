@@ -23,7 +23,7 @@ def upgrade() -> None:
         # Make booking_id nullable (was non-nullable)
         batch_op.alter_column('booking_id', existing_type=sa.Integer(), nullable=True)
         # Add skill_id FK column
-        batch_op.add_column(sa.Column('skill_id', sa.Integer(), sa.ForeignKey('skills.id'), nullable=True))
+        batch_op.add_column(sa.Column('skill_id', sa.Integer(), sa.ForeignKey('skills.id', name='fk_reviews_skill_id'), nullable=True))
         batch_op.create_index('ix_reviews_skill_id', ['skill_id'])
         # Add review_type column
         batch_op.add_column(sa.Column('review_type', sa.String(length=10), nullable=False, server_default='booking'))

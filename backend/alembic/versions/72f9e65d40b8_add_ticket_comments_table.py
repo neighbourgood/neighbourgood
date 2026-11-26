@@ -36,6 +36,9 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    # 6ee90969736f's downgrade already drops ticket_comments
+    if not sa.inspect(op.get_bind()).has_table('ticket_comments'):
+        return
     with op.batch_alter_table('ticket_comments', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_ticket_comments_ticket_id'))
         batch_op.drop_index(batch_op.f('ix_ticket_comments_author_id'))

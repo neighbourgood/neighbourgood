@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.11.1] - 2026-11-25
+
+### Fixed
+
+- **`alembic upgrade head` works on an empty database** (SQLite and PostgreSQL). The history depended on the startup `create_all()`: `a1b2c3d4e5f6` added `due_at` to `emergency_tickets` before any revision created that table, `6ee90969736f` created `ticket_comments` and `messages.skill_id` a second time, `b4c5d6e7f8a9` and `f3a4b5c6d7e8` altered `mesh_synced_messages`, which no revision created, and `c7d8e9f0a1b2` added an unnamed foreign key that SQLite batch mode refuses. These revisions now check what exists (`sa.inspect(op.get_bind())`) and create the missing tables where they are first needed; the foreign keys to tables that don't exist yet (`skills`, `emergency_tickets`) no longer break PostgreSQL. Downgrading to `base` and back up works too
+- New revision `d4e5f6a7b8c9` creates `mesh_checkins`, `instance_sync_logs`, `federated_resources` and `federated_skills`, which only `create_all()` ever made. On existing installs every table already exists, so it only records the revision
+- New `tests/test_migrations.py`: empty database → head, down across the merge points and to `base` and back, and the existing-install path (`create_all` + stamp + upgrade) (754 tests)
+
 ## [2.11.0] - 2026-11-25
 
 ### Added
